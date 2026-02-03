@@ -106,6 +106,9 @@ export async function getProject(id: string) {
           { createdAt: 'desc' },
         ],
       },
+      timeEntries: {
+        orderBy: { date: 'desc' },
+      },
     },
   })
 }

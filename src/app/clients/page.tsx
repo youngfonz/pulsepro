@@ -4,6 +4,7 @@ import { getClients } from '@/actions/clients'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { SortableHeader } from '@/components/ui/SortableHeader'
 import { statusColors, statusLabels } from '@/lib/utils'
 import { ClientsFilter } from './ClientsFilter'
 
@@ -53,11 +54,17 @@ export default async function ClientsPage({ searchParams }: Props) {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border text-left text-sm font-medium text-muted-foreground">
-                      <th className="px-6 py-3">Client</th>
-                      <th className="px-6 py-3">Company</th>
+                      <th className="px-6 py-3">
+                        <SortableHeader label="Client" sortKey="name" currentSort={params.sort} basePath="/clients" />
+                      </th>
+                      <th className="px-6 py-3">
+                        <SortableHeader label="Company" sortKey="company" currentSort={params.sort} basePath="/clients" />
+                      </th>
                       <th className="px-6 py-3">Email</th>
                       <th className="px-6 py-3">Status</th>
-                      <th className="px-6 py-3">Projects</th>
+                      <th className="px-6 py-3">
+                        <SortableHeader label="Projects" sortKey="projects" currentSort={params.sort} basePath="/clients" />
+                      </th>
                       <th className="px-6 py-3"></th>
                     </tr>
                   </thead>

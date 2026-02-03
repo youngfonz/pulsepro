@@ -21,6 +21,7 @@ export async function getClients(search?: string, status?: string, sort?: string
   // Determine sort order
   type OrderBy = Record<string, 'asc' | 'desc'>
   let orderBy: OrderBy = { name: 'asc' }
+  let sortByProjects = false
 
   switch (sort) {
     case 'name':
@@ -41,6 +42,12 @@ export async function getClients(search?: string, status?: string, sort?: string
     case 'oldest':
       orderBy = { createdAt: 'asc' }
       break
+    case 'projects':
+      sortByProjects = true
+      break
+    case 'projects_desc':
+      sortByProjects = true
+      break
     default:
       orderBy = { name: 'asc' }
   }
@@ -59,8 +66,12 @@ export async function getClients(search?: string, status?: string, sort?: string
   })
 
   // Sort by project count if requested (can't do this in Prisma directly)
-  if (sort === 'projects') {
-    clients.sort((a, b) => b.projects.length - a.projects.length)
+  if (sortByProjects) {
+    if (sort === 'projects_desc') {
+      clients.sort((a, b) => a.projects.length - b.projects.length)
+    } else {
+      clients.sort((a, b) => b.projects.length - a.projects.length)
+    }
   }
 
   return clients

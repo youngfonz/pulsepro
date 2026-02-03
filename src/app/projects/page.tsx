@@ -3,6 +3,7 @@ import { getProjects, getClientsForSelect } from '@/actions/projects'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { SortableHeader } from '@/components/ui/SortableHeader'
 import { statusColors, statusLabels, priorityColors, priorityLabels, formatDate, isOverdue } from '@/lib/utils'
 import { ProjectsFilter } from './ProjectsFilter'
 
@@ -55,11 +56,19 @@ export default async function ProjectsPage({ searchParams }: Props) {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border text-left text-sm font-medium text-muted-foreground">
-                      <th className="px-6 py-3">Project</th>
-                      <th className="px-6 py-3">Client</th>
+                      <th className="px-6 py-3">
+                        <SortableHeader label="Project" sortKey="name" currentSort={params.sort} basePath="/projects" />
+                      </th>
+                      <th className="px-6 py-3">
+                        <SortableHeader label="Client" sortKey="client" currentSort={params.sort} basePath="/projects" />
+                      </th>
                       <th className="px-6 py-3">Status</th>
-                      <th className="px-6 py-3">Priority</th>
-                      <th className="px-6 py-3">Due Date</th>
+                      <th className="px-6 py-3">
+                        <SortableHeader label="Priority" sortKey="priority_high" currentSort={params.sort} basePath="/projects" />
+                      </th>
+                      <th className="px-6 py-3">
+                        <SortableHeader label="Due Date" sortKey="due_date" currentSort={params.sort} basePath="/projects" />
+                      </th>
                       <th className="px-6 py-3">Tasks</th>
                       <th className="px-6 py-3"></th>
                     </tr>
