@@ -83,7 +83,7 @@ export function ProjectsFilter({ clients }: { clients: Client[] }) {
             { value: 'priority_high', label: 'Priority (High First)' },
             { value: 'priority_low', label: 'Priority (Low First)' },
           ]}
-          className="w-full sm:w-44"
+          className="w-full sm:w-48"
         />
       </div>
     </div>
