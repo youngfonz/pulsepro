@@ -1,14 +1,16 @@
 {
-  "name": "project-tracker",
+  "name": "pulse-trackr",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && prisma db push && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@prisma/client": "^5.22.0",
     "clsx": "^2.1.1",
     "dotenv": "^17.2.3",
     "next": "16.1.6",
@@ -17,7 +19,6 @@
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
-    "@prisma/client": "^5.22.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
