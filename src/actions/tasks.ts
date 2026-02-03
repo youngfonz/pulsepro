@@ -363,7 +363,8 @@ export async function getAllTasks(options?: {
       orderBy = [{ completed: 'asc' }, { project: { name: 'asc' } }]
       break
     case 'client':
-      orderBy = [{ completed: 'asc' }, { project: { client: { name: 'asc' } } }]
+      // Sort by client in memory after fetching (Prisma doesn't support nested relation ordering)
+      orderBy = [{ completed: 'asc' }, { createdAt: 'desc' }]
       break
     case 'priority_high':
       orderBy = [{ completed: 'asc' }, { priority: 'desc' }]
@@ -373,7 +374,7 @@ export async function getAllTasks(options?: {
       break
   }
 
-  return prisma.task.findMany({
+  const tasks = await prisma.task.findMany({
     where,
     include: {
       project: {
@@ -391,6 +392,16 @@ export async function getAllTasks(options?: {
     },
     orderBy,
   })
+
+  // Sort by client name in memory (Prisma doesn't support nested relation ordering)
+  if (options?.sort === 'client') {
+    tasks.sort((a, b) => {
+      if (a.completed !== b.completed) return a.completed ? 1 : -1
+      return a.project.client.name.localeCompare(b.project.client.name)
+    })
+  }
+
+  return tasks
 }
 
 export async function getProjectsForTaskFilter() {
