@@ -22,7 +22,7 @@
   --sidebar-foreground: #1a1a2e;
   --sidebar-border: #e4e4e7;
   --sidebar-accent: #eef2ff;
-  --link: #4f46e5;
+  --link: #1a1a2e;
 }
 
 /* VS Code inspired dark theme - refined */
@@ -48,7 +48,7 @@
   --sidebar-foreground: #e6edf3;
   --sidebar-border: #21262d;
   --sidebar-accent: #1f6feb;
-  --link: #58a6ff;
+  --link: #e6edf3;
 }
 
 @theme inline {
