@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 
-export async function getClients(search?: string, status?: string) {
+export async function getClients(search?: string, status?: string, sort?: string) {
   const where: Record<string, unknown> = {}
 
   if (search) {
@@ -18,7 +18,34 @@ export async function getClients(search?: string, status?: string) {
     where.status = status
   }
 
-  return prisma.client.findMany({
+  // Determine sort order
+  type OrderBy = Record<string, 'asc' | 'desc'>
+  let orderBy: OrderBy = { name: 'asc' }
+
+  switch (sort) {
+    case 'name':
+      orderBy = { name: 'asc' }
+      break
+    case 'name_desc':
+      orderBy = { name: 'desc' }
+      break
+    case 'company':
+      orderBy = { company: 'asc' }
+      break
+    case 'company_desc':
+      orderBy = { company: 'desc' }
+      break
+    case 'newest':
+      orderBy = { createdAt: 'desc' }
+      break
+    case 'oldest':
+      orderBy = { createdAt: 'asc' }
+      break
+    default:
+      orderBy = { name: 'asc' }
+  }
+
+  const clients = await prisma.client.findMany({
     where,
     include: {
       projects: {
@@ -28,8 +55,15 @@ export async function getClients(search?: string, status?: string) {
         },
       },
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy,
   })
+
+  // Sort by project count if requested (can't do this in Prisma directly)
+  if (sort === 'projects') {
+    clients.sort((a, b) => b.projects.length - a.projects.length)
+  }
+
+  return clients
 }
 
 export async function getClient(id: string) {

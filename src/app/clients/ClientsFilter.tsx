@@ -42,6 +42,20 @@ export function ClientsFilter() {
         ]}
         className="w-full sm:w-40"
       />
+      <Select
+        defaultValue={searchParams.get('sort') || 'name'}
+        onChange={(e) => updateFilter('sort', e.target.value)}
+        options={[
+          { value: 'name', label: 'Name (A-Z)' },
+          { value: 'name_desc', label: 'Name (Z-A)' },
+          { value: 'company', label: 'Company (A-Z)' },
+          { value: 'company_desc', label: 'Company (Z-A)' },
+          { value: 'newest', label: 'Newest First' },
+          { value: 'oldest', label: 'Oldest First' },
+          { value: 'projects', label: 'Most Projects' },
+        ]}
+        className="w-full sm:w-44"
+      />
     </div>
   )
 }

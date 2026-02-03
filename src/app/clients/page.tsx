@@ -8,12 +8,12 @@ import { statusColors, statusLabels } from '@/lib/utils'
 import { ClientsFilter } from './ClientsFilter'
 
 interface Props {
-  searchParams: Promise<{ search?: string; status?: string }>
+  searchParams: Promise<{ search?: string; status?: string; sort?: string }>
 }
 
 export default async function ClientsPage({ searchParams }: Props) {
   const params = await searchParams
-  const clients = await getClients(params.search, params.status)
+  const clients = await getClients(params.search, params.status, params.sort)
 
   return (
     <div className="space-y-4 md:space-y-6">
