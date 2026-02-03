@@ -223,3 +223,34 @@ export async function removeProjectImage(imageId: string) {
   })
   revalidatePath(`/projects/${image.projectId}`)
 }
+
+// Time Entry Actions
+export async function addTimeEntry(projectId: string, formData: FormData) {
+  const hours = parseFloat(formData.get('hours') as string)
+  const description = formData.get('description') as string || null
+  const dateStr = formData.get('date') as string
+
+  await prisma.timeEntry.create({
+    data: {
+      hours,
+      description,
+      date: dateStr ? new Date(dateStr) : new Date(),
+      projectId,
+    },
+  })
+  revalidatePath(`/projects/${projectId}`)
+}
+
+export async function deleteTimeEntry(id: string) {
+  const entry = await prisma.timeEntry.findUnique({
+    where: { id },
+    select: { projectId: true },
+  })
+
+  if (!entry) return
+
+  await prisma.timeEntry.delete({
+    where: { id },
+  })
+  revalidatePath(`/projects/${entry.projectId}`)
+}

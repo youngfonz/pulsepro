@@ -7,6 +7,7 @@ import { DeleteProjectButton } from './DeleteProjectButton'
 import { TaskList } from './TaskList'
 import { AddTaskForm } from './AddTaskForm'
 import { ProjectImages } from './ProjectImages'
+import { TimeTracker } from './TimeTracker'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -85,6 +86,15 @@ export default async function ProjectDetailPage({ params }: Props) {
                 </div>
                 <p className="text-right text-sm font-medium text-foreground">{progress}%</p>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Time Tracking</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <TimeTracker projectId={project.id} timeEntries={project.timeEntries} />
             </CardContent>
           </Card>
 
