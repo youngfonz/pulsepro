@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/components/Sidebar";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { LayoutWrapper } from "@/components/LayoutWrapper";
 import { getClientCount } from "@/actions/dashboard";
 
 const geistSans = Geist({
@@ -33,12 +33,9 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider>
-          <div className="flex min-h-screen bg-background">
-            <Sidebar clientCount={clientCount} />
-            <main className="flex-1 overflow-auto pt-14 md:pt-0">
-              <div className="p-4 md:p-8">{children}</div>
-            </main>
-          </div>
+          <LayoutWrapper clientCount={clientCount}>
+            {children}
+          </LayoutWrapper>
         </ThemeProvider>
       </body>
     </html>

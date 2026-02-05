@@ -6,12 +6,13 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter()
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: '',
-    remember: false,
+    confirmPassword: '',
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -21,24 +22,34 @@ export default function LoginPage() {
     setError('')
 
     // Basic validation
-    if (!formData.email || !formData.password) {
+    if (!formData.name || !formData.email || !formData.password) {
       setError('Please fill in all fields')
+      return
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters')
       return
     }
 
     setLoading(true)
 
-    // For now, just simulate login and redirect to dashboard
+    // For now, just simulate signup and redirect to dashboard
     // TODO: Add actual authentication logic
     setTimeout(() => {
-      localStorage.setItem('user', JSON.stringify({ email: formData.email }))
+      localStorage.setItem('user', JSON.stringify({ name: formData.name, email: formData.email }))
       router.push('/')
     }, 1000)
   }
 
   return (
     <div className="min-h-screen flex">
-      {/* Left side - Login Form */}
+      {/* Left side - Signup Form */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-background">
         <div className="w-full max-w-md space-y-8">
           {/* Logo */}
@@ -53,17 +64,27 @@ export default function LoginPage() {
 
           {/* Header */}
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-foreground">Welcome back</h1>
-            <p className="text-muted-foreground">Sign in to your account to continue</p>
+            <h1 className="text-3xl font-bold text-foreground">Create an account</h1>
+            <p className="text-muted-foreground">Get started with Pulse today</p>
           </div>
 
-          {/* Login Form */}
+          {/* Signup Form */}
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
               <div className="p-3 rounded bg-destructive/10 border border-destructive/50 text-destructive text-sm">
                 {error}
               </div>
             )}
+
+            <Input
+              id="name"
+              type="text"
+              label="Full name"
+              placeholder="John Doe"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+            />
 
             <Input
               id="email"
@@ -75,37 +96,47 @@ export default function LoginPage() {
               required
             />
 
-            <div className="space-y-2">
-              <Input
-                id="password"
-                type="password"
-                label="Password"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            <Input
+              id="password"
+              type="password"
+              label="Password"
+              placeholder="At least 8 characters"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              required
+            />
+
+            <Input
+              id="confirmPassword"
+              type="password"
+              label="Confirm password"
+              placeholder="Re-enter your password"
+              value={formData.confirmPassword}
+              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+              required
+            />
+
+            <div className="flex items-start gap-2">
+              <input
+                type="checkbox"
+                id="terms"
                 required
+                className="mt-1 rounded border-input bg-background text-primary focus:ring-2 focus:ring-ring"
               />
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={formData.remember}
-                    onChange={(e) => setFormData({ ...formData, remember: e.target.checked })}
-                    className="rounded border-input bg-background text-primary focus:ring-2 focus:ring-ring"
-                  />
-                  <span className="text-sm text-muted-foreground">Remember me</span>
-                </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-sm font-medium text-primary hover:text-primary/80"
-                >
-                  Forgot password?
+              <label htmlFor="terms" className="text-sm text-muted-foreground">
+                I agree to the{' '}
+                <Link href="/terms" className="text-primary hover:text-primary/80">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link href="/privacy" className="text-primary hover:text-primary/80">
+                  Privacy Policy
                 </Link>
-              </div>
+              </label>
             </div>
 
             <Button type="submit" className="w-full" size="lg" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? 'Creating account...' : 'Create account'}
             </Button>
 
             {/* Divider */}
@@ -118,7 +149,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Social Login */}
+            {/* Social Signup */}
             <div className="grid grid-cols-2 gap-3">
               <Button variant="secondary" type="button">
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -150,11 +181,11 @@ export default function LoginPage() {
             </div>
           </form>
 
-          {/* Sign up link */}
+          {/* Login link */}
           <p className="text-center text-sm text-muted-foreground">
-            Don't have an account?{' '}
-            <Link href="/signup" className="font-medium text-primary hover:text-primary/80">
-              Sign up
+            Already have an account?{' '}
+            <Link href="/login" className="font-medium text-primary hover:text-primary/80">
+              Sign in
             </Link>
           </p>
         </div>
@@ -164,46 +195,46 @@ export default function LoginPage() {
       <div className="hidden lg:flex lg:flex-1 bg-gradient-to-br from-primary to-accent p-12 text-white">
         <div className="flex flex-col justify-center max-w-lg">
           <h2 className="text-4xl font-bold mb-6">
-            Manage projects with confidence
+            Join thousands of teams already using Pulse
           </h2>
           <div className="space-y-6">
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <div className="w-12 h-12 rounded bg-white/10 backdrop-blur flex items-center justify-center">
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                 </div>
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Secure and reliable</h3>
-                <p className="text-white/80 text-sm">Your data is encrypted and protected with enterprise-grade security</p>
+                <h3 className="font-semibold text-lg mb-1">No credit card required</h3>
+                <p className="text-white/80 text-sm">Start with our free plan and upgrade when you're ready</p>
               </div>
             </div>
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <div className="w-12 h-12 rounded bg-white/10 backdrop-blur flex items-center justify-center">
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Real-time collaboration</h3>
-                <p className="text-white/80 text-sm">Work together seamlessly with your team in real-time</p>
+                <h3 className="font-semibold text-lg mb-1">Get started in minutes</h3>
+                <p className="text-white/80 text-sm">Simple setup process, no technical knowledge required</p>
               </div>
             </div>
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <div className="w-12 h-12 rounded bg-white/10 backdrop-blur flex items-center justify-center">
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                   </svg>
                 </div>
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Lightning fast</h3>
-                <p className="text-white/80 text-sm">Optimized for speed and performance on any device</p>
+                <h3 className="font-semibold text-lg mb-1">Invite your team</h3>
+                <p className="text-white/80 text-sm">Collaborate with unlimited team members at no extra cost</p>
               </div>
             </div>
           </div>
