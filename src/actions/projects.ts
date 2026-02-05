@@ -63,6 +63,12 @@ export async function getProjects(filters?: {
     case 'priority_low':
       orderBy = { priority: 'asc' }
       break
+    case 'status':
+      orderBy = { status: 'asc' }
+      break
+    case 'status_desc':
+      orderBy = { status: 'desc' }
+      break
     default:
       orderBy = { createdAt: 'desc' }
   }

@@ -62,7 +62,9 @@ export default async function ProjectsPage({ searchParams }: Props) {
                       <th className="px-6 py-3">
                         <SortableHeader label="Client" sortKey="client" currentSort={params.sort} basePath="/projects" />
                       </th>
-                      <th className="px-6 py-3 min-w-[120px]">Status</th>
+                      <th className="px-6 py-3 min-w-[120px]">
+                        <SortableHeader label="Status" sortKey="status" currentSort={params.sort} basePath="/projects" />
+                      </th>
                       <th className="px-6 py-3">
                         <SortableHeader label="Priority" sortKey="priority_high" currentSort={params.sort} basePath="/projects" />
                       </th>
