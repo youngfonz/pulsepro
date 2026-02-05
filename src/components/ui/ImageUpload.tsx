@@ -82,7 +82,7 @@ export function ImageUpload({
       )}
       <div
         className={cn(
-          'relative overflow-hidden rounded-lg border-2 border-dashed border-gray-300 transition-colors hover:border-gray-400',
+          'relative overflow-hidden  border-2 border-dashed border-gray-300 transition-colors hover:border-gray-400',
           aspect === 'square' ? 'aspect-square w-32' : 'aspect-video w-full max-w-xs',
           isUploading && 'opacity-50'
         )}
@@ -98,7 +98,7 @@ export function ImageUpload({
             <button
               type="button"
               onClick={handleRemove}
-              className="absolute right-1 top-1 rounded-full bg-red-500 p-1 text-white shadow-sm hover:bg-red-600"
+              className="absolute right-1 top-1  bg-red-500 p-1 text-white shadow-sm hover:bg-red-600"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

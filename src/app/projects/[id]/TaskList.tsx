@@ -156,7 +156,7 @@ function TaskItem({ task }: { task: Task }) {
             {task.notes && (
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-1">Notes</p>
-                <p className="text-sm text-foreground whitespace-pre-wrap bg-muted/50 rounded-md p-2">{task.notes}</p>
+                <p className="text-sm text-foreground whitespace-pre-wrap bg-muted/50  p-2">{task.notes}</p>
               </div>
             )}
             {task.images.length > 0 && (
@@ -164,7 +164,7 @@ function TaskItem({ task }: { task: Task }) {
                 <p className="text-xs font-medium text-muted-foreground mb-1">Images</p>
                 <div className="flex flex-wrap gap-2">
                   {task.images.map((image) => (
-                    <div key={image.id} className="relative h-20 w-20 overflow-hidden rounded-lg border border-border">
+                    <div key={image.id} className="relative h-20 w-20 overflow-hidden  border border-border">
                       <Image src={image.path} alt={image.name} fill className="object-cover" />
                     </div>
                   ))}
@@ -181,7 +181,7 @@ function TaskItem({ task }: { task: Task }) {
                       href={file.path}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 rounded-md border border-border bg-muted/50 px-3 py-2 text-sm hover:bg-muted transition-colors"
+                      className="flex items-center gap-2  border border-border bg-muted/50 px-3 py-2 text-sm hover:bg-muted transition-colors"
                     >
                       <span className="text-lg">{getFileIcon(file.type)}</span>
                       <span className="flex-1 truncate text-foreground">{file.name}</span>
@@ -362,12 +362,12 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
         <label className="block text-sm font-medium text-foreground">Images</label>
         <div className="flex flex-wrap gap-2">
           {images.map((image) => (
-            <div key={image.id} className="relative h-20 w-20 overflow-hidden rounded-lg border border-border">
+            <div key={image.id} className="relative h-20 w-20 overflow-hidden  border border-border">
               <Image src={image.path} alt={image.name} fill className="object-cover" />
               <button
                 type="button"
                 onClick={() => handleRemoveImage(image.id)}
-                className="absolute right-1 top-1 rounded-full bg-destructive p-0.5 text-white hover:bg-destructive/80"
+                className="absolute right-1 top-1  bg-destructive p-0.5 text-white hover:bg-destructive/80"
               >
                 <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -375,7 +375,7 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
               </button>
             </div>
           ))}
-          <label className={`flex h-20 w-20 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border text-muted-foreground hover:border-muted-foreground ${isUploadingImage ? 'opacity-50' : ''}`}>
+          <label className={`flex h-20 w-20 cursor-pointer flex-col items-center justify-center  border-2 border-dashed border-border text-muted-foreground hover:border-muted-foreground ${isUploadingImage ? 'opacity-50' : ''}`}>
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
             </svg>
@@ -396,7 +396,7 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
         <label className="block text-sm font-medium text-foreground">Files</label>
         <div className="space-y-2">
           {files.map((file) => (
-            <div key={file.id} className="flex items-center gap-2 rounded-md border border-border bg-muted/50 px-3 py-2">
+            <div key={file.id} className="flex items-center gap-2  border border-border bg-muted/50 px-3 py-2">
               <span className="text-lg">{getFileIcon(file.type)}</span>
               <span className="flex-1 truncate text-sm text-foreground">{file.name}</span>
               <span className="text-xs text-muted-foreground">{formatFileSize(file.size)}</span>
@@ -411,7 +411,7 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
               </button>
             </div>
           ))}
-          <label className={`flex cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-dashed border-border px-4 py-3 text-sm text-muted-foreground hover:border-muted-foreground ${isUploadingFile ? 'opacity-50' : ''}`}>
+          <label className={`flex cursor-pointer items-center justify-center gap-2  border-2 border-dashed border-border px-4 py-3 text-sm text-muted-foreground hover:border-muted-foreground ${isUploadingFile ? 'opacity-50' : ''}`}>
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
             </svg>

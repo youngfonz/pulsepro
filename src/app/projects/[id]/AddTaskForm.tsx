@@ -50,7 +50,7 @@ export function AddTaskForm({ projectId }: { projectId: string }) {
   }
 
   return (
-    <form action={handleSubmit} className="space-y-3 rounded-lg border border-border bg-muted/50 p-4">
+    <form action={handleSubmit} className="space-y-3  border border-border bg-muted/50 p-4">
       <div className="flex items-start gap-2">
         <Input
           id="title"

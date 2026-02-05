@@ -73,13 +73,13 @@ export function ProjectImages({
         {images.map((image) => (
           <div
             key={image.id}
-            className={`relative h-32 w-32 overflow-hidden rounded-lg border border-gray-200 ${isPending ? 'opacity-50' : ''}`}
+            className={`relative h-32 w-32 overflow-hidden  border border-gray-200 ${isPending ? 'opacity-50' : ''}`}
           >
             <Image src={image.path} alt={image.name} fill className="object-cover" />
             <button
               type="button"
               onClick={() => handleRemoveImage(image.id)}
-              className="absolute right-1 top-1 rounded-full bg-red-500 p-1 text-white shadow-sm hover:bg-red-600"
+              className="absolute right-1 top-1  bg-red-500 p-1 text-white shadow-sm hover:bg-red-600"
             >
               <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -88,7 +88,7 @@ export function ProjectImages({
           </div>
         ))}
         <label
-          className={`flex h-32 w-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-500 ${isUploading ? 'cursor-not-allowed opacity-50' : ''}`}
+          className={`flex h-32 w-32 cursor-pointer flex-col items-center justify-center  border-2 border-dashed border-gray-300 text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-500 ${isUploading ? 'cursor-not-allowed opacity-50' : ''}`}
         >
           <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path

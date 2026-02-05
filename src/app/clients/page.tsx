@@ -77,7 +77,7 @@ export default async function ClientsPage({ searchParams }: Props) {
                             className="flex items-center gap-3"
                           >
                             {client.logo ? (
-                              <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
+                              <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden ">
                                 <Image
                                   src={client.logo}
                                   alt={client.name}
@@ -86,7 +86,7 @@ export default async function ClientsPage({ searchParams }: Props) {
                                 />
                               </div>
                             ) : (
-                              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center  bg-muted text-muted-foreground">
                                 <span className="text-sm font-medium">
                                   {client.name.charAt(0).toUpperCase()}
                                 </span>
@@ -134,7 +134,7 @@ export default async function ClientsPage({ searchParams }: Props) {
                     className="flex items-center gap-4 p-4 hover:bg-muted/50 transition-colors"
                   >
                     {client.logo ? (
-                      <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full">
+                      <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden ">
                         <Image
                           src={client.logo}
                           alt={client.name}
@@ -143,7 +143,7 @@ export default async function ClientsPage({ searchParams }: Props) {
                         />
                       </div>
                     ) : (
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center  bg-muted text-muted-foreground">
                         <span className="text-lg font-medium">
                           {client.name.charAt(0).toUpperCase()}
                         </span>

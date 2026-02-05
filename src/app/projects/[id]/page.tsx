@@ -78,7 +78,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                   <span className="text-muted-foreground">Tasks Completed</span>
                   <span className="font-medium text-foreground">{completedTasks} / {totalTasks}</span>
                 </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                <div className="h-2 w-full overflow-hidden  bg-muted">
                   <div
                     className="h-full bg-primary transition-all"
                     style={{ width: `${progress}%` }}

@@ -285,7 +285,7 @@ export function GanttChart({ projects }: GanttChartProps) {
                       <div className="relative h-6 mx-2">
                         <Link
                           href={`/projects/${project.id}`}
-                          className={`absolute h-full rounded-md shadow-sm cursor-pointer
+                          className={`absolute h-full  shadow-sm cursor-pointer
                             hover:brightness-110 hover:shadow-md transition-all
                             ${getPriorityBarColor(task.priority, task.completed)}`}
                           style={barStyle}

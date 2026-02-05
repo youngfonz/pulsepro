@@ -202,7 +202,7 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
                   {day && (
                     <>
                       <div
-                        className={`text-sm font-medium mb-1 w-7 h-7 flex items-center justify-center rounded-full ${
+                        className={`text-sm font-medium mb-1 w-7 h-7 flex items-center justify-center  ${
                           isToday(day)
                             ? 'bg-primary text-primary-foreground'
                             : 'text-foreground'
@@ -245,7 +245,7 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
 
         {/* Selected day details */}
         <div className="lg:col-span-1">
-          <div className="border border-border rounded-lg p-4 bg-card">
+          <div className="border border-border  p-4 bg-card">
             {selectedDate ? (
               <>
                 <div className="flex items-center justify-between mb-3">
@@ -271,7 +271,7 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
                       <Link
                         key={task.id}
                         href={`/projects/${task.project.id}`}
-                        className="block p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors"
+                        className="block p-3  border border-border hover:bg-muted/50 transition-colors"
                       >
                         <div className="flex items-start justify-between gap-2">
                           <span
@@ -308,7 +308,7 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
           </div>
 
           {/* Legend */}
-          <div className="mt-4 p-4 border border-border rounded-lg bg-card">
+          <div className="mt-4 p-4 border border-border  bg-card">
             <h4 className="text-sm font-medium text-foreground mb-2">Legend</h4>
             <div className="space-y-2 text-xs">
               <div className="flex items-center gap-2">

@@ -48,3 +48,4 @@ next-env.d.ts
 
 # uploads (use cloud storage in production)
 /public/uploads
+.env*.local

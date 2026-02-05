@@ -85,7 +85,7 @@ export function MultiImageUpload({
         {images.map((image, index) => (
           <div
             key={image.id || index}
-            className="relative h-24 w-24 overflow-hidden rounded-lg border border-gray-200"
+            className="relative h-24 w-24 overflow-hidden  border border-gray-200"
           >
             <Image
               src={image.path}
@@ -96,7 +96,7 @@ export function MultiImageUpload({
             <button
               type="button"
               onClick={() => onRemove(index, image.id)}
-              className="absolute right-1 top-1 rounded-full bg-red-500 p-1 text-white shadow-sm hover:bg-red-600"
+              className="absolute right-1 top-1  bg-red-500 p-1 text-white shadow-sm hover:bg-red-600"
             >
               <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -106,7 +106,7 @@ export function MultiImageUpload({
         ))}
         <label
           className={cn(
-            'flex h-24 w-24 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-500',
+            'flex h-24 w-24 cursor-pointer flex-col items-center justify-center  border-2 border-dashed border-gray-300 text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-500',
             isUploading && 'cursor-not-allowed opacity-50'
           )}
         >

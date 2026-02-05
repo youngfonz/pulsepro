@@ -23,7 +23,7 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
           className={cn(
-            'relative max-h-[90vh] w-full max-w-lg overflow-auto rounded-lg bg-card shadow-xl border border-border',
+            'relative max-h-[90vh] w-full max-w-lg overflow-auto bg-card shadow-xl border border-border',
             className
           )}
           onClick={(e) => e.stopPropagation()}
@@ -33,7 +33,7 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
               <h2 className="text-lg font-semibold text-foreground">{title}</h2>
               <button
                 onClick={onClose}
-                className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                className="p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
               >
                 <svg
                   className="h-5 w-5"

@@ -62,7 +62,7 @@ export function TimeTracker({ projectId, timeEntries }: TimeTrackerProps) {
 
       {/* Add Time Form */}
       {isAdding && (
-        <form action={handleSubmit} className="space-y-3 rounded-lg border border-border bg-muted/50 p-4">
+        <form action={handleSubmit} className="space-y-3  border border-border bg-muted/50 p-4">
           <div className="grid grid-cols-2 gap-3">
             <Input
               id="hours"
@@ -101,7 +101,7 @@ export function TimeTracker({ projectId, timeEntries }: TimeTrackerProps) {
       {timeEntries.length > 0 && (
         <div className="space-y-2">
           <p className="text-sm font-medium text-muted-foreground">Recent entries</p>
-          <div className="divide-y divide-border rounded-lg border border-border">
+          <div className="divide-y divide-border  border border-border">
             {timeEntries.slice(0, 10).map((entry) => (
               <div
                 key={entry.id}

@@ -79,7 +79,7 @@ export function Sidebar({ clientCount }: SidebarProps) {
       {/* Mobile header */}
       <div className="fixed top-0 left-0 right-0 z-40 flex h-14 items-center justify-between border-b border-sidebar-border bg-sidebar px-4 md:hidden">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+          <div className="w-7 h-7  bg-gradient-to-br from-primary to-accent flex items-center justify-center">
             <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M22 12h-4l-3 9L9 3l-3 9H2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
@@ -89,7 +89,7 @@ export function Sidebar({ clientCount }: SidebarProps) {
         <div className="flex items-center gap-2">
           <button
             onClick={toggleTheme}
-            className="rounded-md p-2 text-sidebar-foreground hover:bg-secondary"
+            className=" p-2 text-sidebar-foreground hover:bg-secondary"
           >
             {theme === 'dark' ? (
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -103,7 +103,7 @@ export function Sidebar({ clientCount }: SidebarProps) {
           </button>
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="rounded-md p-2 text-sidebar-foreground hover:bg-secondary"
+            className=" p-2 text-sidebar-foreground hover:bg-secondary"
           >
             {isOpen ? (
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -135,7 +135,7 @@ export function Sidebar({ clientCount }: SidebarProps) {
       >
         <div className="flex h-14 md:h-16 items-center justify-between border-b border-sidebar-border px-6">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+            <div className="w-7 h-7  bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M22 12h-4l-3 9L9 3l-3 9H2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -144,7 +144,7 @@ export function Sidebar({ clientCount }: SidebarProps) {
           </div>
           <button
             onClick={toggleTheme}
-            className="hidden md:flex rounded-md p-2 text-sidebar-foreground hover:bg-secondary"
+            className="hidden md:flex  p-2 text-sidebar-foreground hover:bg-secondary"
             title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {theme === 'dark' ? (
@@ -168,7 +168,7 @@ export function Sidebar({ clientCount }: SidebarProps) {
                 href={item.href}
                 onClick={() => setIsOpen(false)}
                 className={cn(
-                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                  'flex items-center gap-3  px-3 py-2 text-sm font-medium transition-colors',
                   isActive
                     ? 'bg-sidebar-accent text-accent-foreground'
                     : 'text-sidebar-foreground hover:bg-secondary hover:text-secondary-foreground'

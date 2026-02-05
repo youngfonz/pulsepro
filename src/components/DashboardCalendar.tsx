@@ -164,7 +164,7 @@ export function DashboardCalendar() {
             <Link
               key={index}
               href={`/tasks?date=${formatDateParam(day)}`}
-              className={`h-8 flex items-center justify-center text-sm rounded-full relative transition-colors ${
+              className={`h-8 flex items-center justify-center text-sm  relative transition-colors ${
                 isToday(day)
                   ? 'bg-primary text-primary-foreground font-medium hover:bg-primary/90'
                   : hasTasks
@@ -175,7 +175,7 @@ export function DashboardCalendar() {
               {day}
               {hasTasks && !isToday(day) && (
                 <span
-                  className={`absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 rounded-full ${
+                  className={`absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5  ${
                     hasHighPriority
                       ? 'bg-rose-600'
                       : hasPendingTasks

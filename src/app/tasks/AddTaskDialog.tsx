@@ -82,7 +82,7 @@ export function AddTaskDialog({ projects }: AddTaskDialogProps) {
           />
 
           {/* Dialog */}
-          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-background rounded-lg shadow-lg z-50 max-h-[90vh] overflow-y-auto">
+          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-background  shadow-lg z-50 max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-foreground">Add New Task</h2>
