@@ -488,6 +488,69 @@ export async function createBookmarkTask(
   revalidatePath(`/projects/${projectId}`)
 }
 
+export async function getAllBookmarks(filters?: {
+  search?: string
+  projectId?: string
+  bookmarkType?: string
+  sort?: string
+}) {
+  const where: Record<string, unknown> = {
+    url: { not: null }
+  }
+
+  if (filters?.search) {
+    where.AND = [
+      { url: { not: null } },
+      {
+        OR: [
+          { title: { contains: filters.search } },
+          { description: { contains: filters.search } },
+          { url: { contains: filters.search } },
+        ]
+      }
+    ]
+    delete where.url
+  }
+
+  if (filters?.projectId && filters.projectId !== 'all') {
+    where.projectId = filters.projectId
+  }
+
+  if (filters?.bookmarkType && filters.bookmarkType !== 'all') {
+    where.bookmarkType = filters.bookmarkType
+  }
+
+  let orderBy: Record<string, 'asc' | 'desc'> = { createdAt: 'desc' }
+
+  switch (filters?.sort) {
+    case 'oldest':
+      orderBy = { createdAt: 'asc' }
+      break
+    case 'title':
+      orderBy = { title: 'asc' }
+      break
+  }
+
+  const bookmarks = await prisma.task.findMany({
+    where,
+    include: {
+      project: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+    orderBy,
+  })
+
+  if (filters?.sort === 'project') {
+    bookmarks.sort((a, b) => a.project.name.localeCompare(b.project.name))
+  }
+
+  return bookmarks
+}
+
 export async function getAllTags() {
   const tasks = await prisma.task.findMany({
     where: {
