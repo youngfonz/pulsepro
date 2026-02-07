@@ -59,25 +59,60 @@ async function fetchYouTubeMetadata(url: string): Promise<BookmarkMetadata | nul
 
 async function fetchTwitterMetadata(url: string): Promise<BookmarkMetadata | null> {
   try {
+    // First try oEmbed for basic info
     const oembedUrl = `https://publish.twitter.com/oembed?url=${encodeURIComponent(url)}`;
-    const response = await fetch(oembedUrl);
+    const oembedResponse = await fetch(oembedUrl);
 
-    if (!response.ok) {
-      return null;
+    let authorName = 'Unknown';
+    let tweetText = '';
+
+    if (oembedResponse.ok) {
+      const data = await oembedResponse.json();
+      authorName = data.author_name || 'Unknown';
+
+      // Extract tweet text from HTML (remove HTML tags)
+      if (data.html) {
+        const textMatch = data.html.match(/<p[^>]*>(.*?)<\/p>/s);
+        if (textMatch) {
+          tweetText = textMatch[1]
+            .replace(/<[^>]*>/g, '')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .trim();
+        }
+      }
     }
 
-    const data = await response.json();
+    // Try to fetch the page to get og:image for thumbnail
+    let thumbnailUrl: string | undefined = undefined;
+    try {
+      const pageResponse = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+        },
+      });
 
-    // Extract author name from HTML if available
-    let description = undefined;
-    if (data.author_name) {
-      description = `By ${data.author_name}`;
+      if (pageResponse.ok) {
+        const html = await pageResponse.text();
+
+        // Extract og:image
+        const ogImageMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i) ||
+                            html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["']/i);
+
+        if (ogImageMatch && ogImageMatch[1]) {
+          thumbnailUrl = ogImageMatch[1];
+        }
+      }
+    } catch (e) {
+      console.log('Could not fetch Twitter page for thumbnail:', e);
     }
 
     return {
-      title: data.author_name ? `Post by ${data.author_name}` : 'X Post',
-      description,
-      thumbnailUrl: undefined, // Twitter oEmbed doesn't provide thumbnails
+      title: tweetText ? `${authorName}: "${tweetText.substring(0, 100)}${tweetText.length > 100 ? '...' : ''}"` : `Post by ${authorName}`,
+      description: `By ${authorName}`,
+      thumbnailUrl,
       type: 'twitter',
     };
   } catch (error) {
