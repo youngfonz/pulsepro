@@ -186,23 +186,6 @@ export function Sidebar({ clientCount, clerkEnabled = false }: SidebarProps) {
               </>
             )}
           </div>
-          {!isCollapsed && (
-            <button
-              onClick={toggleTheme}
-              className="hidden md:flex p-2 text-sidebar-foreground hover:bg-secondary rounded"
-              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {theme === 'dark' ? (
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              ) : (
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-              )}
-            </button>
-          )}
         </div>
         <nav className="flex-1 overflow-y-auto space-y-1 px-3 py-4">
           {navigation.map((item) => {
@@ -236,12 +219,51 @@ export function Sidebar({ clientCount, clerkEnabled = false }: SidebarProps) {
           })}
         </nav>
 
-        {/* Auth Section - fixed at bottom */}
-        {clerkEnabled && (
-          <div className="flex-shrink-0">
+        {/* Bottom section */}
+        <div className="flex-shrink-0 border-t border-sidebar-border px-3 py-3 space-y-1">
+          <button
+            onClick={toggleTheme}
+            title={isCollapsed ? (theme === 'dark' ? 'Light mode' : 'Dark mode') : undefined}
+            className={cn(
+              'flex items-center gap-3 w-full px-3 py-2 text-sm font-medium text-sidebar-foreground hover:bg-secondary hover:text-secondary-foreground transition-colors rounded',
+              isCollapsed && 'justify-center'
+            )}
+          >
+            {theme === 'dark' ? (
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            ) : (
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            )}
+            {!isCollapsed && <span>{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>}
+          </button>
+          <Link
+            href="/settings"
+            onClick={() => setIsOpen(false)}
+            title={isCollapsed ? 'Settings' : undefined}
+            className={cn(
+              'flex items-center gap-3 px-3 py-2 text-sm font-medium transition-colors rounded',
+              pathname === '/settings'
+                ? 'bg-sidebar-accent text-accent-foreground'
+                : 'text-sidebar-foreground hover:bg-secondary hover:text-secondary-foreground',
+              isCollapsed && 'justify-center'
+            )}
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            {!isCollapsed && <span>Settings</span>}
+          </Link>
+
+          {/* Auth Section */}
+          {clerkEnabled && (
             <SidebarAuth isCollapsed={isCollapsed} />
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </>
   )
