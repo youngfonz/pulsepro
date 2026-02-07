@@ -143,7 +143,7 @@ export function Sidebar({ clientCount, clerkEnabled = false }: SidebarProps) {
       {/* Sidebar */}
       <div
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex flex-col border-r border-sidebar-border bg-sidebar transition-all duration-200 md:static md:translate-x-0',
+          'fixed inset-y-0 left-0 z-50 flex flex-col border-r border-sidebar-border bg-sidebar transition-all duration-200 md:sticky md:top-0 md:h-screen md:translate-x-0',
           isOpen ? 'translate-x-0' : '-translate-x-full',
           isCollapsed ? 'md:w-16' : 'w-64'
         )}
