@@ -152,9 +152,11 @@ function TaskItem({ task }: { task: Task }) {
                 <span className={`text-xs px-1.5 py-0.5 rounded ${
                   task.bookmarkType === 'youtube'
                     ? 'bg-red-500/10 text-red-600 dark:text-red-400'
-                    : 'bg-secondary text-secondary-foreground'
+                    : task.bookmarkType === 'twitter'
+                    ? 'bg-secondary text-secondary-foreground'
+                    : 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
                 }`}>
-                  {task.bookmarkType === 'youtube' ? 'YouTube' : 'X'}
+                  {task.bookmarkType === 'youtube' ? 'YouTube' : task.bookmarkType === 'twitter' ? 'X' : 'Link'}
                 </span>
               )}
               <Badge className={`${priorityColors[task.priority]} text-xs`}>

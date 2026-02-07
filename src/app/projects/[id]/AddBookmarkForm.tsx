@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react'
 import { createBookmarkTask, getAllTags } from '@/actions/tasks'
 import { TagInput } from '@/components/ui/TagInput'
-import { Loader2, ExternalLink, Youtube, Twitter } from 'lucide-react'
+import { Loader2, ExternalLink, Youtube, Twitter, Globe } from 'lucide-react'
 
 interface BookmarkMetadata {
   title: string
   description?: string
   thumbnailUrl?: string
-  type: 'youtube' | 'twitter'
+  type: 'youtube' | 'twitter' | 'website'
 }
 
 interface AddBookmarkFormProps {
@@ -35,19 +35,8 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
   const validateUrl = (url: string): boolean => {
     try {
       const urlObj = new URL(url)
-      const hostname = urlObj.hostname.toLowerCase()
-
-      // YouTube validation
-      if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
-        return true
-      }
-
-      // Twitter/X validation
-      if (hostname.includes('twitter.com') || hostname.includes('x.com')) {
-        return urlObj.pathname.includes('/status/')
-      }
-
-      return false
+      // Accept any http/https URL
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:'
     } catch {
       return false
     }
@@ -57,7 +46,7 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
     if (!url.trim()) return
 
     if (!validateUrl(url)) {
-      setError('Please enter a valid YouTube or X (Twitter) URL')
+      setError('Please enter a valid URL')
       return
     }
 
@@ -158,7 +147,7 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4 p-4 border border-border rounded-lg bg-secondary/30">
       <div>
         <label htmlFor="url" className="block text-sm font-medium text-foreground mb-1">
-          YouTube or X URL
+          URL
         </label>
         <div className="flex gap-2">
           <input
@@ -173,7 +162,7 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
             onPaste={(e) => {
               setTimeout(fetchMetadata, 100)
             }}
-            placeholder="https://youtube.com/watch?v=... or https://x.com/.../status/..."
+            placeholder="Paste any URL..."
             className="flex-1 p-2 border border-input rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground"
             disabled={loading || submitting}
           />
@@ -213,8 +202,10 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
                 <div className="flex items-center gap-2 mb-2">
                   {metadata.type === 'youtube' ? (
                     <Youtube className="w-5 h-5 text-red-500" />
-                  ) : (
+                  ) : metadata.type === 'twitter' ? (
                     <Twitter className="w-5 h-5 text-foreground" />
+                  ) : (
+                    <Globe className="w-5 h-5 text-blue-500" />
                   )}
                   <span className="text-xs font-medium text-muted-foreground uppercase">
                     {metadata.type}

@@ -5,7 +5,7 @@ import { createBookmarkTask, getAllTags } from '@/actions/tasks'
 import { Modal } from '@/components/ui/Modal'
 import { Select } from '@/components/ui/Select'
 import { TagInput } from '@/components/ui/TagInput'
-import { Loader2, ExternalLink, Youtube, Twitter } from 'lucide-react'
+import { Loader2, ExternalLink, Youtube, Twitter, Globe } from 'lucide-react'
 
 interface Project {
   id: string
@@ -17,7 +17,7 @@ interface BookmarkMetadata {
   title: string
   description?: string
   thumbnailUrl?: string
-  type: 'youtube' | 'twitter'
+  type: 'youtube' | 'twitter' | 'website'
 }
 
 export function AddBookmarkButton({ projects }: { projects: Project[] }) {
@@ -42,12 +42,7 @@ export function AddBookmarkButton({ projects }: { projects: Project[] }) {
   const validateUrl = (url: string): boolean => {
     try {
       const urlObj = new URL(url)
-      const hostname = urlObj.hostname.toLowerCase()
-      if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) return true
-      if (hostname.includes('twitter.com') || hostname.includes('x.com')) {
-        return urlObj.pathname.includes('/status/')
-      }
-      return false
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:'
     } catch {
       return false
     }
@@ -56,7 +51,7 @@ export function AddBookmarkButton({ projects }: { projects: Project[] }) {
   const fetchMetadata = async () => {
     if (!url.trim()) return
     if (!validateUrl(url)) {
-      setError('Please enter a valid YouTube or X (Twitter) URL')
+      setError('Please enter a valid URL')
       return
     }
 
@@ -160,7 +155,7 @@ export function AddBookmarkButton({ projects }: { projects: Project[] }) {
 
           <div>
             <label htmlFor="url" className="block text-sm font-medium text-foreground mb-1">
-              YouTube or X URL *
+              URL *
             </label>
             <div className="flex gap-2">
               <input
@@ -169,7 +164,7 @@ export function AddBookmarkButton({ projects }: { projects: Project[] }) {
                 value={url}
                 onChange={(e) => { setUrl(e.target.value); setError(null) }}
                 onBlur={() => url && !metadata && fetchMetadata()}
-                placeholder="https://youtube.com/watch?v=..."
+                placeholder="Paste any URL..."
                 className="flex-1 p-2 border border-input rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground"
                 disabled={loading || submitting}
               />
@@ -196,8 +191,10 @@ export function AddBookmarkButton({ projects }: { projects: Project[] }) {
                     <div className="flex items-center gap-2 mb-2">
                       {metadata.type === 'youtube' ? (
                         <Youtube className="w-4 h-4 text-red-500" />
-                      ) : (
+                      ) : metadata.type === 'twitter' ? (
                         <Twitter className="w-4 h-4 text-foreground" />
+                      ) : (
+                        <Globe className="w-4 h-4 text-blue-500" />
                       )}
                       <span className="text-xs font-medium text-muted-foreground uppercase">{metadata.type}</span>
                     </div>

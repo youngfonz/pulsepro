@@ -4,10 +4,10 @@ interface BookmarkMetadata {
   title: string;
   description?: string;
   thumbnailUrl?: string;
-  type: 'youtube' | 'twitter';
+  type: 'youtube' | 'twitter' | 'website';
 }
 
-function getBookmarkType(url: string): 'youtube' | 'twitter' | null {
+function getBookmarkType(url: string): 'youtube' | 'twitter' | 'website' | null {
   try {
     const urlObj = new URL(url);
     const hostname = urlObj.hostname.toLowerCase();
@@ -28,7 +28,8 @@ function getBookmarkType(url: string): 'youtube' | 'twitter' | null {
       return 'twitter';
     }
 
-    return null;
+    // Any other valid URL is a website
+    return 'website';
   } catch {
     return null;
   }
@@ -121,6 +122,58 @@ async function fetchTwitterMetadata(url: string): Promise<BookmarkMetadata | nul
   }
 }
 
+async function fetchWebsiteMetadata(url: string): Promise<BookmarkMetadata | null> {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+      },
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const html = await response.text();
+
+    // Extract title (og:title > title tag)
+    const ogTitleMatch = html.match(/<meta[^>]*property=["']og:title["'][^>]*content=["']([^"']+)["']/i) ||
+                         html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:title["']/i);
+    const titleTagMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    const title = ogTitleMatch?.[1] || titleTagMatch?.[1] || new URL(url).hostname;
+
+    // Extract description (og:description > meta description)
+    const ogDescMatch = html.match(/<meta[^>]*property=["']og:description["'][^>]*content=["']([^"']+)["']/i) ||
+                        html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:description["']/i);
+    const metaDescMatch = html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i) ||
+                          html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*name=["']description["']/i);
+    const description = ogDescMatch?.[1] || metaDescMatch?.[1];
+
+    // Extract thumbnail (og:image)
+    const ogImageMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i) ||
+                         html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["']/i);
+    let thumbnailUrl = ogImageMatch?.[1];
+
+    // Make relative URLs absolute
+    if (thumbnailUrl && !thumbnailUrl.startsWith('http')) {
+      const urlObj = new URL(url);
+      thumbnailUrl = thumbnailUrl.startsWith('/')
+        ? `${urlObj.protocol}//${urlObj.host}${thumbnailUrl}`
+        : `${urlObj.protocol}//${urlObj.host}/${thumbnailUrl}`;
+    }
+
+    return {
+      title: title.trim(),
+      description: description?.trim(),
+      thumbnailUrl,
+      type: 'website',
+    };
+  } catch (error) {
+    console.error('Error fetching website metadata:', error);
+    return null;
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -137,7 +190,7 @@ export async function POST(request: NextRequest) {
 
     if (!bookmarkType) {
       return NextResponse.json(
-        { error: 'Unsupported URL. Only YouTube and X (Twitter) URLs are supported.' },
+        { error: 'Invalid URL format' },
         { status: 400 }
       );
     }
@@ -148,6 +201,8 @@ export async function POST(request: NextRequest) {
       metadata = await fetchYouTubeMetadata(url);
     } else if (bookmarkType === 'twitter') {
       metadata = await fetchTwitterMetadata(url);
+    } else if (bookmarkType === 'website') {
+      metadata = await fetchWebsiteMetadata(url);
     }
 
     if (!metadata) {
