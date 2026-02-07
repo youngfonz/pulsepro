@@ -151,8 +151,8 @@ function TaskItem({ task }: { task: Task }) {
               {isBookmark && (
                 <span className={`text-xs px-1.5 py-0.5 rounded ${
                   task.bookmarkType === 'youtube'
-                    ? 'bg-red-100 text-red-700'
-                    : 'bg-blue-100 text-blue-700'
+                    ? 'bg-red-500/10 text-red-600 dark:text-red-400'
+                    : 'bg-secondary text-secondary-foreground'
                 }`}>
                   {task.bookmarkType === 'youtube' ? 'YouTube' : 'X'}
                 </span>
@@ -161,7 +161,7 @@ function TaskItem({ task }: { task: Task }) {
                 {priorityLabels[task.priority]}
               </Badge>
               {task.tags.length > 0 && task.tags.map((tag) => (
-                <span key={tag} className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-700 rounded">
+                <span key={tag} className="text-xs px-1.5 py-0.5 bg-secondary text-secondary-foreground rounded">
                   {tag}
                 </span>
               ))}
@@ -173,6 +173,14 @@ function TaskItem({ task }: { task: Task }) {
               {task.files.length > 0 && (
                 <span className="text-xs text-muted-foreground">
                   {task.files.length} file{task.files.length > 1 ? 's' : ''}
+                </span>
+              )}
+              {task.comments.length > 0 && (
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  {task.comments.length}
                 </span>
               )}
             </div>

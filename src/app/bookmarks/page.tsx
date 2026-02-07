@@ -3,6 +3,7 @@ import { getAllBookmarks, getProjectsForTaskFilter } from '@/actions/tasks'
 import { Card, CardContent } from '@/components/ui/Card'
 import { BookmarksFilter } from './BookmarksFilter'
 import { BookmarksList } from './BookmarksList'
+import { AddBookmarkButton } from './AddBookmarkButton'
 
 interface Props {
   searchParams: Promise<{ search?: string; projectId?: string; type?: string; sort?: string }>
@@ -38,6 +39,7 @@ export default async function BookmarksPage({ searchParams }: Props) {
             All your saved YouTube videos and X posts across projects
           </p>
         </div>
+        <AddBookmarkButton projects={projects} />
       </div>
 
       <BookmarksFilter projects={projects} />

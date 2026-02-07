@@ -155,9 +155,9 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800">
+    <form onSubmit={handleSubmit} className="space-y-4 p-4 border border-border rounded-lg bg-secondary/30">
       <div>
-        <label htmlFor="url" className="block text-sm font-medium mb-1">
+        <label htmlFor="url" className="block text-sm font-medium text-foreground mb-1">
           YouTube or X URL
         </label>
         <div className="flex gap-2">
@@ -174,14 +174,14 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
               setTimeout(fetchMetadata, 100)
             }}
             placeholder="https://youtube.com/watch?v=... or https://x.com/.../status/..."
-            className="flex-1 p-2 border rounded-md text-sm"
+            className="flex-1 p-2 border border-input rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground"
             disabled={loading || submitting}
           />
           <button
             type="button"
             onClick={fetchMetadata}
             disabled={!url || loading || submitting}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {loading ? (
               <>
@@ -194,13 +194,13 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
           </button>
         </div>
         {error && (
-          <p className="text-sm text-red-600 mt-1">{error}</p>
+          <p className="text-sm text-destructive mt-1">{error}</p>
         )}
       </div>
 
       {metadata && (
         <>
-          <div className="p-3 border rounded-md bg-white">
+          <div className="p-3 border border-border rounded-md bg-background">
             <div className="flex items-start gap-3">
               {metadata.thumbnailUrl && (
                 <img
@@ -212,18 +212,18 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   {metadata.type === 'youtube' ? (
-                    <Youtube className="w-5 h-5 text-red-600" />
+                    <Youtube className="w-5 h-5 text-red-500" />
                   ) : (
-                    <Twitter className="w-5 h-5 text-blue-400" />
+                    <Twitter className="w-5 h-5 text-foreground" />
                   )}
-                  <span className="text-xs font-medium text-gray-600 uppercase">
+                  <span className="text-xs font-medium text-muted-foreground uppercase">
                     {metadata.type}
                   </span>
                   <a
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="ml-auto text-blue-600 hover:text-blue-800"
+                    className="ml-auto text-primary hover:text-primary/80"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </a>
@@ -233,18 +233,18 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
                   value={manualTitle}
                   onChange={(e) => setManualTitle(e.target.value)}
                   placeholder="Edit title..."
-                  className="w-full p-2 border rounded text-sm font-medium mb-2"
+                  className="w-full p-2 border border-input rounded text-sm font-medium mb-2 bg-background text-foreground placeholder:text-muted-foreground"
                   disabled={submitting}
                 />
                 {metadata.description && (
-                  <p className="text-sm text-gray-600">{metadata.description}</p>
+                  <p className="text-sm text-muted-foreground">{metadata.description}</p>
                 )}
               </div>
             </div>
           </div>
 
           <div>
-            <label htmlFor="tags" className="block text-sm font-medium mb-1">
+            <label htmlFor="tags" className="block text-sm font-medium text-foreground mb-1">
               Tags
             </label>
             <TagInput
@@ -256,7 +256,7 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
           </div>
 
           <div>
-            <label htmlFor="notes" className="block text-sm font-medium mb-1">
+            <label htmlFor="notes" className="block text-sm font-medium text-foreground mb-1">
               Notes
             </label>
             <textarea
@@ -265,7 +265,7 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any notes..."
               rows={3}
-              className="w-full p-2 border rounded-md text-sm"
+              className="w-full p-2 border border-input rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground"
               disabled={submitting}
             />
           </div>
@@ -274,7 +274,7 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
             <button
               type="submit"
               disabled={submitting || !manualTitle.trim()}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
             >
               {submitting ? (
                 <>
@@ -295,7 +295,7 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
                 setError(null)
               }}
               disabled={submitting}
-              className="px-4 py-2 border rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 text-sm"
+              className="px-4 py-2 border border-border rounded-md hover:bg-secondary text-foreground disabled:opacity-50 text-sm"
             >
               Cancel
             </button>
