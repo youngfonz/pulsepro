@@ -18,8 +18,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pulse",
-  description: "Project & Task Management",
+  metadataBase: new URL("https://project-tracker-rose-five.vercel.app"),
+  title: "Pulse — Project & Task Management",
+  description: "Plan, track, and manage your projects and tasks in one place. Organize clients, set deadlines, and stay on top of your work with Pulse.",
+  openGraph: {
+    title: "Pulse — Project & Task Management",
+    description: "Plan, track, and manage your projects and tasks in one place. Organize clients, set deadlines, and stay on top of your work with Pulse.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Pulse — Project & Task Management",
+    description: "Plan, track, and manage your projects and tasks in one place.",
+  },
 };
 
 export default async function RootLayout({

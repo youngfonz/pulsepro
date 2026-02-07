@@ -19,8 +19,11 @@ export function LayoutWrapper({ children, clientCount, clerkEnabled = false }: L
 
   return (
     <div className="flex min-h-screen bg-background">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-background focus:text-foreground">
+        Skip to main content
+      </a>
       <Sidebar clientCount={clientCount} clerkEnabled={clerkEnabled} />
-      <main className="flex-1 overflow-x-hidden overflow-y-auto pt-14 md:pt-0">
+      <main id="main-content" className="flex-1 overflow-x-hidden overflow-y-auto pt-14 md:pt-0">
         <div className="p-4 md:p-8">{children}</div>
       </main>
     </div>
