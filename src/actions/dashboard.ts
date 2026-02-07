@@ -150,3 +150,71 @@ export async function getTasksDueThisWeek() {
     },
   })
 }
+
+export type RecentItem = {
+  id: string
+  type: 'project' | 'task' | 'bookmark'
+  title: string
+  subtitle: string
+  status?: string
+  priority?: string
+  href: string
+  updatedAt: Date
+}
+
+export async function getRecentlyViewed(): Promise<RecentItem[]> {
+  const [projects, tasks, bookmarks] = await Promise.all([
+    // Recent projects
+    prisma.project.findMany({
+      include: { client: { select: { name: true } } },
+      orderBy: { updatedAt: 'desc' },
+      take: 5,
+    }),
+    // Recent tasks (non-bookmark)
+    prisma.task.findMany({
+      where: { url: null },
+      include: { project: { select: { id: true, name: true } } },
+      orderBy: { updatedAt: 'desc' },
+      take: 5,
+    }),
+    // Recent bookmarks
+    prisma.task.findMany({
+      where: { url: { not: null } },
+      include: { project: { select: { id: true, name: true } } },
+      orderBy: { updatedAt: 'desc' },
+      take: 5,
+    }),
+  ])
+
+  const items: RecentItem[] = [
+    ...projects.map((p) => ({
+      id: p.id,
+      type: 'project' as const,
+      title: p.name,
+      subtitle: p.client.name,
+      status: p.status,
+      href: `/projects/${p.id}`,
+      updatedAt: p.updatedAt,
+    })),
+    ...tasks.map((t) => ({
+      id: t.id,
+      type: 'task' as const,
+      title: t.title,
+      subtitle: t.project.name,
+      priority: t.priority,
+      href: `/projects/${t.project.id}`,
+      updatedAt: t.updatedAt,
+    })),
+    ...bookmarks.map((b) => ({
+      id: b.id,
+      type: 'bookmark' as const,
+      title: b.title,
+      subtitle: b.project.name,
+      href: `/projects/${b.project.id}`,
+      updatedAt: b.updatedAt,
+    })),
+  ]
+
+  // Sort by most recent and take top 8
+  return items.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()).slice(0, 8)
+}

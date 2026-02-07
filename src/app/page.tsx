@@ -8,18 +8,18 @@ import {
   getProjectsDueThisWeek,
   getTasksDueToday,
   getOverdueTasks,
-  getRecentProjects,
+  getRecentlyViewed,
   getTasksDueThisWeek,
 } from '@/actions/dashboard'
 import { statusColors, statusLabels, priorityColors, priorityLabels, formatDate } from '@/lib/utils'
 
 export default async function DashboardPage() {
-  const [stats, projectsDueThisWeek, tasksDueToday, overdueTasks, recentProjects, tasksDueThisWeekCount] = await Promise.all([
+  const [stats, projectsDueThisWeek, tasksDueToday, overdueTasks, recentlyViewed, tasksDueThisWeekCount] = await Promise.all([
     getDashboardStats(),
     getProjectsDueThisWeek(),
     getTasksDueToday(),
     getOverdueTasks(),
-    getRecentProjects(),
+    getRecentlyViewed(),
     getTasksDueThisWeek(),
   ])
 
@@ -305,39 +305,71 @@ export default async function DashboardPage() {
           </Card>
         )}
 
-        {/* Recent Projects */}
+        {/* Recently Viewed */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Recent Projects</CardTitle>
+            <CardTitle>Recently Viewed</CardTitle>
             <Link href="/projects" className="text-sm text-primary hover:text-primary/80">
               View all
             </Link>
           </CardHeader>
           <CardContent className="p-0">
-            {recentProjects.length === 0 ? (
+            {recentlyViewed.length === 0 ? (
               <Link
                 href="/projects/new"
-                className="block px-6 py-8 text-center text-muted-foreground hover:bg-muted transition-colors"
+                className="block px-4 py-8 text-center text-muted-foreground hover:bg-muted transition-colors"
               >
-                No projects yet. Click to create your first project.
+                No activity yet. Create your first project to get started.
               </Link>
             ) : (
               <div className="divide-y divide-border">
-                {recentProjects.map((project) => (
+                {recentlyViewed.map((item) => (
                   <Link
-                    key={project.id}
-                    href={`/projects/${project.id}`}
-                    className="block px-4 py-3 sm:px-6 hover:bg-muted transition-colors"
+                    key={`${item.type}-${item.id}`}
+                    href={item.href}
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors active:bg-muted"
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <span className="font-medium text-foreground block truncate">{project.name}</span>
-                        <p className="text-sm text-muted-foreground truncate">{project.client.name}</p>
-                      </div>
-                      <Badge className={`${statusColors[project.status]} flex-shrink-0`}>
-                        {statusLabels[project.status]}
-                      </Badge>
+                    {/* Type Icon */}
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                      item.type === 'project'
+                        ? 'bg-primary/10 text-primary'
+                        : item.type === 'task'
+                        ? 'bg-blue-500/10 text-blue-500'
+                        : 'bg-amber-500/10 text-amber-500'
+                    }`}>
+                      {item.type === 'project' ? (
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                        </svg>
+                      ) : item.type === 'task' ? (
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      ) : (
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                        </svg>
+                      )}
                     </div>
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-foreground truncate text-sm">{item.title}</p>
+                      <p className="text-xs text-muted-foreground truncate">{item.subtitle}</p>
+                    </div>
+                    {/* Badge */}
+                    {item.status && (
+                      <Badge className={`${statusColors[item.status]} flex-shrink-0 text-xs`}>
+                        {statusLabels[item.status]}
+                      </Badge>
+                    )}
+                    {item.priority && (
+                      <Badge className={`${priorityColors[item.priority]} flex-shrink-0 text-xs`}>
+                        {priorityLabels[item.priority]}
+                      </Badge>
+                    )}
+                    {item.type === 'bookmark' && (
+                      <span className="text-xs text-muted-foreground flex-shrink-0">Bookmark</span>
+                    )}
                   </Link>
                 ))}
               </div>
