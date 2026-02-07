@@ -56,58 +56,67 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Stats Overview - Graph Style */}
-      <Card className="border-border/50">
-        <CardContent className="p-4 md:p-6">
-          <div className="space-y-4">
-            {/* Projects Progress Bar */}
-            <Link href="/projects" className="block group">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">Active Projects</span>
-                <span className="text-sm text-muted-foreground">{stats.activeProjects} / {stats.totalProjects}</span>
+      {/* Stats Cards - All Clickable */}
+      <div className="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <Link href="/projects" className="block group">
+          <Card className="transition-all hover:shadow-lg cursor-pointer border-border/50 h-full">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-muted-foreground">Active Projects</div>
+                  <div className="mt-3 flex items-baseline gap-2">
+                    <span className="text-4xl font-bold text-foreground">{stats.activeProjects}</span>
+                    <span className="text-sm text-muted-foreground">of {stats.totalProjects}</span>
+                  </div>
+                </div>
+                <svg className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </div>
-              <div className="h-2.5 bg-secondary rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary rounded-full transition-all duration-500"
-                  style={{ width: `${stats.totalProjects > 0 ? (stats.activeProjects / stats.totalProjects) * 100 : 0}%` }}
-                />
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/tasks" className="block group">
+          <Card className="transition-all hover:shadow-lg cursor-pointer border-border/50 h-full">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-muted-foreground">Pending Tasks</div>
+                  <div className="mt-3 flex items-baseline gap-2">
+                    <span className="text-4xl font-bold text-foreground">{stats.pendingTasks}</span>
+                    <span className="text-sm text-muted-foreground">of {stats.totalTasks}</span>
+                  </div>
+                </div>
+                <svg className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </div>
-            </Link>
-
-            {/* Tasks Progress Bar */}
-            <Link href="/tasks" className="block group">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">Tasks Completed</span>
-                <span className="text-sm text-muted-foreground">{stats.totalTasks - stats.pendingTasks} / {stats.totalTasks}</span>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/tasks" className="block group">
+          <Card className={`transition-all hover:shadow-lg cursor-pointer h-full ${overdueTasks.length > 0 ? 'border-destructive/50 bg-destructive/5' : 'border-border/50'}`}>
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-muted-foreground">Overdue Tasks</div>
+                  <div className="mt-3 flex items-baseline gap-2">
+                    <span className={`text-4xl font-bold ${overdueTasks.length > 0 ? 'text-destructive' : 'text-foreground'}`}>
+                      {overdueTasks.length}
+                    </span>
+                  </div>
+                  {overdueTasks.length === 0 && (
+                    <p className="mt-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">All caught up!</p>
+                  )}
+                </div>
+                <svg className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </div>
-              <div className="h-2.5 bg-secondary rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-blue-500 rounded-full transition-all duration-500"
-                  style={{ width: `${stats.totalTasks > 0 ? ((stats.totalTasks - stats.pendingTasks) / stats.totalTasks) * 100 : 0}%` }}
-                />
-              </div>
-            </Link>
-
-            {/* Overdue Bar */}
-            <Link href="/tasks" className="block group">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className={`text-sm font-medium group-hover:text-primary transition-colors ${overdueTasks.length > 0 ? 'text-destructive' : 'text-foreground'}`}>
-                  {overdueTasks.length > 0 ? 'Overdue Tasks' : 'All Caught Up'}
-                </span>
-                <span className={`text-sm ${overdueTasks.length > 0 ? 'text-destructive' : 'text-emerald-500'}`}>
-                  {overdueTasks.length > 0 ? overdueTasks.length : '✓'}
-                </span>
-              </div>
-              <div className="h-2.5 bg-secondary rounded-full overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${overdueTasks.length > 0 ? 'bg-destructive' : 'bg-emerald-500'}`}
-                  style={{ width: overdueTasks.length > 0 ? `${Math.min((overdueTasks.length / Math.max(stats.totalTasks, 1)) * 100, 100)}%` : '100%' }}
-                />
-              </div>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Calendar Widget */}
