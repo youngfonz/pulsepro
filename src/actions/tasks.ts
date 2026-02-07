@@ -464,7 +464,7 @@ export async function createBookmarkTask(
     title: string
     description?: string
     thumbnailUrl?: string
-    bookmarkType: 'youtube' | 'twitter'
+    bookmarkType: 'youtube' | 'twitter' | 'website'
     tags?: string[]
     priority?: string
     dueDate?: string
