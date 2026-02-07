@@ -237,6 +237,10 @@ export function Sidebar({ clientCount, clerkEnabled = false }: SidebarProps) {
         </nav>
 
         {/* Auth Section */}
+        {/* Debug: remove after testing */}
+        <div className="p-2 text-xs text-red-500">
+          Clerk: {clerkEnabled ? 'ON' : 'OFF'}
+        </div>
         {clerkEnabled && <SidebarAuth isCollapsed={isCollapsed} />}
       </div>
     </>
