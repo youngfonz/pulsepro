@@ -69,17 +69,17 @@ export function TagInput({
 
   return (
     <div className="relative">
-      <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-[42px] bg-white focus-within:ring-2 focus-within:ring-blue-500">
+      <div className="flex flex-wrap gap-2 p-2 border border-input rounded-md min-h-[42px] bg-background focus-within:ring-2 focus-within:ring-primary">
         {value.map((tag) => (
           <span
             key={tag}
-            className="inline-flex items-center gap-1 px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded"
+            className="inline-flex items-center gap-1 px-2 py-1 text-sm bg-primary/10 text-primary rounded"
           >
             {tag}
             <button
               type="button"
               onClick={() => removeTag(tag)}
-              className="hover:bg-blue-200 rounded p-0.5"
+              className="hover:bg-primary/20 rounded p-0.5"
             >
               <X className="w-3 h-3" />
             </button>
@@ -99,19 +99,19 @@ export function TagInput({
             setTimeout(() => setShowSuggestions(false), 200)
           }}
           placeholder={value.length === 0 ? placeholder : ''}
-          className="flex-1 min-w-[120px] outline-none text-sm"
+          className="flex-1 min-w-[120px] outline-none text-sm bg-transparent text-foreground placeholder:text-muted-foreground"
         />
       </div>
 
       {showSuggestions && filteredSuggestions.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto">
+        <div className="absolute z-10 w-full mt-1 bg-background border border-border rounded-md shadow-lg max-h-48 overflow-y-auto">
           {filteredSuggestions.map((suggestion, index) => (
             <button
               key={suggestion}
               type="button"
               onClick={() => addTag(suggestion)}
-              className={`w-full px-3 py-2 text-sm text-left hover:bg-gray-100 ${
-                index === selectedIndex ? 'bg-gray-100' : ''
+              className={`w-full px-3 py-2 text-sm text-left text-foreground hover:bg-secondary ${
+                index === selectedIndex ? 'bg-secondary' : ''
               }`}
             >
               {suggestion}
