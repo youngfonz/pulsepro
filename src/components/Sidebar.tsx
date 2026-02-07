@@ -204,7 +204,7 @@ export function Sidebar({ clientCount, clerkEnabled = false }: SidebarProps) {
             </button>
           )}
         </div>
-        <nav className="flex-1 space-y-1 px-3 py-4">
+        <nav className="flex-1 overflow-y-auto space-y-1 px-3 py-4">
           {navigation.map((item) => {
             const isActive = pathname === item.href ||
               (item.href !== '/' && pathname.startsWith(item.href))
@@ -236,8 +236,12 @@ export function Sidebar({ clientCount, clerkEnabled = false }: SidebarProps) {
           })}
         </nav>
 
-        {/* Auth Section */}
-        {clerkEnabled && <SidebarAuth isCollapsed={isCollapsed} />}
+        {/* Auth Section - fixed at bottom */}
+        {clerkEnabled && (
+          <div className="flex-shrink-0">
+            <SidebarAuth isCollapsed={isCollapsed} />
+          </div>
+        )}
       </div>
     </>
   )
