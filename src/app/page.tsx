@@ -56,67 +56,127 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Stats Cards - All Clickable */}
-      <div className="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <Link href="/projects" className="block group">
-          <Card className="transition-all hover:shadow-lg cursor-pointer border-border/50 h-full">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="text-sm font-medium text-muted-foreground">Active Projects</div>
-                  <div className="mt-3 flex items-baseline gap-2">
-                    <span className="text-4xl font-bold text-foreground">{stats.activeProjects}</span>
-                    <span className="text-sm text-muted-foreground">of {stats.totalProjects}</span>
-                  </div>
-                </div>
-                <svg className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+      {/* Activity Rings - Apple-inspired */}
+      <Card className="border-border/50 overflow-hidden">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            {/* Activity Rings */}
+            <div className="relative w-40 h-40 flex-shrink-0">
+              {/* Glow effect */}
+              <div className="absolute inset-0 blur-xl opacity-30">
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#f43f5e" strokeWidth="6" />
+                  <circle cx="50" cy="50" r="32" fill="none" stroke="#3b82f6" strokeWidth="6" />
+                  <circle cx="50" cy="50" r="22" fill="none" stroke="#22c55e" strokeWidth="6" />
                 </svg>
               </div>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/tasks" className="block group">
-          <Card className="transition-all hover:shadow-lg cursor-pointer border-border/50 h-full">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="text-sm font-medium text-muted-foreground">Pending Tasks</div>
-                  <div className="mt-3 flex items-baseline gap-2">
-                    <span className="text-4xl font-bold text-foreground">{stats.pendingTasks}</span>
-                    <span className="text-sm text-muted-foreground">of {stats.totalTasks}</span>
+
+              {/* Background rings */}
+              <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" className="text-rose-500/20" strokeWidth="6" />
+                <circle cx="50" cy="50" r="32" fill="none" stroke="currentColor" className="text-blue-500/20" strokeWidth="6" />
+                <circle cx="50" cy="50" r="22" fill="none" stroke="currentColor" className="text-emerald-500/20" strokeWidth="6" />
+              </svg>
+
+              {/* Progress rings */}
+              <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full -rotate-90">
+                {/* Outer ring - Projects */}
+                <circle
+                  cx="50" cy="50" r="42"
+                  fill="none"
+                  stroke="url(#projectGradient)"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeDasharray={`${stats.totalProjects > 0 ? (stats.activeProjects / stats.totalProjects) * 264 : 0} 264`}
+                  className="drop-shadow-sm"
+                />
+                {/* Middle ring - Tasks completed */}
+                <circle
+                  cx="50" cy="50" r="32"
+                  fill="none"
+                  stroke="url(#taskGradient)"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeDasharray={`${stats.totalTasks > 0 ? ((stats.totalTasks - stats.pendingTasks) / stats.totalTasks) * 201 : 0} 201`}
+                  className="drop-shadow-sm"
+                />
+                {/* Inner ring - On track indicator */}
+                <circle
+                  cx="50" cy="50" r="22"
+                  fill="none"
+                  stroke={overdueTasks.length > 0 ? "url(#overdueGradient)" : "url(#onTrackGradient)"}
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeDasharray={overdueTasks.length > 0 ? `${Math.min((overdueTasks.length / Math.max(stats.totalTasks, 1)) * 138, 138)} 138` : "138 138"}
+                  className="drop-shadow-sm"
+                />
+
+                {/* Gradient definitions */}
+                <defs>
+                  <linearGradient id="projectGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#fb7185" />
+                    <stop offset="100%" stopColor="#f43f5e" />
+                  </linearGradient>
+                  <linearGradient id="taskGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#60a5fa" />
+                    <stop offset="100%" stopColor="#3b82f6" />
+                  </linearGradient>
+                  <linearGradient id="onTrackGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#4ade80" />
+                    <stop offset="100%" stopColor="#22c55e" />
+                  </linearGradient>
+                  <linearGradient id="overdueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#fbbf24" />
+                    <stop offset="100%" stopColor="#f59e0b" />
+                  </linearGradient>
+                </defs>
+              </svg>
+
+              {/* Center icon */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                {overdueTasks.length === 0 ? (
+                  <svg className="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <span className="text-xl font-bold text-amber-500">{overdueTasks.length}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Stats Legend */}
+            <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+              <Link href="/projects" className="group flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-rose-400 to-rose-500 shadow-sm shadow-rose-500/50" />
+                <div>
+                  <div className="text-2xl font-bold text-foreground">{stats.activeProjects}<span className="text-sm font-normal text-muted-foreground">/{stats.totalProjects}</span></div>
+                  <div className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Active Projects</div>
+                </div>
+              </Link>
+
+              <Link href="/tasks" className="group flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 shadow-sm shadow-blue-500/50" />
+                <div>
+                  <div className="text-2xl font-bold text-foreground">{stats.totalTasks - stats.pendingTasks}<span className="text-sm font-normal text-muted-foreground">/{stats.totalTasks}</span></div>
+                  <div className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Tasks Done</div>
+                </div>
+              </Link>
+
+              <Link href="/tasks" className="group flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors">
+                <div className={`w-3 h-3 rounded-full shadow-sm ${overdueTasks.length > 0 ? 'bg-gradient-to-r from-amber-400 to-amber-500 shadow-amber-500/50' : 'bg-gradient-to-r from-emerald-400 to-emerald-500 shadow-emerald-500/50'}`} />
+                <div>
+                  <div className={`text-2xl font-bold ${overdueTasks.length > 0 ? 'text-amber-500' : 'text-emerald-500'}`}>
+                    {overdueTasks.length > 0 ? overdueTasks.length : '✓'}
+                  </div>
+                  <div className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                    {overdueTasks.length > 0 ? 'Need Attention' : 'On Track'}
                   </div>
                 </div>
-                <svg className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/tasks" className="block group">
-          <Card className={`transition-all hover:shadow-lg cursor-pointer h-full ${overdueTasks.length > 0 ? 'border-destructive/50 bg-destructive/5' : 'border-border/50'}`}>
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="text-sm font-medium text-muted-foreground">Overdue Tasks</div>
-                  <div className="mt-3 flex items-baseline gap-2">
-                    <span className={`text-4xl font-bold ${overdueTasks.length > 0 ? 'text-destructive' : 'text-foreground'}`}>
-                      {overdueTasks.length}
-                    </span>
-                  </div>
-                  {overdueTasks.length === 0 && (
-                    <p className="mt-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">All caught up!</p>
-                  )}
-                </div>
-                <svg className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
-      </div>
+              </Link>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Calendar Widget */}
