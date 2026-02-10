@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { ScrollReveal } from '../ScrollReveal';
 
 export function AppShowcase() {
@@ -17,11 +18,13 @@ export function AppShowcase() {
               </div>
 
               {/* Content area */}
-              <div className="aspect-[16/10] bg-background flex items-center justify-center">
-                <span className="text-muted-foreground">
-                  Full dashboard view
-                </span>
-              </div>
+              <Image
+                src="/screenshots/projects.png"
+                alt="Pulse projects view with task management"
+                width={1920}
+                height={1200}
+                className="w-full h-auto"
+              />
             </div>
           </ScrollReveal>
 

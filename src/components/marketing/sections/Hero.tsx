@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { ScrollReveal } from '../ScrollReveal';
 
@@ -58,11 +59,14 @@ export function Hero() {
               </div>
 
               {/* Content area */}
-              <div className="aspect-[16/10] bg-muted/50 flex items-center justify-center">
-                <span className="text-muted-foreground text-sm">
-                  Dashboard screenshot
-                </span>
-              </div>
+              <Image
+                src="/screenshots/dashboard.png"
+                alt="Pulse dashboard showing project overview"
+                width={1920}
+                height={1200}
+                className="w-full h-auto"
+                priority
+              />
             </div>
           </ScrollReveal>
         </div>
