@@ -62,8 +62,8 @@ export function ProjectTabs({ projectId, tasks, timeEntries, images }: ProjectTa
   return (
     <div className="mt-6">
       {/* Tab Navigation */}
-      <div className="border-b border-border overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-        <nav className="-mb-px flex gap-4 sm:gap-6 min-w-max">
+      <div className="border-b border-border overflow-x-auto">
+        <nav className="-mb-px flex gap-4 sm:gap-6">
           {tabs.map((tab) => (
             <button
               key={tab.id}
