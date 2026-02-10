@@ -18,6 +18,7 @@ export default function SignInPage() {
           <p className="text-muted-foreground">Sign in to manage your projects</p>
         </div>
         <SignIn
+          forceRedirectUrl="/dashboard"
           appearance={{
             elements: {
               rootBox: "mx-auto",
