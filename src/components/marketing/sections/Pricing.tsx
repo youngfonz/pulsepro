@@ -14,7 +14,8 @@ const plans = [
       '1 client',
       'Basic calendar'
     ],
-    highlighted: false
+    highlighted: false,
+    cta: 'Get Started',
   },
   {
     name: 'Pro',
@@ -27,7 +28,8 @@ const plans = [
       'File attachments',
       'Priority support'
     ],
-    highlighted: true
+    highlighted: true,
+    cta: 'Start Free Trial',
   }
 ]
 
@@ -107,7 +109,7 @@ export function Pricing() {
                         : 'border border-border hover:bg-muted hover:border-primary/30'
                     }`}
                   >
-                    Get Started
+                    {plan.cta}
                   </Link>
                 </div>
               </div>

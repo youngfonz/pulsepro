@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { requireUserId } from '@/lib/auth'
+import { checkLimit } from '@/lib/subscription'
 import { revalidatePath } from 'next/cache'
 
 export async function getTask(id: string) {
@@ -26,6 +27,12 @@ export async function getTask(id: string) {
 
 export async function createTask(projectId: string, formData: FormData) {
   const userId = await requireUserId()
+
+  const limit = await checkLimit('tasks')
+  if (!limit.allowed) {
+    throw new Error(`Free plan limit: ${limit.limit} tasks. Upgrade to Pro for unlimited tasks.`)
+  }
+
   const data = {
     userId,
     title: formData.get('title') as string,
@@ -496,6 +503,12 @@ export async function createBookmarkTask(
   }
 ) {
   const userId = await requireUserId()
+
+  const limit = await checkLimit('tasks')
+  if (!limit.allowed) {
+    throw new Error(`Free plan limit: ${limit.limit} tasks. Upgrade to Pro for unlimited tasks.`)
+  }
+
   const taskData = {
     userId,
     title: data.title,

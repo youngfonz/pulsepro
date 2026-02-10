@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { requireUserId } from '@/lib/auth'
+import { checkLimit } from '@/lib/subscription'
 import { revalidatePath } from 'next/cache'
 
 export async function getProjects(filters?: {
@@ -174,6 +175,12 @@ export async function getProjectsForGantt() {
 
 export async function createProject(formData: FormData) {
   const userId = await requireUserId()
+
+  const limit = await checkLimit('projects')
+  if (!limit.allowed) {
+    throw new Error(`Free plan limit: ${limit.limit} projects. Upgrade to Pro for unlimited projects.`)
+  }
+
   const data = {
     userId,
     name: formData.get('name') as string,

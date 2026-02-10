@@ -29,8 +29,24 @@ export function AppShowcase() {
   }, [isVisible, paused, next]);
 
   return (
-    <section className="bg-[#0f172a] py-20 md:py-28" ref={ref}>
-      <div className="max-w-5xl mx-auto px-4 md:px-8">
+    <section className="relative overflow-hidden bg-[#0f172a] py-20 md:py-28" ref={ref}>
+      {/* Geometric pattern overlay */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <svg className="absolute top-0 right-0 w-[600px] h-[600px] opacity-[0.07]" viewBox="0 0 400 400">
+          {Array.from({ length: 10 }).map((_, row) =>
+            Array.from({ length: 10 }).map((_, col) => (
+              <g key={`${row}-${col}`} transform={`translate(${col * 40 + 20}, ${row * 40 + 20})`}>
+                <line x1="-5" y1="0" x2="5" y2="0" stroke="white" strokeWidth="1" />
+                <line x1="0" y1="-5" x2="0" y2="5" stroke="white" strokeWidth="1" />
+              </g>
+            ))
+          )}
+        </svg>
+        <div className="absolute -bottom-32 -left-32 w-64 h-64 rounded-full border border-white/10" />
+        <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full border border-white/10" />
+      </div>
+
+      <div className="relative max-w-5xl mx-auto px-4 md:px-8">
         <ScrollReveal delay={0}>
           <span className="block text-sm font-semibold tracking-widest uppercase text-[#58a6ff] text-center">
             See it in action

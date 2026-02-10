@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { SettingsClient } from './SettingsClient'
+import { BillingCard } from './BillingCard'
 
 export default function SettingsPage() {
   return (
@@ -17,6 +18,8 @@ export default function SettingsPage() {
         </Link>
         <h1 className="mt-2 text-xl md:text-2xl font-bold text-foreground">Settings</h1>
       </div>
+
+      <BillingCard />
 
       <Card>
         <CardHeader>

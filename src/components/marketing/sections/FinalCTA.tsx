@@ -5,7 +5,7 @@ import { ScrollReveal } from '@/components/marketing/ScrollReveal'
 
 export function FinalCTA() {
   return (
-    <section className="relative overflow-hidden bg-primary py-20 md:py-28">
+    <section className="relative overflow-hidden bg-[#0f172a] py-20 md:py-28">
       {/* Geometric pattern overlay */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <svg className="absolute top-0 right-0 w-[600px] h-[600px] opacity-[0.07]" viewBox="0 0 400 400">
@@ -36,7 +36,7 @@ export function FinalCTA() {
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/sign-up"
-              className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-white text-primary font-semibold text-lg hover:bg-white/90 hover:shadow-xl hover:shadow-black/10 transition-all duration-200"
+              className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-white text-[#0f172a] font-semibold text-lg hover:bg-white/90 hover:shadow-xl hover:shadow-black/10 transition-all duration-200"
             >
               Start for free
             </Link>
