@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireUserId } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
+  const userId = await requireUserId()
   const searchParams = request.nextUrl.searchParams
   const year = parseInt(searchParams.get('year') || new Date().getFullYear().toString())
   const month = parseInt(searchParams.get('month') || new Date().getMonth().toString())
@@ -11,6 +13,7 @@ export async function GET(request: NextRequest) {
 
   const tasks = await prisma.task.findMany({
     where: {
+      userId,
       OR: [
         {
           dueDate: {

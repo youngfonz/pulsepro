@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server'
+import { requireUserId } from '@/lib/auth'
 
 export async function POST() {
   try {
+    await requireUserId()
+
     const token = process.env.BLOB_READ_WRITE_TOKEN
 
     if (!token) {

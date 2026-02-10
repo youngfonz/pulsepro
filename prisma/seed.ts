@@ -2,6 +2,8 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+const SEED_USER_ID = process.env.SEED_USER_ID || 'local-dev-user'
+
 const clients = [
   {"id":"cml4l3fyc000010viyi0z9nny","name":"Cristina Mancini","email":"cristina@wearebgc.com","phone":null,"company":"Black Girls Code","status":"active","notes":"Interim Head of Product Role","logo":"/uploads/clients/1770007675739-bcc.png"},
   {"id":"cml4nw869000110vi2d59pz7l","name":"Dankland","email":"umesh3000@gmail.com","phone":null,"company":"Dankland LLC","status":"active","notes":null,"logo":"/uploads/clients/1770007544244-DL-logo.png"},
@@ -52,19 +54,19 @@ async function main() {
 
   // Insert clients
   for (const client of clients) {
-    await prisma.client.create({ data: client })
+    await prisma.client.create({ data: { ...client, userId: SEED_USER_ID } })
   }
   console.log(`Created ${clients.length} clients`)
 
   // Insert projects
   for (const project of projects) {
-    await prisma.project.create({ data: project })
+    await prisma.project.create({ data: { ...project, userId: SEED_USER_ID } })
   }
   console.log(`Created ${projects.length} projects`)
 
   // Insert tasks
   for (const task of tasks) {
-    await prisma.task.create({ data: task })
+    await prisma.task.create({ data: { ...task, userId: SEED_USER_ID } })
   }
   console.log(`Created ${tasks.length} tasks`)
 

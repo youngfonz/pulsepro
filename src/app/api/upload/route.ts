@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { put } from '@vercel/blob'
+import { requireUserId } from '@/lib/auth'
 
 // Configure route for larger file uploads
 export const maxDuration = 60 // 60 seconds
 
 export async function POST(request: NextRequest) {
   try {
+    await requireUserId()
+
     const formData = await request.formData()
     const file = formData.get('file') as File | null
     const type = formData.get('type') as string || 'general'

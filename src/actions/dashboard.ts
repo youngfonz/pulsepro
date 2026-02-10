@@ -1,8 +1,10 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
+import { requireUserId } from '@/lib/auth'
 
 export async function getDashboardStats() {
+  const userId = await requireUserId()
   const [
     totalClients,
     activeClients,
@@ -11,12 +13,12 @@ export async function getDashboardStats() {
     totalTasks,
     pendingTasks,
   ] = await Promise.all([
-    prisma.client.count(),
-    prisma.client.count({ where: { status: 'active' } }),
-    prisma.project.count(),
-    prisma.project.count({ where: { status: { in: ['in_progress', 'not_started'] } } }),
-    prisma.task.count(),
-    prisma.task.count({ where: { completed: false } }),
+    prisma.client.count({ where: { userId } }),
+    prisma.client.count({ where: { userId, status: 'active' } }),
+    prisma.project.count({ where: { userId } }),
+    prisma.project.count({ where: { userId, status: { in: ['in_progress', 'not_started'] } } }),
+    prisma.task.count({ where: { userId } }),
+    prisma.task.count({ where: { userId, completed: false } }),
   ])
 
   return {
@@ -30,6 +32,7 @@ export async function getDashboardStats() {
 }
 
 export async function getProjectsDueThisWeek() {
+  const userId = await requireUserId()
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const weekFromNow = new Date(today)
@@ -37,6 +40,7 @@ export async function getProjectsDueThisWeek() {
 
   return prisma.project.findMany({
     where: {
+      userId,
       status: { notIn: ['completed'] },
       dueDate: {
         gte: today,
@@ -60,6 +64,7 @@ export async function getProjectsDueThisWeek() {
 }
 
 export async function getTasksDueToday() {
+  const userId = await requireUserId()
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const tomorrow = new Date(today)
@@ -67,6 +72,7 @@ export async function getTasksDueToday() {
 
   return prisma.task.findMany({
     where: {
+      userId,
       completed: false,
       dueDate: {
         gte: today,
@@ -87,11 +93,13 @@ export async function getTasksDueToday() {
 }
 
 export async function getOverdueTasks() {
+  const userId = await requireUserId()
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
   return prisma.task.findMany({
     where: {
+      userId,
       completed: false,
       dueDate: {
         lt: today,
@@ -111,7 +119,9 @@ export async function getOverdueTasks() {
 }
 
 export async function getRecentProjects() {
+  const userId = await requireUserId()
   return prisma.project.findMany({
+    where: { userId },
     include: {
       client: {
         select: {
@@ -127,7 +137,8 @@ export async function getRecentProjects() {
 
 export async function getClientCount() {
   try {
-    return await prisma.client.count()
+    const userId = await requireUserId()
+    return await prisma.client.count({ where: { userId } })
   } catch (error) {
     // Return 0 if database is not available (e.g., during build time)
     return 0
@@ -135,6 +146,7 @@ export async function getClientCount() {
 }
 
 export async function getTasksDueThisWeek() {
+  const userId = await requireUserId()
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const weekFromNow = new Date(today)
@@ -142,6 +154,7 @@ export async function getTasksDueThisWeek() {
 
   return prisma.task.count({
     where: {
+      userId,
       completed: false,
       dueDate: {
         gte: today,
@@ -163,23 +176,25 @@ export type RecentItem = {
 }
 
 export async function getRecentlyViewed(): Promise<RecentItem[]> {
+  const userId = await requireUserId()
   const [projects, tasks, bookmarks] = await Promise.all([
     // Recent projects
     prisma.project.findMany({
+      where: { userId },
       include: { client: { select: { name: true } } },
       orderBy: { updatedAt: 'desc' },
       take: 5,
     }),
     // Recent tasks (non-bookmark)
     prisma.task.findMany({
-      where: { url: null },
+      where: { userId, url: null },
       include: { project: { select: { id: true, name: true } } },
       orderBy: { updatedAt: 'desc' },
       take: 5,
     }),
     // Recent bookmarks
     prisma.task.findMany({
-      where: { url: { not: null } },
+      where: { userId, url: { not: null } },
       include: { project: { select: { id: true, name: true } } },
       orderBy: { updatedAt: 'desc' },
       take: 5,
@@ -217,4 +232,25 @@ export async function getRecentlyViewed(): Promise<RecentItem[]> {
 
   // Sort by most recent and take top 8
   return items.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()).slice(0, 8)
+}
+
+/**
+ * One-time backfill: assigns all records with userId=null to the current user.
+ * Safe to call multiple times — does nothing if no orphaned records exist.
+ */
+export async function backfillUserId() {
+  const userId = await requireUserId()
+
+  const [clients, projects, tasks] = await Promise.all([
+    prisma.client.updateMany({ where: { userId: null }, data: { userId } }),
+    prisma.project.updateMany({ where: { userId: null }, data: { userId } }),
+    prisma.task.updateMany({ where: { userId: null }, data: { userId } }),
+  ])
+
+  const total = clients.count + projects.count + tasks.count
+  if (total > 0) {
+    console.log(`Backfilled ${clients.count} clients, ${projects.count} projects, ${tasks.count} tasks to user ${userId}`)
+  }
+
+  return total
 }
