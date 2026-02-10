@@ -18,7 +18,7 @@ export function LayoutWrapper({ children, clientCount, clerkEnabled = false }: L
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background overflow-x-clip w-full">
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-background focus:text-foreground">
         Skip to main content
       </a>
