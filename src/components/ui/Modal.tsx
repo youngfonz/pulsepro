@@ -23,13 +23,13 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
           className={cn(
-            'relative max-h-[90vh] w-full max-w-lg overflow-auto rounded bg-card shadow-xl border border-border',
+            'relative max-h-[90vh] w-full max-w-lg overflow-auto rounded-lg bg-card shadow-lg border border-border',
             className
           )}
           onClick={(e) => e.stopPropagation()}
         >
           {title && (
-            <div className="flex items-center justify-between border-b border-border px-6 py-4">
+            <div className="flex items-center justify-between border-b border-border px-5 py-3">
               <h2 className="text-lg font-semibold text-foreground">{title}</h2>
               <button
                 onClick={onClose}
@@ -51,7 +51,7 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
               </button>
             </div>
           )}
-          <div className="px-6 py-4">{children}</div>
+          <div className="px-5 py-3">{children}</div>
         </div>
       </div>
     </Fragment>

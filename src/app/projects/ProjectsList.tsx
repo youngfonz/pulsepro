@@ -39,24 +39,24 @@ export function ProjectsList({ projects, currentSort, viewMode }: Props) {
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full min-w-[800px]">
               <thead>
-                <tr className="border-b border-border text-left text-sm font-medium text-muted-foreground">
-                  <th className="px-6 py-3">
+                <tr className="border-b border-border text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  <th className="px-4 py-3">
                     <SortableHeader label="Project" sortKey="name" currentSort={currentSort} basePath="/projects" />
                   </th>
-                  <th className="px-6 py-3">
+                  <th className="px-4 py-3">
                     <SortableHeader label="Client" sortKey="client" currentSort={currentSort} basePath="/projects" />
                   </th>
-                  <th className="px-6 py-3 min-w-[120px]">
+                  <th className="px-4 py-3 min-w-[120px]">
                     <SortableHeader label="Status" sortKey="status" currentSort={currentSort} basePath="/projects" />
                   </th>
-                  <th className="px-6 py-3">
+                  <th className="px-4 py-3">
                     <SortableHeader label="Priority" sortKey="priority" currentSort={currentSort} basePath="/projects" />
                   </th>
-                  <th className="px-6 py-3">
+                  <th className="px-4 py-3">
                     <SortableHeader label="Due Date" sortKey="due_date" currentSort={currentSort} basePath="/projects" />
                   </th>
-                  <th className="px-6 py-3">Tasks</th>
-                  <th className="px-6 py-3"></th>
+                  <th className="px-4 py-3">Tasks</th>
+                  <th className="px-4 py-3"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -64,7 +64,7 @@ export function ProjectsList({ projects, currentSort, viewMode }: Props) {
                   const overdue = isOverdue(project.dueDate) && project.status !== 'completed'
                   return (
                     <tr key={project.id} className="hover:bg-muted/50 transition-colors">
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-3">
                         <Link
                           href={`/projects/${project.id}`}
                           className="font-medium text-link hover:text-link/80"
@@ -72,7 +72,7 @@ export function ProjectsList({ projects, currentSort, viewMode }: Props) {
                           {project.name}
                         </Link>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-3">
                         <Link
                           href={`/clients/${project.client.id}`}
                           className="text-muted-foreground hover:text-link"
@@ -80,24 +80,24 @@ export function ProjectsList({ projects, currentSort, viewMode }: Props) {
                           {project.client.name}
                         </Link>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-3">
                         <Badge className={statusColors[project.status]}>
                           {statusLabels[project.status]}
                         </Badge>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-3">
                         <Badge className={priorityColors[project.priority]}>
                           {priorityLabels[project.priority]}
                         </Badge>
                       </td>
-                      <td className={`px-6 py-4 ${overdue ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
+                      <td className={`px-4 py-3 ${overdue ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
                         {formatDate(project.dueDate)}
                         {overdue && ' (Overdue)'}
                       </td>
-                      <td className="px-6 py-4 text-muted-foreground">
+                      <td className="px-4 py-3 text-muted-foreground">
                         {project._count.tasks}
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-4 py-3 text-right">
                         <Link
                           href={`/projects/${project.id}`}
                           className="text-sm text-link hover:text-link/80"
@@ -176,7 +176,7 @@ export function ProjectsList({ projects, currentSort, viewMode }: Props) {
             const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
             return (
               <Link key={project.id} href={`/projects/${project.id}`}>
-                <Card className="h-full hover:shadow-md transition-shadow cursor-pointer group">
+                <Card className="h-full hover:bg-muted/50 transition-colors cursor-pointer group">
                   <CardContent className="p-5 space-y-4">
                     {/* Project Name */}
                     <div>

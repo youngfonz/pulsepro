@@ -97,8 +97,8 @@ export default async function TasksPage({ searchParams }: Props) {
                 return (
                   <div
                     key={task.id}
-                    className={`px-4 py-4 sm:px-6 hover:bg-muted/50 transition-colors ${
-                      isOverdue ? 'bg-destructive/10 hover:bg-destructive/20' : ''
+                    className={`px-4 py-3 hover:bg-muted/50 transition-colors ${
+                      isOverdue ? 'bg-destructive/5 hover:bg-destructive/10' : ''
                     }`}
                   >
                     <div className="flex items-start gap-3">

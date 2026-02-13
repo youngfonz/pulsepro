@@ -58,25 +58,25 @@ export default async function ClientsPage({ searchParams }: Props) {
               <div className="hidden md:block">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-border text-left text-sm font-medium text-muted-foreground">
-                      <th className="px-6 py-3">
+                    <tr className="border-b border-border text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      <th className="px-4 py-3">
                         <SortableHeader label="Client" sortKey="name" currentSort={params.sort} basePath="/clients" />
                       </th>
-                      <th className="px-6 py-3">
+                      <th className="px-4 py-3">
                         <SortableHeader label="Company" sortKey="company" currentSort={params.sort} basePath="/clients" />
                       </th>
-                      <th className="px-6 py-3">Email</th>
-                      <th className="px-6 py-3">Status</th>
-                      <th className="px-6 py-3">
+                      <th className="px-4 py-3">Email</th>
+                      <th className="px-4 py-3">Status</th>
+                      <th className="px-4 py-3">
                         <SortableHeader label="Projects" sortKey="projects" currentSort={params.sort} basePath="/clients" />
                       </th>
-                      <th className="px-6 py-3"></th>
+                      <th className="px-4 py-3"></th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
                     {clients.map((client) => (
                       <tr key={client.id} className="hover:bg-muted/50 transition-colors">
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-3">
                           <Link
                             href={`/clients/${client.id}`}
                             className="flex items-center gap-3"
@@ -102,21 +102,21 @@ export default async function ClientsPage({ searchParams }: Props) {
                             </span>
                           </Link>
                         </td>
-                        <td className="px-6 py-4 text-muted-foreground">
+                        <td className="px-4 py-3 text-muted-foreground">
                           {client.company || '-'}
                         </td>
-                        <td className="px-6 py-4 text-muted-foreground">
+                        <td className="px-4 py-3 text-muted-foreground">
                           {client.email || '-'}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-3">
                           <Badge className={statusColors[client.status]}>
                             {statusLabels[client.status]}
                           </Badge>
                         </td>
-                        <td className="px-6 py-4 text-muted-foreground">
+                        <td className="px-4 py-3 text-muted-foreground">
                           {client.projects.length}
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-4 py-3 text-right">
                           <Link
                             href={`/clients/${client.id}`}
                             className="text-sm text-link hover:text-link/80"

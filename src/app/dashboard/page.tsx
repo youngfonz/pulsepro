@@ -52,113 +52,33 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Activity Rings - Apple-inspired */}
-      <Card className="border-border/50 overflow-hidden">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            {/* Activity Rings */}
-            <div className="relative w-40 h-40 flex-shrink-0">
-              {/* Glow effect */}
-              <div className="absolute inset-0 blur-xl opacity-30">
-                <svg viewBox="0 0 100 100" className="w-full h-full">
-                  <circle cx="50" cy="50" r="42" fill="none" stroke="#f43f5e" strokeWidth="6" />
-                  <circle cx="50" cy="50" r="32" fill="none" stroke="#3b82f6" strokeWidth="6" />
-                  <circle cx="50" cy="50" r="22" fill="none" stroke="#22c55e" strokeWidth="6" />
-                </svg>
-              </div>
-
-              {/* Background rings */}
-              <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
-                <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" className="text-rose-500/20" strokeWidth="6" />
-                <circle cx="50" cy="50" r="32" fill="none" stroke="currentColor" className="text-blue-500/20" strokeWidth="6" />
-                <circle cx="50" cy="50" r="22" fill="none" stroke="currentColor" className="text-emerald-500/20" strokeWidth="6" />
-              </svg>
-
-              {/* Progress rings */}
-              <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full -rotate-90">
-                {/* Outer ring - Projects */}
-                <circle
-                  cx="50" cy="50" r="42"
-                  fill="none"
-                  stroke="url(#projectGradient)"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                  strokeDasharray={`${stats.totalProjects > 0 ? (stats.activeProjects / stats.totalProjects) * 264 : 0} 264`}
-                  className="drop-shadow-sm"
-                />
-                {/* Middle ring - Tasks completed */}
-                <circle
-                  cx="50" cy="50" r="32"
-                  fill="none"
-                  stroke="url(#taskGradient)"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                  strokeDasharray={`${stats.totalTasks > 0 ? ((stats.totalTasks - stats.pendingTasks) / stats.totalTasks) * 201 : 0} 201`}
-                  className="drop-shadow-sm"
-                />
-                {/* Inner ring - Due this week */}
-                <circle
-                  cx="50" cy="50" r="22"
-                  fill="none"
-                  stroke="url(#dueWeekGradient)"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                  strokeDasharray={`${stats.pendingTasks > 0 ? Math.min((tasksDueThisWeekCount / stats.pendingTasks) * 138, 138) : 0} 138`}
-                  className="drop-shadow-sm"
-                />
-
-                {/* Gradient definitions */}
-                <defs>
-                  <linearGradient id="projectGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#fb7185" />
-                    <stop offset="100%" stopColor="#f43f5e" />
-                  </linearGradient>
-                  <linearGradient id="taskGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#60a5fa" />
-                    <stop offset="100%" stopColor="#3b82f6" />
-                  </linearGradient>
-                  <linearGradient id="dueWeekGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#4ade80" />
-                    <stop offset="100%" stopColor="#22c55e" />
-                  </linearGradient>
-                </defs>
-              </svg>
-
-              {/* Center icon */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-xl font-bold text-emerald-500">{tasksDueThisWeekCount}</span>
-              </div>
-            </div>
-
-            {/* Stats Legend */}
-            <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-              <Link href="/projects" className="group flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors">
-                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-rose-400 to-rose-500 shadow-sm shadow-rose-500/50" />
-                <div>
-                  <div className="text-2xl font-bold text-foreground">{stats.activeProjects}<span className="text-sm font-normal text-muted-foreground">/{stats.totalProjects}</span></div>
-                  <div className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Active Projects</div>
-                </div>
-              </Link>
-
-              <Link href="/tasks" className="group flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors">
-                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 shadow-sm shadow-blue-500/50" />
-                <div>
-                  <div className="text-2xl font-bold text-foreground">{stats.totalTasks - stats.pendingTasks}<span className="text-sm font-normal text-muted-foreground">/{stats.totalTasks}</span></div>
-                  <div className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Tasks Done</div>
-                </div>
-              </Link>
-
-              <Link href="/tasks" className="group flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors">
-                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-400 to-emerald-500 shadow-sm shadow-emerald-500/50" />
-                <div>
-                  <div className="text-2xl font-bold text-emerald-500">{tasksDueThisWeekCount}</div>
-                  <div className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Due This Week</div>
-                </div>
-              </Link>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Link href="/projects">
+          <Card className="hover:bg-muted/50 transition-colors">
+            <CardContent className="py-4">
+              <p className="text-sm text-muted-foreground">Active Projects</p>
+              <p className="text-2xl font-semibold text-foreground mt-1">{stats.activeProjects}<span className="text-sm font-normal text-muted-foreground">/{stats.totalProjects}</span></p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/tasks">
+          <Card className="hover:bg-muted/50 transition-colors">
+            <CardContent className="py-4">
+              <p className="text-sm text-muted-foreground">Tasks Completed</p>
+              <p className="text-2xl font-semibold text-foreground mt-1">{stats.totalTasks - stats.pendingTasks}<span className="text-sm font-normal text-muted-foreground">/{stats.totalTasks}</span></p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/tasks">
+          <Card className="hover:bg-muted/50 transition-colors">
+            <CardContent className="py-4">
+              <p className="text-sm text-muted-foreground">Due This Week</p>
+              <p className="text-2xl font-semibold text-foreground mt-1">{tasksDueThisWeekCount}</p>
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
 
       <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Calendar Widget */}
@@ -185,8 +105,8 @@ export default async function DashboardPage() {
           <CardContent className="p-0">
             {projectsDueThisWeek.length === 0 ? (
               <div className="px-6 py-12 flex flex-col items-center justify-center text-center">
-                <div className="w-16 h-16 rounded-full bg-blue-500/10 flex items-center justify-center mb-3">
-                  <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center mb-3">
+                  <svg className="w-6 h-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
@@ -231,8 +151,8 @@ export default async function DashboardPage() {
           <CardContent className="p-0">
             {tasksDueToday.length === 0 ? (
               <div className="px-6 py-12 flex flex-col items-center justify-center text-center">
-                <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-3">
-                  <svg className="w-8 h-8 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center mb-3">
+                  <svg className="w-6 h-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
@@ -265,7 +185,7 @@ export default async function DashboardPage() {
 
         {/* Overdue Tasks */}
         {overdueTasks.length > 0 && (
-          <Card className="border-red-500/50 bg-red-500/10 md:col-span-2 lg:col-span-1">
+          <Card className="border-destructive/30 bg-destructive/5 md:col-span-2 lg:col-span-1">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-red-500">Overdue Tasks</CardTitle>
               <Link href="/tasks" className="text-sm text-red-500 hover:text-red-400">
@@ -324,13 +244,7 @@ export default async function DashboardPage() {
                     className="flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors active:bg-muted"
                   >
                     {/* Type Icon */}
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                      item.type === 'project'
-                        ? 'bg-primary/10 text-primary'
-                        : item.type === 'task'
-                        ? 'bg-blue-500/10 text-blue-500'
-                        : 'bg-amber-500/10 text-amber-500'
-                    }`}>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-muted text-muted-foreground">
                       {item.type === 'project' ? (
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />

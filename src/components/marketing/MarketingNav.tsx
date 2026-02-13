@@ -29,9 +29,9 @@ export function MarketingNav() {
   return (
     <header
       className={cn(
-        'fixed top-0 w-full z-50 h-16 transition-all duration-200',
+        'fixed top-0 w-full z-50 h-14 transition-all duration-200',
         isScrolled
-          ? 'bg-background/80 backdrop-blur-md border-b border-border'
+          ? 'bg-background/80 backdrop-blur-sm border-b border-border'
           : 'bg-transparent'
       )}
     >
@@ -127,7 +127,7 @@ export function MarketingNav() {
 
         {/* Mobile Menu Dropdown */}
         {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-16 left-0 right-0 bg-background border-b border-border shadow-lg">
+          <div className="md:hidden absolute top-14 left-0 right-0 bg-background border-b border-border shadow-lg">
             <nav className="flex flex-col px-4 py-4 space-y-3">
               {navLinks.map((link) => (
                 <a

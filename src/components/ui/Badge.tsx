@@ -10,7 +10,7 @@ export function Badge({ className, variant = 'default', children, ...props }: Ba
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap',
+        'inline-flex items-center rounded-md px-1.5 py-px text-xs font-medium leading-5 whitespace-nowrap',
         {
           'border border-zinc-400/50 text-zinc-600 dark:text-zinc-400 bg-zinc-500/5': variant === 'default',
           'border border-emerald-500/50 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5': variant === 'success',

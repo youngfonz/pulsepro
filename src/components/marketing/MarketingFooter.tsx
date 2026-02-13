@@ -27,7 +27,7 @@ export function MarketingFooter() {
   ]
 
   return (
-    <footer className="bg-muted">
+    <footer className="border-t border-border">
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-12">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
@@ -62,7 +62,7 @@ export function MarketingFooter() {
             <span className="text-lg font-bold text-foreground">Pulse</span>
           </Link>
           <p className="text-sm text-muted-foreground">
-            © 2025 Pulse. All rights reserved.
+            © 2026 Pulse. All rights reserved.
           </p>
         </div>
       </div>
