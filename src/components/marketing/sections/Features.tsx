@@ -103,9 +103,118 @@ export function Features() {
           </p>
         </div>
 
+        {/* App preview illustration */}
+        <ScrollReveal delay={0}>
+          <div className="mt-14 rounded-xl bg-[#0f172a] border border-white/10 p-4 md:p-6 overflow-hidden">
+            {/* Window chrome */}
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-3 h-3 rounded-full bg-red-500/70" />
+              <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
+              <div className="w-3 h-3 rounded-full bg-emerald-500/70" />
+              <div className="ml-3 h-6 w-48 rounded bg-white/5" />
+            </div>
+
+            <div className="grid grid-cols-12 gap-3 md:gap-4">
+              {/* Sidebar */}
+              <div className="col-span-3 space-y-2 hidden md:block">
+                <div className="flex items-center gap-2 px-2 py-1.5 rounded bg-white/5">
+                  <div className="w-4 h-4 rounded bg-blue-500/30" />
+                  <div className="h-3 w-16 rounded bg-white/20" />
+                </div>
+                <div className="flex items-center gap-2 px-2 py-1.5 rounded">
+                  <div className="w-4 h-4 rounded bg-white/10" />
+                  <div className="h-3 w-12 rounded bg-white/10" />
+                </div>
+                <div className="flex items-center gap-2 px-2 py-1.5 rounded">
+                  <div className="w-4 h-4 rounded bg-white/10" />
+                  <div className="h-3 w-20 rounded bg-white/10" />
+                </div>
+                <div className="mt-4 pt-4 border-t border-white/5 space-y-2">
+                  <div className="flex items-center gap-2 px-2 py-1">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <div className="h-2.5 w-20 rounded bg-white/10" />
+                  </div>
+                  <div className="flex items-center gap-2 px-2 py-1">
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
+                    <div className="h-2.5 w-16 rounded bg-white/10" />
+                  </div>
+                  <div className="flex items-center gap-2 px-2 py-1">
+                    <div className="w-2 h-2 rounded-full bg-violet-500" />
+                    <div className="h-2.5 w-24 rounded bg-white/10" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Main content area */}
+              <div className="col-span-12 md:col-span-9 space-y-3">
+                {/* Stats row */}
+                <div className="grid grid-cols-3 gap-2 md:gap-3">
+                  <div className="rounded-lg bg-white/5 p-3">
+                    <div className="h-2 w-12 rounded bg-white/10 mb-2" />
+                    <div className="text-lg md:text-xl font-bold text-white">12</div>
+                    <div className="h-1.5 w-full rounded-full bg-white/5 mt-2">
+                      <div className="h-1.5 w-3/4 rounded-full bg-blue-500" />
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-white/5 p-3">
+                    <div className="h-2 w-10 rounded bg-white/10 mb-2" />
+                    <div className="text-lg md:text-xl font-bold text-white">47</div>
+                    <div className="h-1.5 w-full rounded-full bg-white/5 mt-2">
+                      <div className="h-1.5 w-2/3 rounded-full bg-emerald-500" />
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-white/5 p-3">
+                    <div className="h-2 w-14 rounded bg-white/10 mb-2" />
+                    <div className="text-lg md:text-xl font-bold text-white">5</div>
+                    <div className="h-1.5 w-full rounded-full bg-white/5 mt-2">
+                      <div className="h-1.5 w-1/2 rounded-full bg-violet-500" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Task list */}
+                <div className="rounded-lg bg-white/5 divide-y divide-white/5">
+                  <div className="flex items-center gap-3 px-3 py-2.5 md:px-4">
+                    <div className="w-4 h-4 rounded border-2 border-emerald-500 bg-emerald-500/20 flex items-center justify-center">
+                      <svg className="w-2.5 h-2.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div className="h-2.5 w-32 md:w-40 rounded bg-white/20" />
+                    <div className="ml-auto flex items-center gap-2">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium">Done</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 px-3 py-2.5 md:px-4 bg-blue-500/5">
+                    <div className="w-4 h-4 rounded border-2 border-blue-500" />
+                    <div className="h-2.5 w-36 md:w-48 rounded bg-white/20" />
+                    <div className="ml-auto flex items-center gap-2">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 font-medium">In Progress</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 px-3 py-2.5 md:px-4">
+                    <div className="w-4 h-4 rounded border-2 border-white/20" />
+                    <div className="h-2.5 w-28 md:w-36 rounded bg-white/10" />
+                    <div className="ml-auto flex items-center gap-2">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-400 font-medium">High</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 px-3 py-2.5 md:px-4">
+                    <div className="w-4 h-4 rounded border-2 border-white/20" />
+                    <div className="h-2.5 w-24 md:w-32 rounded bg-white/10" />
+                    <div className="ml-auto flex items-center gap-2">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white/40 font-medium">Todo</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
         {/* Primary feature cards */}
         <ScrollReveal delay={0}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-14">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
             {primaryFeatures.map((feature) => {
               const colors = colorMap[feature.color];
               return (
