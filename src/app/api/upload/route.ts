@@ -11,7 +11,9 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData()
     const file = formData.get('file') as File | null
-    const type = formData.get('type') as string || 'general'
+    const rawType = formData.get('type') as string || 'general'
+    const allowedUploadTypes = ['projects', 'tasks', 'general']
+    const type = allowedUploadTypes.includes(rawType) ? rawType : 'general'
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
@@ -59,7 +61,6 @@ export async function POST(request: NextRequest) {
     console.error('Upload error:', error)
     return NextResponse.json({
       error: 'Upload failed',
-      details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 })
   }
 }

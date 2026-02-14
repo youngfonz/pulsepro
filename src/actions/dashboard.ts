@@ -4,135 +4,167 @@ import { prisma } from '@/lib/prisma'
 import { requireUserId } from '@/lib/auth'
 
 export async function getDashboardStats() {
-  const userId = await requireUserId()
-  const [
-    totalClients,
-    activeClients,
-    totalProjects,
-    activeProjects,
-    totalTasks,
-    pendingTasks,
-  ] = await Promise.all([
-    prisma.client.count({ where: { userId } }),
-    prisma.client.count({ where: { userId, status: 'active' } }),
-    prisma.project.count({ where: { userId } }),
-    prisma.project.count({ where: { userId, status: { in: ['in_progress', 'not_started'] } } }),
-    prisma.task.count({ where: { userId } }),
-    prisma.task.count({ where: { userId, completed: false } }),
-  ])
+  try {
+    const userId = await requireUserId()
+    const [
+      totalClients,
+      activeClients,
+      totalProjects,
+      activeProjects,
+      totalTasks,
+      pendingTasks,
+    ] = await Promise.all([
+      prisma.client.count({ where: { userId } }),
+      prisma.client.count({ where: { userId, status: 'active' } }),
+      prisma.project.count({ where: { userId } }),
+      prisma.project.count({ where: { userId, status: { in: ['in_progress', 'not_started'] } } }),
+      prisma.task.count({ where: { userId } }),
+      prisma.task.count({ where: { userId, completed: false } }),
+    ])
 
-  return {
-    totalClients,
-    activeClients,
-    totalProjects,
-    activeProjects,
-    totalTasks,
-    pendingTasks,
+    return {
+      totalClients,
+      activeClients,
+      totalProjects,
+      activeProjects,
+      totalTasks,
+      pendingTasks,
+    }
+  } catch (error) {
+    console.error('Failed to fetch dashboard stats:', error)
+    return {
+      totalClients: 0,
+      activeClients: 0,
+      totalProjects: 0,
+      activeProjects: 0,
+      totalTasks: 0,
+      pendingTasks: 0,
+    }
   }
 }
 
 export async function getProjectsDueThisWeek() {
-  const userId = await requireUserId()
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const weekFromNow = new Date(today)
-  weekFromNow.setDate(weekFromNow.getDate() + 7)
+  try {
+    const userId = await requireUserId()
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const weekFromNow = new Date(today)
+    weekFromNow.setDate(weekFromNow.getDate() + 7)
 
-  return prisma.project.findMany({
-    where: {
-      userId,
-      status: { notIn: ['completed'] },
-      dueDate: {
-        gte: today,
-        lte: weekFromNow,
-      },
-    },
-    include: {
-      client: {
-        select: {
-          id: true,
-          name: true,
+    return prisma.project.findMany({
+      where: {
+        userId,
+        status: { notIn: ['completed'] },
+        dueDate: {
+          gte: today,
+          lte: weekFromNow,
         },
       },
-      _count: {
-        select: { tasks: true },
+      include: {
+        client: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        _count: {
+          select: { tasks: true },
+        },
       },
-    },
-    orderBy: { dueDate: 'asc' },
-    take: 5,
-  })
+      orderBy: { dueDate: 'asc' },
+      take: 5,
+    })
+  } catch (error) {
+    console.error('Failed to fetch projects due this week:', error)
+    return []
+  }
 }
 
 export async function getTasksDueToday() {
-  const userId = await requireUserId()
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
+  try {
+    const userId = await requireUserId()
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
 
-  return prisma.task.findMany({
-    where: {
-      userId,
-      completed: false,
-      dueDate: {
-        gte: today,
-        lt: tomorrow,
-      },
-    },
-    include: {
-      project: {
-        select: {
-          id: true,
-          name: true,
+    return prisma.task.findMany({
+      where: {
+        userId,
+        completed: false,
+        dueDate: {
+          gte: today,
+          lt: tomorrow,
         },
       },
-    },
-    orderBy: { priority: 'desc' },
-    take: 10,
-  })
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: { priority: 'desc' },
+      take: 10,
+    })
+  } catch (error) {
+    console.error('Failed to fetch tasks due today:', error)
+    return []
+  }
 }
 
 export async function getOverdueTasks() {
-  const userId = await requireUserId()
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  try {
+    const userId = await requireUserId()
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
 
-  return prisma.task.findMany({
-    where: {
-      userId,
-      completed: false,
-      dueDate: {
-        lt: today,
-      },
-    },
-    include: {
-      project: {
-        select: {
-          id: true,
-          name: true,
+    return prisma.task.findMany({
+      where: {
+        userId,
+        completed: false,
+        dueDate: {
+          lt: today,
         },
       },
-    },
-    orderBy: { dueDate: 'asc' },
-    take: 5,
-  })
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: { dueDate: 'asc' },
+      take: 5,
+    })
+  } catch (error) {
+    console.error('Failed to fetch overdue tasks:', error)
+    return []
+  }
 }
 
 export async function getRecentProjects() {
-  const userId = await requireUserId()
-  return prisma.project.findMany({
-    where: { userId },
-    include: {
-      client: {
-        select: {
-          id: true,
-          name: true,
+  try {
+    const userId = await requireUserId()
+    return prisma.project.findMany({
+      where: { userId },
+      include: {
+        client: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
       },
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 5,
-  })
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    })
+  } catch (error) {
+    console.error('Failed to fetch recent projects:', error)
+    return []
+  }
 }
 
 export async function getClientCount() {
@@ -146,22 +178,27 @@ export async function getClientCount() {
 }
 
 export async function getTasksDueThisWeek() {
-  const userId = await requireUserId()
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const weekFromNow = new Date(today)
-  weekFromNow.setDate(weekFromNow.getDate() + 7)
+  try {
+    const userId = await requireUserId()
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const weekFromNow = new Date(today)
+    weekFromNow.setDate(weekFromNow.getDate() + 7)
 
-  return prisma.task.count({
-    where: {
-      userId,
-      completed: false,
-      dueDate: {
-        gte: today,
-        lte: weekFromNow,
+    return prisma.task.count({
+      where: {
+        userId,
+        completed: false,
+        dueDate: {
+          gte: today,
+          lte: weekFromNow,
+        },
       },
-    },
-  })
+    })
+  } catch (error) {
+    console.error('Failed to count tasks due this week:', error)
+    return 0
+  }
 }
 
 export type RecentItem = {
@@ -176,62 +213,67 @@ export type RecentItem = {
 }
 
 export async function getRecentlyViewed(): Promise<RecentItem[]> {
-  const userId = await requireUserId()
-  const [projects, tasks, bookmarks] = await Promise.all([
-    // Recent projects
-    prisma.project.findMany({
-      where: { userId },
-      include: { client: { select: { name: true } } },
-      orderBy: { updatedAt: 'desc' },
-      take: 5,
-    }),
-    // Recent tasks (non-bookmark)
-    prisma.task.findMany({
-      where: { userId, url: null },
-      include: { project: { select: { id: true, name: true } } },
-      orderBy: { updatedAt: 'desc' },
-      take: 5,
-    }),
-    // Recent bookmarks
-    prisma.task.findMany({
-      where: { userId, url: { not: null } },
-      include: { project: { select: { id: true, name: true } } },
-      orderBy: { updatedAt: 'desc' },
-      take: 5,
-    }),
-  ])
+  try {
+    const userId = await requireUserId()
+    const [projects, tasks, bookmarks] = await Promise.all([
+      // Recent projects
+      prisma.project.findMany({
+        where: { userId },
+        include: { client: { select: { name: true } } },
+        orderBy: { updatedAt: 'desc' },
+        take: 5,
+      }),
+      // Recent tasks (non-bookmark)
+      prisma.task.findMany({
+        where: { userId, url: null },
+        include: { project: { select: { id: true, name: true } } },
+        orderBy: { updatedAt: 'desc' },
+        take: 5,
+      }),
+      // Recent bookmarks
+      prisma.task.findMany({
+        where: { userId, url: { not: null } },
+        include: { project: { select: { id: true, name: true } } },
+        orderBy: { updatedAt: 'desc' },
+        take: 5,
+      }),
+    ])
 
-  const items: RecentItem[] = [
-    ...projects.map((p) => ({
-      id: p.id,
-      type: 'project' as const,
-      title: p.name,
-      subtitle: p.client.name,
-      status: p.status,
-      href: `/projects/${p.id}`,
-      updatedAt: p.updatedAt,
-    })),
-    ...tasks.map((t) => ({
-      id: t.id,
-      type: 'task' as const,
-      title: t.title,
-      subtitle: t.project.name,
-      priority: t.priority,
-      href: `/projects/${t.project.id}`,
-      updatedAt: t.updatedAt,
-    })),
-    ...bookmarks.map((b) => ({
-      id: b.id,
-      type: 'bookmark' as const,
-      title: b.title,
-      subtitle: b.project.name,
-      href: `/projects/${b.project.id}`,
-      updatedAt: b.updatedAt,
-    })),
-  ]
+    const items: RecentItem[] = [
+      ...projects.map((p) => ({
+        id: p.id,
+        type: 'project' as const,
+        title: p.name,
+        subtitle: p.client.name,
+        status: p.status,
+        href: `/projects/${p.id}`,
+        updatedAt: p.updatedAt,
+      })),
+      ...tasks.map((t) => ({
+        id: t.id,
+        type: 'task' as const,
+        title: t.title,
+        subtitle: t.project.name,
+        priority: t.priority,
+        href: `/projects/${t.project.id}`,
+        updatedAt: t.updatedAt,
+      })),
+      ...bookmarks.map((b) => ({
+        id: b.id,
+        type: 'bookmark' as const,
+        title: b.title,
+        subtitle: b.project.name,
+        href: `/projects/${b.project.id}`,
+        updatedAt: b.updatedAt,
+      })),
+    ]
 
-  // Sort by most recent and take top 8
-  return items.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()).slice(0, 8)
+    // Sort by most recent and take top 8
+    return items.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()).slice(0, 8)
+  } catch (error) {
+    console.error('Failed to fetch recently viewed items:', error)
+    return []
+  }
 }
 
 /**

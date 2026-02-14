@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireUserId } from '@/lib/auth';
 
 interface BookmarkMetadata {
   title: string;
@@ -176,6 +177,7 @@ async function fetchWebsiteMetadata(url: string): Promise<BookmarkMetadata | nul
 
 export async function POST(request: NextRequest) {
   try {
+    await requireUserId();
     const body = await request.json();
     const { url } = body;
 

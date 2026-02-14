@@ -26,133 +26,163 @@ export async function getTask(id: string) {
 }
 
 export async function createTask(projectId: string, formData: FormData) {
-  const userId = await requireUserId()
+  try {
+    const userId = await requireUserId()
 
-  const limit = await checkLimit('tasks')
-  if (!limit.allowed) {
-    throw new Error(`Free plan limit: ${limit.limit} tasks. Upgrade to Pro for unlimited tasks.`)
+    const limit = await checkLimit('tasks')
+    if (!limit.allowed) {
+      throw new Error(`Free plan limit: ${limit.limit} tasks. Upgrade to Pro for unlimited tasks.`)
+    }
+
+    const data = {
+      userId,
+      title: formData.get('title') as string,
+      description: formData.get('description') as string || null,
+      notes: formData.get('notes') as string || null,
+      priority: formData.get('priority') as string || 'medium',
+      startDate: formData.get('startDate')
+        ? new Date(formData.get('startDate') as string)
+        : null,
+      dueDate: formData.get('dueDate')
+        ? new Date(formData.get('dueDate') as string)
+        : null,
+      projectId,
+    }
+
+    await prisma.task.create({ data })
+    revalidatePath(`/projects/${projectId}`)
+  } catch (error) {
+    console.error('createTask:', error)
+    throw new Error('Failed to create task')
   }
-
-  const data = {
-    userId,
-    title: formData.get('title') as string,
-    description: formData.get('description') as string || null,
-    notes: formData.get('notes') as string || null,
-    priority: formData.get('priority') as string || 'medium',
-    startDate: formData.get('startDate')
-      ? new Date(formData.get('startDate') as string)
-      : null,
-    dueDate: formData.get('dueDate')
-      ? new Date(formData.get('dueDate') as string)
-      : null,
-    projectId,
-  }
-
-  await prisma.task.create({ data })
-  revalidatePath(`/projects/${projectId}`)
 }
 
 export async function updateTask(id: string, formData: FormData) {
-  const userId = await requireUserId()
-  const task = await prisma.task.findFirst({
-    where: { id, userId },
-    select: { projectId: true },
-  })
+  try {
+    const userId = await requireUserId()
+    const task = await prisma.task.findFirst({
+      where: { id, userId },
+      select: { projectId: true },
+    })
 
-  if (!task) return
+    if (!task) return
 
-  const data = {
-    title: formData.get('title') as string,
-    description: formData.get('description') as string || null,
-    notes: formData.get('notes') as string || null,
-    priority: formData.get('priority') as string,
-    startDate: formData.get('startDate')
-      ? new Date(formData.get('startDate') as string)
-      : null,
-    dueDate: formData.get('dueDate')
-      ? new Date(formData.get('dueDate') as string)
-      : null,
+    const data = {
+      title: formData.get('title') as string,
+      description: formData.get('description') as string || null,
+      notes: formData.get('notes') as string || null,
+      priority: formData.get('priority') as string,
+      startDate: formData.get('startDate')
+        ? new Date(formData.get('startDate') as string)
+        : null,
+      dueDate: formData.get('dueDate')
+        ? new Date(formData.get('dueDate') as string)
+        : null,
+    }
+
+    await prisma.task.update({
+      where: { id },
+      data,
+    })
+    revalidatePath(`/projects/${task.projectId}`)
+    revalidatePath(`/tasks/${id}`)
+    revalidatePath('/tasks')
+  } catch (error) {
+    console.error('updateTask:', error)
+    throw new Error('Failed to update task')
   }
-
-  await prisma.task.update({
-    where: { id },
-    data,
-  })
-  revalidatePath(`/projects/${task.projectId}`)
-  revalidatePath(`/tasks/${id}`)
-  revalidatePath('/tasks')
 }
 
 export async function toggleTask(id: string) {
-  const userId = await requireUserId()
-  const task = await prisma.task.findFirst({
-    where: { id, userId },
-    select: { completed: true, projectId: true },
-  })
+  try {
+    const userId = await requireUserId()
+    const task = await prisma.task.findFirst({
+      where: { id, userId },
+      select: { completed: true, projectId: true },
+    })
 
-  if (!task) return
+    if (!task) return
 
-  await prisma.task.update({
-    where: { id },
-    data: { completed: !task.completed },
-  })
-  revalidatePath(`/projects/${task.projectId}`)
-  revalidatePath(`/tasks/${id}`)
-  revalidatePath('/tasks')
+    await prisma.task.update({
+      where: { id },
+      data: { completed: !task.completed },
+    })
+    revalidatePath(`/projects/${task.projectId}`)
+    revalidatePath(`/tasks/${id}`)
+    revalidatePath('/tasks')
+  } catch (error) {
+    console.error('toggleTask:', error)
+    throw new Error('Failed to toggle task')
+  }
 }
 
 export async function deleteTask(id: string) {
-  const userId = await requireUserId()
-  const task = await prisma.task.findFirst({
-    where: { id, userId },
-    select: { projectId: true },
-  })
+  try {
+    const userId = await requireUserId()
+    const task = await prisma.task.findFirst({
+      where: { id, userId },
+      select: { projectId: true },
+    })
 
-  if (!task) return
+    if (!task) return
 
-  await prisma.task.delete({
-    where: { id },
-  })
-  revalidatePath(`/projects/${task.projectId}`)
-  revalidatePath('/tasks')
+    await prisma.task.delete({
+      where: { id },
+    })
+    revalidatePath(`/projects/${task.projectId}`)
+    revalidatePath('/tasks')
+  } catch (error) {
+    console.error('deleteTask:', error)
+    throw new Error('Failed to delete task')
+  }
 }
 
 export async function addTaskImage(taskId: string, path: string, name: string) {
-  const userId = await requireUserId()
-  const task = await prisma.task.findFirst({
-    where: { id: taskId, userId },
-    select: { projectId: true },
-  })
+  try {
+    const userId = await requireUserId()
+    const task = await prisma.task.findFirst({
+      where: { id: taskId, userId },
+      select: { projectId: true },
+    })
 
-  if (!task) return
+    if (!task) return
 
-  await prisma.taskImage.create({
-    data: {
-      path,
-      name,
-      taskId,
-    },
-  })
-  revalidatePath(`/projects/${task.projectId}`)
+    await prisma.taskImage.create({
+      data: {
+        path,
+        name,
+        taskId,
+      },
+    })
+    revalidatePath(`/projects/${task.projectId}`)
+  } catch (error) {
+    console.error('addTaskImage:', error)
+    throw new Error('Failed to add task image')
+  }
 }
 
 export async function removeTaskImage(imageId: string) {
-  const userId = await requireUserId()
-  const image = await prisma.taskImage.findUnique({
-    where: { id: imageId },
-    include: {
-      task: {
-        select: { projectId: true, userId: true },
+  try {
+    const userId = await requireUserId()
+    const image = await prisma.taskImage.findUnique({
+      where: { id: imageId },
+      include: {
+        task: {
+          select: { projectId: true, userId: true },
+        },
       },
-    },
-  })
+    })
 
-  if (!image || image.task.userId !== userId) return
+    if (!image || image.task.userId !== userId) return
 
-  await prisma.taskImage.delete({
-    where: { id: imageId },
-  })
-  revalidatePath(`/projects/${image.task.projectId}`)
+    await prisma.taskImage.delete({
+      where: { id: imageId },
+    })
+    revalidatePath(`/projects/${image.task.projectId}`)
+  } catch (error) {
+    console.error('removeTaskImage:', error)
+    throw new Error('Failed to remove task image')
+  }
 }
 
 export async function addTaskFile(
@@ -162,43 +192,53 @@ export async function addTaskFile(
   type: string,
   size: number
 ) {
-  const userId = await requireUserId()
-  const task = await prisma.task.findFirst({
-    where: { id: taskId, userId },
-    select: { projectId: true },
-  })
+  try {
+    const userId = await requireUserId()
+    const task = await prisma.task.findFirst({
+      where: { id: taskId, userId },
+      select: { projectId: true },
+    })
 
-  if (!task) return
+    if (!task) return
 
-  await prisma.taskFile.create({
-    data: {
-      path,
-      name,
-      type,
-      size,
-      taskId,
-    },
-  })
-  revalidatePath(`/projects/${task.projectId}`)
+    await prisma.taskFile.create({
+      data: {
+        path,
+        name,
+        type,
+        size,
+        taskId,
+      },
+    })
+    revalidatePath(`/projects/${task.projectId}`)
+  } catch (error) {
+    console.error('addTaskFile:', error)
+    throw new Error('Failed to add task file')
+  }
 }
 
 export async function removeTaskFile(fileId: string) {
-  const userId = await requireUserId()
-  const file = await prisma.taskFile.findUnique({
-    where: { id: fileId },
-    include: {
-      task: {
-        select: { projectId: true, userId: true },
+  try {
+    const userId = await requireUserId()
+    const file = await prisma.taskFile.findUnique({
+      where: { id: fileId },
+      include: {
+        task: {
+          select: { projectId: true, userId: true },
+        },
       },
-    },
-  })
+    })
 
-  if (!file || file.task.userId !== userId) return
+    if (!file || file.task.userId !== userId) return
 
-  await prisma.taskFile.delete({
-    where: { id: fileId },
-  })
-  revalidatePath(`/projects/${file.task.projectId}`)
+    await prisma.taskFile.delete({
+      where: { id: fileId },
+    })
+    revalidatePath(`/projects/${file.task.projectId}`)
+  } catch (error) {
+    console.error('removeTaskFile:', error)
+    throw new Error('Failed to remove task file')
+  }
 }
 
 export async function getTasksDueToday() {
@@ -277,6 +317,7 @@ export async function getAllTasksForGantt() {
       { startDate: 'asc' },
       { dueDate: 'asc' },
     ],
+    take: 500,
   })
 }
 
@@ -317,6 +358,7 @@ export async function getTasksForCalendar(year: number, month: number) {
       },
     },
     orderBy: { dueDate: 'asc' },
+    take: 200,
   })
 }
 
@@ -425,6 +467,7 @@ export async function getAllTasks(options?: {
       },
     },
     orderBy,
+    take: 200,
   })
 
   // Sort by client name in memory (Prisma doesn't support nested relation ordering)
@@ -456,40 +499,50 @@ export async function getProjectsForTaskFilter() {
 }
 
 export async function addTaskComment(taskId: string, content: string) {
-  const userId = await requireUserId()
-  const task = await prisma.task.findFirst({
-    where: { id: taskId, userId },
-    select: { projectId: true },
-  })
+  try {
+    const userId = await requireUserId()
+    const task = await prisma.task.findFirst({
+      where: { id: taskId, userId },
+      select: { projectId: true },
+    })
 
-  if (!task) return
+    if (!task) return
 
-  await prisma.taskComment.create({
-    data: {
-      content,
-      taskId,
-    },
-  })
-  revalidatePath(`/projects/${task.projectId}`)
+    await prisma.taskComment.create({
+      data: {
+        content,
+        taskId,
+      },
+    })
+    revalidatePath(`/projects/${task.projectId}`)
+  } catch (error) {
+    console.error('addTaskComment:', error)
+    throw new Error('Failed to add comment')
+  }
 }
 
 export async function deleteTaskComment(commentId: string) {
-  const userId = await requireUserId()
-  const comment = await prisma.taskComment.findUnique({
-    where: { id: commentId },
-    include: {
-      task: {
-        select: { projectId: true, userId: true },
+  try {
+    const userId = await requireUserId()
+    const comment = await prisma.taskComment.findUnique({
+      where: { id: commentId },
+      include: {
+        task: {
+          select: { projectId: true, userId: true },
+        },
       },
-    },
-  })
+    })
 
-  if (!comment || comment.task.userId !== userId) return
+    if (!comment || comment.task.userId !== userId) return
 
-  await prisma.taskComment.delete({
-    where: { id: commentId },
-  })
-  revalidatePath(`/projects/${comment.task.projectId}`)
+    await prisma.taskComment.delete({
+      where: { id: commentId },
+    })
+    revalidatePath(`/projects/${comment.task.projectId}`)
+  } catch (error) {
+    console.error('deleteTaskComment:', error)
+    throw new Error('Failed to delete comment')
+  }
 }
 
 export async function createBookmarkTask(
@@ -506,29 +559,34 @@ export async function createBookmarkTask(
     notes?: string
   }
 ) {
-  const userId = await requireUserId()
+  try {
+    const userId = await requireUserId()
 
-  const limit = await checkLimit('tasks')
-  if (!limit.allowed) {
-    throw new Error(`Free plan limit: ${limit.limit} tasks. Upgrade to Pro for unlimited tasks.`)
+    const limit = await checkLimit('tasks')
+    if (!limit.allowed) {
+      throw new Error(`Free plan limit: ${limit.limit} tasks. Upgrade to Pro for unlimited tasks.`)
+    }
+
+    const taskData = {
+      userId,
+      title: data.title,
+      description: data.description || null,
+      notes: data.notes || null,
+      priority: data.priority || 'medium',
+      dueDate: data.dueDate ? new Date(data.dueDate) : null,
+      projectId,
+      url: data.url,
+      bookmarkType: data.bookmarkType,
+      thumbnailUrl: data.thumbnailUrl || null,
+      tags: data.tags || [],
+    }
+
+    await prisma.task.create({ data: taskData })
+    revalidatePath(`/projects/${projectId}`)
+  } catch (error) {
+    console.error('createBookmarkTask:', error)
+    throw new Error('Failed to create bookmark task')
   }
-
-  const taskData = {
-    userId,
-    title: data.title,
-    description: data.description || null,
-    notes: data.notes || null,
-    priority: data.priority || 'medium',
-    dueDate: data.dueDate ? new Date(data.dueDate) : null,
-    projectId,
-    url: data.url,
-    bookmarkType: data.bookmarkType,
-    thumbnailUrl: data.thumbnailUrl || null,
-    tags: data.tags || [],
-  }
-
-  await prisma.task.create({ data: taskData })
-  revalidatePath(`/projects/${projectId}`)
 }
 
 export async function getAllBookmarks(filters?: {
@@ -587,6 +645,7 @@ export async function getAllBookmarks(filters?: {
       },
     },
     orderBy,
+    take: 200,
   })
 
   if (filters?.sort === 'project') {
@@ -608,6 +667,7 @@ export async function getAllTags() {
     select: {
       tags: true,
     },
+    take: 500,
   })
 
   const allTags = new Set<string>()
