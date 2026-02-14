@@ -6,12 +6,14 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { VoiceInput } from '@/components/ui/VoiceInput'
+import { UpgradePrompt, isLimitError } from '@/components/ui/UpgradePrompt'
 import { createTask } from '@/actions/tasks'
 import { parseTaskFromVoice } from '@/lib/voice'
 
 export function AddTaskForm({ projectId, onSuccess }: { projectId: string; onSuccess?: () => void }) {
   const [isOpen, setIsOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
+  const [limitMessage, setLimitMessage] = useState<string | null>(null)
 
   // Controlled form state for voice input
   const [title, setTitle] = useState('')
@@ -31,17 +33,28 @@ export function AddTaskForm({ projectId, onSuccess }: { projectId: string; onSuc
 
   const handleSubmit = async (formData: FormData) => {
     startTransition(async () => {
-      await createTask(projectId, formData)
-      setIsOpen(false)
-      // Reset form
-      setTitle('')
-      setPriority('medium')
-      setDueDate('')
-      setNotes('')
-      if (onSuccess) {
-        onSuccess()
+      try {
+        await createTask(projectId, formData)
+        setIsOpen(false)
+        setLimitMessage(null)
+        setTitle('')
+        setPriority('medium')
+        setDueDate('')
+        setNotes('')
+        if (onSuccess) {
+          onSuccess()
+        }
+      } catch (error) {
+        const msg = isLimitError(error)
+        if (msg) {
+          setLimitMessage(msg)
+        }
       }
     })
+  }
+
+  if (limitMessage) {
+    return <UpgradePrompt message={limitMessage} onDismiss={() => setLimitMessage(null)} />
   }
 
   if (!isOpen) {

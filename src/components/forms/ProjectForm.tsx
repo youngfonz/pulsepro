@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { VoiceInput } from '@/components/ui/VoiceInput'
+import { UpgradePrompt, isLimitError } from '@/components/ui/UpgradePrompt'
 import { createProject, updateProject } from '@/actions/projects'
 import { parseProjectFromVoice } from '@/lib/voice'
 import { useRouter } from 'next/navigation'
@@ -37,6 +38,7 @@ interface ProjectFormProps {
 export function ProjectForm({ project, clients, defaultClientId, onSuccess }: ProjectFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const [limitMessage, setLimitMessage] = useState<string | null>(null)
 
   const formatDateForInput = (date: Date | null) => {
     if (!date) return ''
@@ -63,17 +65,29 @@ export function ProjectForm({ project, clients, defaultClientId, onSuccess }: Pr
 
   const handleSubmit = async (formData: FormData) => {
     startTransition(async () => {
-      if (project) {
-        await updateProject(project.id, formData)
-      } else {
-        await createProject(formData)
-      }
-      if (onSuccess) {
-        onSuccess()
-      } else {
-        router.push('/projects')
+      try {
+        if (project) {
+          await updateProject(project.id, formData)
+        } else {
+          await createProject(formData)
+        }
+        setLimitMessage(null)
+        if (onSuccess) {
+          onSuccess()
+        } else {
+          router.push('/projects')
+        }
+      } catch (error) {
+        const msg = isLimitError(error)
+        if (msg) {
+          setLimitMessage(msg)
+        }
       }
     })
+  }
+
+  if (limitMessage) {
+    return <UpgradePrompt message={limitMessage} onDismiss={() => setLimitMessage(null)} />
   }
 
   return (

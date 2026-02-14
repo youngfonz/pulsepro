@@ -29,7 +29,7 @@ const plans = [
       'Priority support'
     ],
     highlighted: true,
-    cta: 'Start Free Trial',
+    cta: 'Get Started',
   }
 ]
 
@@ -103,7 +103,7 @@ export function Pricing() {
         </div>
 
         <p className="mt-8 text-center text-sm text-muted-foreground">
-          14-day free trial. No credit card required.
+          Free plan included. No credit card required.
         </p>
       </div>
     </section>

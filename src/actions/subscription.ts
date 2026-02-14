@@ -16,4 +16,3 @@ export async function getUsageLimits() {
   return { projects, tasks, clients }
 }
 
-export type { Plan }

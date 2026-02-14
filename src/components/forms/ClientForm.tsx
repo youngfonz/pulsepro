@@ -1,14 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { ImageUpload } from '@/components/ui/ImageUpload'
+import { UpgradePrompt, isLimitError } from '@/components/ui/UpgradePrompt'
 import { createClient, updateClient } from '@/actions/clients'
 import { useRouter } from 'next/navigation'
-import { useTransition } from 'react'
 
 interface Client {
   id: string
@@ -30,6 +30,7 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [logo, setLogo] = useState<string | null>(client?.logo || null)
+  const [limitMessage, setLimitMessage] = useState<string | null>(null)
 
   const handleSubmit = async (formData: FormData) => {
     if (logo) {
@@ -39,17 +40,29 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
     }
 
     startTransition(async () => {
-      if (client) {
-        await updateClient(client.id, formData)
-      } else {
-        await createClient(formData)
-      }
-      if (onSuccess) {
-        onSuccess()
-      } else {
-        router.push('/clients')
+      try {
+        if (client) {
+          await updateClient(client.id, formData)
+        } else {
+          await createClient(formData)
+        }
+        setLimitMessage(null)
+        if (onSuccess) {
+          onSuccess()
+        } else {
+          router.push('/clients')
+        }
+      } catch (error) {
+        const msg = isLimitError(error)
+        if (msg) {
+          setLimitMessage(msg)
+        }
       }
     })
+  }
+
+  if (limitMessage) {
+    return <UpgradePrompt message={limitMessage} onDismiss={() => setLimitMessage(null)} />
   }
 
   return (
