@@ -53,7 +53,7 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {clerkEnabled ? (
-          <ClerkProvider fallback={<div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-pulse"><div className="w-10 h-10 bg-primary/20 rounded-lg"></div></div></div>}>
+          <ClerkProvider>
             <AuthGuard>
               {innerContent}
             </AuthGuard>

@@ -11,6 +11,7 @@ const primaryFeatures = [
     ),
     title: 'Project Tracking',
     description: 'Organize projects by client, set deadlines, and track progress from start to finish.',
+    color: 'blue' as const,
   },
   {
     icon: (
@@ -20,6 +21,7 @@ const primaryFeatures = [
     ),
     title: 'Task Management',
     description: 'Create tasks, set priorities, and check them off. Never miss a deadline again.',
+    color: 'emerald' as const,
   },
   {
     icon: (
@@ -29,33 +31,61 @@ const primaryFeatures = [
     ),
     title: 'Client Organization',
     description: 'Keep client details, project history, and communication all in one place.',
+    color: 'violet' as const,
   },
 ];
+
+const colorMap = {
+  blue: {
+    iconBg: 'bg-blue-500/10',
+    iconText: 'text-blue-500',
+    border: 'border-t-blue-500',
+    dot: 'bg-blue-500',
+  },
+  emerald: {
+    iconBg: 'bg-emerald-500/10',
+    iconText: 'text-emerald-500',
+    border: 'border-t-emerald-500',
+    dot: 'bg-emerald-500',
+  },
+  violet: {
+    iconBg: 'bg-violet-500/10',
+    iconText: 'text-violet-500',
+    border: 'border-t-violet-500',
+    dot: 'bg-violet-500',
+  },
+} as const;
 
 const secondaryFeatures = [
   {
     title: 'Calendar view',
     description: 'See all deadlines at a glance',
+    dot: 'bg-blue-500',
   },
   {
     title: 'Bookmarks',
     description: 'Save important tasks and projects',
+    dot: 'bg-emerald-500',
   },
   {
     title: 'Daily email reminders',
     description: 'Get notified about upcoming and overdue tasks',
+    dot: 'bg-violet-500',
   },
   {
     title: 'Mobile-friendly',
     description: 'Fully responsive — manage everything from your phone',
+    dot: 'bg-blue-500',
   },
   {
     title: 'Dark mode',
     description: 'Easy on the eyes',
+    dot: 'bg-emerald-500',
   },
   {
     title: 'File attachments',
     description: 'Keep everything organized',
+    dot: 'bg-violet-500',
   },
 ];
 
@@ -76,17 +106,23 @@ export function Features() {
         {/* Primary feature cards */}
         <ScrollReveal delay={0}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-14">
-            {primaryFeatures.map((feature) => (
-              <div key={feature.title} className="border border-border rounded-lg p-6">
-                <div className="w-10 h-10 rounded-md bg-muted text-foreground flex items-center justify-center">
-                  {feature.icon}
+            {primaryFeatures.map((feature) => {
+              const colors = colorMap[feature.color];
+              return (
+                <div
+                  key={feature.title}
+                  className={`border border-border ${colors.border} border-t-2 rounded-lg p-6 hover:shadow-md transition-shadow`}
+                >
+                  <div className={`w-10 h-10 rounded-md ${colors.iconBg} ${colors.iconText} flex items-center justify-center`}>
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-base font-semibold mt-4">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                    {feature.description}
+                  </p>
                 </div>
-                <h3 className="text-base font-semibold mt-4">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </ScrollReveal>
 
@@ -94,9 +130,12 @@ export function Features() {
         <ScrollReveal delay={0}>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-12">
             {secondaryFeatures.map((feature) => (
-              <div key={feature.title} className="p-4">
-                <h4 className="text-sm font-medium text-foreground">{feature.title}</h4>
-                <p className="text-sm text-muted-foreground mt-1">{feature.description}</p>
+              <div key={feature.title} className="p-4 flex gap-3">
+                <div className={`w-2 h-2 rounded-full ${feature.dot} mt-1.5 flex-shrink-0`} />
+                <div>
+                  <h4 className="text-sm font-medium text-foreground">{feature.title}</h4>
+                  <p className="text-sm text-muted-foreground mt-1">{feature.description}</p>
+                </div>
               </div>
             ))}
           </div>
