@@ -9,6 +9,7 @@ const isPublicRoute = createRouteMatcher([
   '/sign-up(.*)',
   '/api/bookmark-metadata',
   '/api/webhook/polar',
+  '/api/cron/daily-reminder',
 ])
 
 const middleware = clerkEnabled
