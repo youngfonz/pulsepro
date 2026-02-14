@@ -42,12 +42,12 @@ const secondaryFeatures = [
     description: 'Save important tasks and projects',
   },
   {
-    title: 'Due date alerts',
-    description: 'Never miss a deadline',
+    title: 'Daily email reminders',
+    description: 'Get notified about upcoming and overdue tasks',
   },
   {
-    title: 'Activity dashboard',
-    description: 'Track your productivity',
+    title: 'Mobile-friendly',
+    description: 'Fully responsive — manage everything from your phone',
   },
   {
     title: 'Dark mode',
@@ -69,7 +69,7 @@ export function Features() {
             Everything you need, nothing you don&apos;t.
           </h2>
           <p className="text-base text-muted-foreground mt-3 max-w-xl mx-auto">
-            Manage your entire workflow in one place.
+            No 200-page docs. No week-long setup. Open it, use it, done.
           </p>
         </div>
 

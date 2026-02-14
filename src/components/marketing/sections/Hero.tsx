@@ -96,16 +96,15 @@ export function Hero() {
 
             <ScrollReveal delay={100}>
               <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-foreground leading-[1.1] tracking-tight">
-                Stay on top of every{' '}
-                <span className="text-primary">project</span>,{' '}
-                every deadline.
+                Project management,{' '}
+                <span className="text-primary">minus the complexity</span>.
               </h1>
             </ScrollReveal>
 
             <ScrollReveal delay={200}>
               <p className="text-lg md:text-xl text-muted-foreground mt-6 max-w-xl leading-relaxed">
-                Project & task management built for freelancers and solo
-                creators. Track clients, manage tasks, and hit every deadline.
+                No steep learning curve. No features you&apos;ll never use.
+                Just clients, projects, and tasks — organized in seconds.
               </p>
             </ScrollReveal>
 

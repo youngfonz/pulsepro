@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { DashboardCalendar } from '@/components/DashboardCalendar'
 import { DashboardGreeting } from '@/components/DashboardGreeting'
+import { OnboardingOverlay } from '@/components/OnboardingOverlay'
 import {
   getDashboardStats,
   getProjectsDueThisWeek,
@@ -26,6 +27,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-4 md:space-y-6">
+      <OnboardingOverlay />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <DashboardGreeting />
         <div className="flex gap-2 sm:gap-3">

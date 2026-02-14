@@ -4,19 +4,19 @@ import { ScrollReveal } from '@/components/marketing/ScrollReveal'
 
 const testimonials = [
   {
-    quote: "Pulse replaced three different tools I was using. Everything I need for client work is in one place.",
+    quote: "I tried Trello, Asana, Notion — they all felt like overkill. Pulse is the only tool that didn't need a tutorial.",
     name: "Sarah Kim",
     role: "Freelance Designer",
     initials: "SK",
   },
   {
-    quote: "The task management is exactly what I needed. Simple, fast, and doesn't get in the way of actual work.",
+    quote: "Set it up in under 5 minutes. No boards, no sprints, no nonsense. Just my tasks and deadlines. Perfect.",
     name: "Marcus Chen",
     role: "Web Developer",
     initials: "MC",
   },
   {
-    quote: "I finally have a clear picture of all my projects and deadlines. Game changer for staying organized.",
+    quote: "The daily email reminders alone are worth it. I always know exactly what's due without opening anything.",
     name: "Ava Rodriguez",
     role: "Content Creator",
     initials: "AR",

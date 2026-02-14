@@ -5,7 +5,11 @@ import { useState } from 'react'
 const faqs = [
   {
     question: "What is Pulse?",
-    answer: "Pulse is a project and task management tool built for freelancers, solo creators, and small teams. It helps you organize clients, track tasks, and never miss a deadline."
+    answer: "Pulse is project management without the bloat. No Gantt charts, no sprint planning, no 30-minute onboarding videos. Just a clean way to track your clients, projects, and tasks."
+  },
+  {
+    question: "How is this different from Trello or Asana?",
+    answer: "Those tools are built for teams of 50. Pulse is built for you. No boards to configure, no workflows to set up. Add a client, create a project, add tasks — you're done in under 5 minutes."
   },
   {
     question: "Is there a free plan?",
