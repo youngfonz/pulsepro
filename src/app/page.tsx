@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation'
+import { auth } from '@clerk/nextjs/server'
 import { MarketingNav } from '@/components/marketing/MarketingNav'
 import { MarketingFooter } from '@/components/marketing/MarketingFooter'
 import { Hero } from '@/components/marketing/sections/Hero'
@@ -9,7 +11,14 @@ import { Pricing } from '@/components/marketing/sections/Pricing'
 import { FAQ } from '@/components/marketing/sections/FAQ'
 import { FinalCTA } from '@/components/marketing/sections/FinalCTA'
 
-export default function MarketingPage() {
+export default async function MarketingPage() {
+  const clerkEnabled = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+  if (clerkEnabled) {
+    const { userId } = await auth()
+    if (userId) {
+      redirect('/dashboard')
+    }
+  }
   return (
     <div className="min-h-screen bg-background">
       <MarketingNav />
