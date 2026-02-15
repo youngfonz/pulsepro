@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { useTheme } from './ThemeProvider'
 import { SidebarAuth } from './SidebarAuth'
 import { PulseLogo } from './PulseLogo'
+import { CommandBarTrigger } from './CommandBar'
 
 const getNavigation = (clientCount?: number) => [
   {
@@ -99,6 +100,15 @@ export function Sidebar({ clientCount, clerkEnabled = false }: SidebarProps) {
         </div>
         <div className="flex items-center gap-2">
           <button
+            onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}
+            className=" p-2 text-sidebar-foreground hover:bg-secondary"
+            title="Search (⌘K)"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </button>
+          <button
             onClick={toggleTheme}
             className=" p-2 text-sidebar-foreground hover:bg-secondary"
           >
@@ -180,7 +190,13 @@ export function Sidebar({ clientCount, clerkEnabled = false }: SidebarProps) {
             )}
           </div>
         </div>
-        <nav className="flex-1 overflow-y-auto space-y-1 px-3 py-4">
+        <div className="px-3 pt-4 pb-2">
+          <CommandBarTrigger
+            isCollapsed={isCollapsed}
+            onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}
+          />
+        </div>
+        <nav className="flex-1 overflow-y-auto space-y-1 px-3 pb-4">
           {navigation.map((item) => {
             const isActive = pathname === item.href ||
               (item.href !== '/' && pathname.startsWith(item.href))

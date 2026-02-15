@@ -58,33 +58,33 @@ const colorMap = {
 
 const secondaryFeatures = [
   {
-    title: 'Calendar view',
-    description: 'See all deadlines at a glance',
+    title: 'Quick Search (\u2318K)',
+    description: 'Find any project, task, or client instantly',
     dot: 'bg-blue-500',
   },
   {
-    title: 'Bookmarks',
-    description: 'Pin what matters most for quick access',
+    title: 'Calendar view',
+    description: 'See all deadlines at a glance',
     dot: 'bg-emerald-500',
+  },
+  {
+    title: 'Bookmarks',
+    description: 'Save links, articles, and resources to projects',
+    dot: 'bg-violet-500',
   },
   {
     title: 'Daily email reminders',
     description: 'Know exactly what\u2019s due every morning',
-    dot: 'bg-violet-500',
+    dot: 'bg-blue-500',
   },
   {
     title: 'Mobile-friendly',
-    description: 'Fully responsive — manage everything from your phone',
-    dot: 'bg-blue-500',
+    description: 'Fully responsive \u2014 manage everything from your phone',
+    dot: 'bg-emerald-500',
   },
   {
     title: 'Dark mode',
     description: 'Easy on the eyes',
-    dot: 'bg-emerald-500',
-  },
-  {
-    title: 'File attachments',
-    description: 'Attach contracts, briefs, and assets to projects',
     dot: 'bg-violet-500',
   },
 ];

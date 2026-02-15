@@ -10,30 +10,21 @@ const testimonials = [
     quote: "I manage 6 clients at once. Before Pulse Pro, I was tracking everything in sticky notes and spreadsheets. Now I actually feel in control.",
     name: "Sarah Kim",
     role: "Freelance Designer",
-    initials: "SK",
-    color: 'blue' as const,
+    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
   },
   {
     quote: "I tried Trello, Asana, Notion — they all felt like overkill for a solo consultant. Pulse Pro was set up in 5 minutes. That's it. Done.",
     name: "Marcus Chen",
     role: "IT Consultant",
-    initials: "MC",
-    color: 'emerald' as const,
+    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
   },
   {
     quote: "The daily email telling me what's due today? Game changer. I used to wake up anxious about what I was forgetting. Not anymore.",
     name: "Ava Rodriguez",
     role: "Marketing Strategist",
-    initials: "AR",
-    color: 'violet' as const,
+    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
   }
 ]
-
-const avatarColors = {
-  blue: 'bg-blue-500/15 text-blue-500 ring-blue-500/20',
-  emerald: 'bg-emerald-500/15 text-emerald-500 ring-emerald-500/20',
-  violet: 'bg-violet-500/15 text-violet-500 ring-violet-500/20',
-} as const
 
 function RotatingText() {
   const [index, setIndex] = useState(0)
@@ -78,9 +69,12 @@ export function Testimonials() {
                 </p>
 
                 <div className="mt-6 pt-4 border-t border-border flex items-center gap-3">
-                  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold ring-1 ${avatarColors[testimonial.color]}`}>
-                    {testimonial.initials}
-                  </div>
+                  <img
+                    src={testimonial.avatar}
+                    alt={testimonial.name}
+                    className="w-9 h-9 rounded-full object-cover ring-1 ring-border"
+                    loading="lazy"
+                  />
                   <div>
                     <div className="text-sm font-medium text-foreground">
                       {testimonial.name}

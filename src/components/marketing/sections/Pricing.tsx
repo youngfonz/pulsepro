@@ -25,6 +25,7 @@ const plans = [
       'Unlimited projects',
       'Unlimited tasks',
       'Unlimited clients',
+      'Quick Search (\u2318K)',
       'File attachments',
       'Daily email reminders',
       'Priority support'
