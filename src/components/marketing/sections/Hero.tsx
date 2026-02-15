@@ -103,7 +103,8 @@ export function Hero() {
 
             <ScrollReveal delay={200}>
               <p className="text-lg md:text-xl text-muted-foreground mt-6 max-w-xl leading-relaxed">
-                Trello, Asana, and Notion weren&apos;t built for you. Pulse Pro is — one place to track every client, project, and deadline. Set up in minutes, not days.
+                You have 5 clients, 12 deadlines, and zero idea what&apos;s overdue.
+                You don&apos;t need a tool built for 50-person teams — you need to know what&apos;s due today.
               </p>
             </ScrollReveal>
 

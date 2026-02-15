@@ -6,6 +6,8 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { LayoutWrapper } from "@/components/LayoutWrapper";
 import { AuthGuard } from "@/components/AuthGuard";
 import { getClientCount } from "@/actions/dashboard";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -61,6 +63,8 @@ export default async function RootLayout({
         ) : (
           innerContent
         )}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
