@@ -23,11 +23,12 @@ interface Project {
 interface Props {
   projects: Project[]
   currentSort?: string
+  healthMap?: Record<string, 'healthy' | 'at_risk' | 'critical' | 'completed'>
 }
 
 type ViewMode = 'table' | 'grid'
 
-export function ProjectsView({ projects, currentSort }: Props) {
+export function ProjectsView({ projects, currentSort, healthMap }: Props) {
   const [viewMode, setViewMode] = useState<ViewMode>('table')
 
   return (
@@ -37,7 +38,7 @@ export function ProjectsView({ projects, currentSort }: Props) {
         <ViewToggle onViewChange={setViewMode} />
       </div>
       <div className="mt-4">
-        <ProjectsList projects={projects} currentSort={currentSort} viewMode={viewMode} />
+        <ProjectsList projects={projects} currentSort={currentSort} viewMode={viewMode} healthMap={healthMap} />
       </div>
     </>
   )

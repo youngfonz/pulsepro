@@ -12,21 +12,26 @@ import {
   getOverdueTasks,
   getRecentlyViewed,
   getTasksDueThisWeek,
+  getProjectHealth,
+  getSmartInsights,
   backfillUserId,
 } from '@/actions/dashboard'
+import { InsightsPanel } from '@/components/InsightsPanel'
 import { statusColors, statusLabels, priorityColors, priorityLabels, formatDate } from '@/lib/utils'
 
 export default async function DashboardPage() {
   // Assign any orphaned records to the current user
   await backfillUserId()
 
-  const [stats, projectsDueThisWeek, tasksDueToday, overdueTasks, recentlyViewed, tasksDueThisWeekCount] = await Promise.all([
+  const [stats, projectsDueThisWeek, tasksDueToday, overdueTasks, recentlyViewed, tasksDueThisWeekCount, projectHealth, insights] = await Promise.all([
     getDashboardStats(),
     getProjectsDueThisWeek(),
     getTasksDueToday(),
     getOverdueTasks(),
     getRecentlyViewed(),
     getTasksDueThisWeek(),
+    getProjectHealth(),
+    getSmartInsights(),
   ])
 
   return (
@@ -53,6 +58,9 @@ export default async function DashboardPage() {
           </Link>
         </div>
       </div>
+
+      {/* Pulse Check — Smart Insights */}
+      <InsightsPanel insights={insights} />
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -214,6 +222,69 @@ export default async function DashboardPage() {
                     <p className="mt-1 text-sm text-red-400">
                       Due {formatDate(task.dueDate)}
                     </p>
+                  </Link>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Project Health */}
+        {projectHealth.length > 0 && (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Project Health</CardTitle>
+              <Link href="/projects" className="text-sm text-primary hover:text-primary/80">
+                View all
+              </Link>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="divide-y divide-border">
+                {projectHealth.slice(0, 6).map((project) => (
+                  <Link
+                    key={project.projectId}
+                    href={project.href}
+                    className="flex items-center gap-3 px-4 py-3 sm:px-6 hover:bg-muted/50 transition-colors"
+                  >
+                    <div
+                      className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                        project.label === 'completed'
+                          ? 'bg-emerald-500'
+                          : project.label === 'healthy'
+                          ? 'bg-emerald-500'
+                          : project.label === 'at_risk'
+                          ? 'bg-amber-500'
+                          : 'bg-rose-500'
+                      }`}
+                      title={
+                        project.label === 'completed'
+                          ? 'Completed'
+                          : project.label === 'healthy'
+                          ? 'Healthy'
+                          : project.label === 'at_risk'
+                          ? 'At Risk'
+                          : 'Critical'
+                      }
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{project.projectName}</p>
+                      <p className="text-xs text-muted-foreground truncate">{project.clientName}</p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      {project.label === 'completed' ? (
+                        <Badge className="border border-emerald-500/50 text-emerald-600 bg-emerald-500/5 text-xs">
+                          Done
+                        </Badge>
+                      ) : project.overdueTasks > 0 ? (
+                        <span className="text-xs text-rose-500 font-medium">
+                          {project.overdueTasks} overdue
+                        </span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">
+                          {project.completedTasks}/{project.totalTasks} tasks
+                        </span>
+                      )}
+                    </div>
                   </Link>
                 ))}
               </div>

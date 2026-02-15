@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { getProjects, getClientsForSelect } from '@/actions/projects'
+import { getProjectHealth } from '@/actions/dashboard'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/Card'
 import { ProjectsFilter } from './ProjectsFilter'
@@ -11,10 +12,16 @@ interface Props {
 
 export default async function ProjectsPage({ searchParams }: Props) {
   const params = await searchParams
-  const [projects, clients] = await Promise.all([
+  const [projects, clients, health] = await Promise.all([
     getProjects(params),
     getClientsForSelect(),
+    getProjectHealth(),
   ])
+
+  const healthMap: Record<string, 'healthy' | 'at_risk' | 'critical' | 'completed'> = {}
+  for (const h of health) {
+    healthMap[h.projectId] = h.label
+  }
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -50,7 +57,7 @@ export default async function ProjectsPage({ searchParams }: Props) {
               No projects found. Create your first project to get started.
             </div>
           ) : (
-            <ProjectsView projects={projects} currentSort={params.sort} />
+            <ProjectsView projects={projects} currentSort={params.sort} healthMap={healthMap} />
           )}
         </CardContent>
       </Card>

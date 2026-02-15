@@ -22,13 +22,30 @@ interface Project {
   }
 }
 
+type HealthLabel = 'healthy' | 'at_risk' | 'critical' | 'completed'
+
+const healthDotColors: Record<HealthLabel, string> = {
+  healthy: 'bg-emerald-500',
+  at_risk: 'bg-amber-500',
+  critical: 'bg-rose-500',
+  completed: 'bg-emerald-500',
+}
+
+const healthTooltips: Record<HealthLabel, string> = {
+  healthy: 'Healthy',
+  at_risk: 'At Risk',
+  critical: 'Critical',
+  completed: 'Completed',
+}
+
 interface Props {
   projects: Project[]
   currentSort?: string
   viewMode: 'table' | 'grid'
+  healthMap?: Record<string, HealthLabel>
 }
 
-export function ProjectsList({ projects, currentSort, viewMode }: Props) {
+export function ProjectsList({ projects, currentSort, viewMode, healthMap }: Props) {
   return (
     <>
 
@@ -65,12 +82,20 @@ export function ProjectsList({ projects, currentSort, viewMode }: Props) {
                   return (
                     <tr key={project.id} className="hover:bg-muted/50 transition-colors">
                       <td className="px-4 py-3">
-                        <Link
-                          href={`/projects/${project.id}`}
-                          className="font-medium text-link hover:text-link/80"
-                        >
-                          {project.name}
-                        </Link>
+                        <div className="flex items-center gap-2">
+                          {healthMap?.[project.id] && (
+                            <span
+                              className={`w-2 h-2 rounded-full flex-shrink-0 ${healthDotColors[healthMap[project.id]]}`}
+                              title={healthTooltips[healthMap[project.id]]}
+                            />
+                          )}
+                          <Link
+                            href={`/projects/${project.id}`}
+                            className="font-medium text-link hover:text-link/80"
+                          >
+                            {project.name}
+                          </Link>
+                        </div>
                       </td>
                       <td className="px-4 py-3">
                         <Link
@@ -127,7 +152,15 @@ export function ProjectsList({ projects, currentSort, viewMode }: Props) {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-foreground truncate">{project.name}</h3>
+                      <div className="flex items-center gap-2">
+                        {healthMap?.[project.id] && (
+                          <span
+                            className={`w-2 h-2 rounded-full flex-shrink-0 ${healthDotColors[healthMap[project.id]]}`}
+                            title={healthTooltips[healthMap[project.id]]}
+                          />
+                        )}
+                        <h3 className="font-medium text-foreground truncate">{project.name}</h3>
+                      </div>
                       <p className="text-sm text-muted-foreground truncate">{project.client.name}</p>
                     </div>
                     <svg className="h-5 w-5 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -180,9 +213,17 @@ export function ProjectsList({ projects, currentSort, viewMode }: Props) {
                   <CardContent className="p-5 space-y-4">
                     {/* Project Name */}
                     <div>
-                      <h3 className="font-semibold text-foreground group-hover:text-link transition-colors line-clamp-2">
-                        {project.name}
-                      </h3>
+                      <div className="flex items-center gap-2">
+                        {healthMap?.[project.id] && (
+                          <span
+                            className={`w-2 h-2 rounded-full flex-shrink-0 ${healthDotColors[healthMap[project.id]]}`}
+                            title={healthTooltips[healthMap[project.id]]}
+                          />
+                        )}
+                        <h3 className="font-semibold text-foreground group-hover:text-link transition-colors line-clamp-2">
+                          {project.name}
+                        </h3>
+                      </div>
                       <p className="text-sm text-muted-foreground mt-1 truncate">
                         {project.client.name}
                       </p>
