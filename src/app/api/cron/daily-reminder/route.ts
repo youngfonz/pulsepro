@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { resend } from '@/lib/email'
 
-const OWNER_USER_ID = 'user_39KEkT66j3ZRRZLdFBaDEzWjKtr'
+const OWNER_USER_ID = 'user_39gDkEXlWy6U3vOmaWdymHZn2uI'
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
