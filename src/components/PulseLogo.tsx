@@ -15,7 +15,7 @@ export function PulseLogo({ size = 28, className }: PulseLogoProps) {
       style={{ width: size, height: size }}
     >
       <svg
-        className="text-white"
+        className="text-primary-foreground"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
