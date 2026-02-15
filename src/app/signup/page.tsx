@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { PulseLogo } from '@/components/PulseLogo'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 
@@ -54,11 +55,7 @@ export default function SignupPage() {
         <div className="w-full max-w-md space-y-8">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M22 12h-4l-3 9L9 3l-3 9H2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
+            <PulseLogo size={40} />
             <span className="text-2xl font-bold text-foreground">Pulse Pro</span>
           </div>
 
