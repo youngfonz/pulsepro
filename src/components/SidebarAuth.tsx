@@ -44,7 +44,7 @@ export function SidebarAuth({ isCollapsed }: SidebarAuthProps) {
                   "flex items-center gap-3 w-full rounded-lg transition-colors hover:bg-secondary/80 focus:outline-none focus:ring-0",
                   isCollapsed ? "justify-center p-2" : "px-3 py-2.5"
                 ),
-                userButtonOuterIdentifier: "text-sidebar-foreground text-sm font-medium",
+                userButtonOuterIdentifier: "!text-sidebar-foreground text-sm font-medium",
               }
             }}
             showName={!isCollapsed}

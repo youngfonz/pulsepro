@@ -12,10 +12,14 @@ import {
   getOverdueTasks,
   getRecentlyViewed,
   getTasksDueThisWeek,
+  backfillUserId,
 } from '@/actions/dashboard'
 import { statusColors, statusLabels, priorityColors, priorityLabels, formatDate } from '@/lib/utils'
 
 export default async function DashboardPage() {
+  // Assign any orphaned records to the current user
+  await backfillUserId()
+
   const [stats, projectsDueThisWeek, tasksDueToday, overdueTasks, recentlyViewed, tasksDueThisWeekCount] = await Promise.all([
     getDashboardStats(),
     getProjectsDueThisWeek(),
