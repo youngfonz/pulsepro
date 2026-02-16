@@ -158,6 +158,9 @@ export function CommandBar() {
         e.preventDefault()
         setIsOpen((prev) => !prev)
       }
+      if (e.key === 'Escape') {
+        setIsOpen(false)
+      }
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
@@ -272,8 +275,8 @@ export function CommandBar() {
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-[101] flex items-start justify-center pt-[15vh] px-4">
-        <div className="w-full max-w-lg bg-background border border-border rounded-xl shadow-2xl overflow-hidden">
+      <div className="fixed inset-0 z-[101] flex items-start justify-center pt-[15vh] px-4" onClick={() => setIsOpen(false)}>
+        <div className="w-full max-w-lg bg-background border border-border rounded-xl shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
           {/* Search input */}
           <div className="flex items-center gap-3 px-4 border-b border-border">
             <svg
