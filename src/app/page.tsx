@@ -9,6 +9,7 @@ import { AppShowcase } from '@/components/marketing/sections/AppShowcase'
 import { Testimonials } from '@/components/marketing/sections/Testimonials'
 import { Pricing } from '@/components/marketing/sections/Pricing'
 import { FAQ } from '@/components/marketing/sections/FAQ'
+import { TelegramFeature } from '@/components/marketing/sections/TelegramFeature'
 import { FinalCTA } from '@/components/marketing/sections/FinalCTA'
 
 export default async function MarketingPage() {
@@ -27,6 +28,7 @@ export default async function MarketingPage() {
         <SocialProof />
         <Features />
         <AppShowcase />
+        <TelegramFeature />
         <Testimonials />
         <Pricing />
         <FAQ />

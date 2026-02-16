@@ -78,9 +78,9 @@ const secondaryFeatures = [
     dot: 'bg-blue-500',
   },
   {
-    title: 'Mobile-friendly',
-    description: 'Fully responsive \u2014 manage everything from your phone',
-    dot: 'bg-emerald-500',
+    title: 'Telegram bot',
+    description: 'Check tasks and mark them done from Telegram',
+    dot: 'bg-[#2AABEE]',
   },
   {
     title: 'Dark mode',
