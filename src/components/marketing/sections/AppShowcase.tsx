@@ -30,7 +30,7 @@ export function AppShowcase() {
   }, [isVisible, paused, next]);
 
   return (
-    <section className="py-20 md:py-28 border-t border-border" ref={ref}>
+    <section className="py-20 md:py-28" ref={ref}>
       <div className="max-w-5xl mx-auto px-4 md:px-8">
         <ScrollReveal delay={0}>
           <h2 className="text-3xl font-semibold text-foreground tracking-tight text-center">

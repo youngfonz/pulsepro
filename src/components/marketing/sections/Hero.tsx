@@ -138,7 +138,7 @@ export function Hero() {
 
         {/* Logo strip */}
         <ScrollReveal delay={500}>
-          <div className="mt-20 pt-12 border-t border-border/50">
+          <div className="mt-20 pt-12">
             <p className="text-sm text-muted-foreground text-center mb-8 tracking-wide uppercase">
               Trusted by freelancers, consultants, and small teams
             </p>

@@ -5,7 +5,7 @@ import { ScrollReveal } from '@/components/marketing/ScrollReveal'
 
 export function FinalCTA() {
   return (
-    <section className="py-20 md:py-28 border-t border-border">
+    <section className="py-20 md:py-28">
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <ScrollReveal>
           <div className="relative rounded-2xl overflow-hidden">
