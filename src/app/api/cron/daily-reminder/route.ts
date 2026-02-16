@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { resend } from '@/lib/email'
+import { sendTelegramMessage } from '@/lib/telegram'
 
 const OWNER_USER_ID = 'user_39gDkEXlWy6U3vOmaWdymHZn2uI'
 
@@ -67,10 +68,41 @@ export async function GET(request: NextRequest) {
     html,
   })
 
+  // Send Telegram reminders to opted-in users
+  let telegramSent = 0
+  const telegramSubs = await prisma.subscription.findMany({
+    where: {
+      telegramRemindersEnabled: true,
+      telegramChatId: { not: null },
+    },
+  })
+
+  for (const sub of telegramSubs) {
+    const [userOverdue, userDueToday] = await Promise.all([
+      prisma.task.count({
+        where: { userId: sub.userId, completed: false, dueDate: { lt: todayStart } },
+      }),
+      prisma.task.count({
+        where: { userId: sub.userId, completed: false, dueDate: { gte: todayStart, lt: todayEnd } },
+      }),
+    ])
+
+    if (userOverdue === 0 && userDueToday === 0) continue
+
+    const lines = [`<b>Daily Summary</b> — ${dateStr}`]
+    if (userOverdue > 0) lines.push(`${userOverdue} overdue task${userOverdue === 1 ? '' : 's'}`)
+    if (userDueToday > 0) lines.push(`${userDueToday} task${userDueToday === 1 ? '' : 's'} due today`)
+    lines.push('', 'Send <b>tasks</b> to see your list.')
+
+    await sendTelegramMessage(sub.telegramChatId!, lines.join('\n'))
+    telegramSent++
+  }
+
   return NextResponse.json({
     status: 'sent',
     overdue: overdueTasks.length,
     dueToday: dueTodayTasks.length,
+    telegramSent,
   })
 }
 

@@ -144,6 +144,11 @@ model Subscription {
   status                String    @default("active") // active, canceled, past_due, trialing
   currentPeriodEnd      DateTime?
   cancelAtPeriodEnd     Boolean   @default(false)
+  // Telegram Bot integration
+  telegramChatId            String?   @unique
+  telegramVerifyCode        String?
+  telegramVerifyExpires     DateTime?
+  telegramRemindersEnabled  Boolean   @default(false)
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 

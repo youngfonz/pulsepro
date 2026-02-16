@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { SettingsClient } from './SettingsClient'
 import { BillingCard } from './BillingCard'
+import { TelegramCard } from './TelegramCard'
 
 export default function SettingsPage() {
   return (
@@ -20,6 +21,8 @@ export default function SettingsPage() {
       </div>
 
       <BillingCard />
+
+      <TelegramCard />
 
       <Card>
         <CardHeader>

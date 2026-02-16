@@ -45,6 +45,11 @@ export async function getUserPlan(): Promise<Plan> {
   return sub.plan
 }
 
+export async function canUseTelegram(): Promise<boolean> {
+  const plan = await getUserPlan()
+  return plan === 'pro'
+}
+
 export async function checkLimit(resource: 'projects' | 'tasks' | 'clients'): Promise<{
   allowed: boolean
   current: number
