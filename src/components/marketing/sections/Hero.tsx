@@ -31,8 +31,8 @@ export function Hero() {
     <section className="relative min-h-[calc(100vh-64px)] flex items-center overflow-hidden">
       {/* Subtle gradient accents */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div className="absolute top-0 right-0 w-[60%] h-full bg-gradient-to-bl from-rose-100/40 via-blue-100/20 to-transparent dark:from-rose-500/[0.06] dark:via-blue-500/[0.03] dark:to-transparent" />
-        <div className="absolute bottom-0 right-[10%] w-[40%] h-[60%] bg-gradient-to-tl from-emerald-100/30 via-transparent to-transparent dark:from-emerald-500/[0.04] dark:via-transparent dark:to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_80%_20%,rgba(251,207,232,0.3),transparent_70%)] dark:bg-[radial-gradient(ellipse_80%_60%_at_80%_20%,rgba(244,63,94,0.04),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_70%_80%,rgba(167,243,208,0.2),transparent_70%)] dark:bg-[radial-gradient(ellipse_60%_50%_at_70%_80%,rgba(16,185,129,0.03),transparent_70%)]" />
       </div>
 
       <div className="relative max-w-6xl mx-auto px-4 md:px-8 py-20 w-full">
