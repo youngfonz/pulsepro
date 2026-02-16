@@ -52,9 +52,9 @@ export function Pricing() {
               key={index}
               className={`${
                 plan.highlighted
-                  ? 'border border-foreground'
+                  ? 'border-2 border-foreground shadow-lg'
                   : 'border border-border'
-              } rounded-lg p-8`}
+              } rounded-xl p-8`}
             >
               <div className="text-sm font-medium text-muted-foreground">
                 {plan.name}
@@ -92,7 +92,7 @@ export function Pricing() {
 
               <Link
                 href="/sign-up"
-                className={`mt-6 block rounded-md px-5 py-2.5 w-full text-center text-sm font-medium transition-colors ${
+                className={`mt-6 block rounded-full px-5 py-2.5 w-full text-center text-sm font-medium transition-colors ${
                   plan.highlighted
                     ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                     : 'border border-border hover:bg-muted'

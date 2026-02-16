@@ -63,7 +63,7 @@ export function Testimonials() {
         <ScrollReveal>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
             {testimonials.map((testimonial, index) => (
-              <div key={index} className="border border-border rounded-lg p-6">
+              <div key={index} className="border border-border rounded-xl p-6 hover:shadow-lg transition-all duration-200">
                 <p className="text-foreground leading-relaxed">
                   &ldquo;{testimonial.quote}&rdquo;
                 </p>

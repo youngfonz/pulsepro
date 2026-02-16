@@ -112,9 +112,9 @@ export function Features() {
               return (
                 <div
                   key={feature.title}
-                  className={`border border-border ${colors.border} border-t-2 rounded-lg p-6 hover:shadow-md transition-shadow`}
+                  className={`border border-border ${colors.border} border-t-2 rounded-xl p-6 hover:shadow-lg transition-all duration-200`}
                 >
-                  <div className={`w-10 h-10 rounded-md ${colors.iconBg} ${colors.iconText} flex items-center justify-center`}>
+                  <div className={`w-10 h-10 rounded-lg ${colors.iconBg} ${colors.iconText} flex items-center justify-center`}>
                     {feature.icon}
                   </div>
                   <h3 className="text-base font-semibold mt-4">{feature.title}</h3>

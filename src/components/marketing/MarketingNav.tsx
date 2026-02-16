@@ -91,7 +91,7 @@ export function MarketingNav() {
             </Link>
             <Link
               href="/sign-up"
-              className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-md transition-colors"
+              className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-full transition-colors"
             >
               Get Started
             </Link>

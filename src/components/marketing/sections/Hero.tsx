@@ -29,58 +29,10 @@ function LogoMarks() {
 export function Hero() {
   return (
     <section className="relative min-h-[calc(100vh-64px)] flex items-center overflow-hidden">
-      {/* Network constellation background */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
-          {/* Connection lines */}
-          <g stroke="currentColor" className="text-primary/[0.07]" strokeWidth="1" fill="none">
-            <line x1="850" y1="80" x2="1050" y2="200" />
-            <line x1="1050" y1="200" x2="950" y2="350" />
-            <line x1="950" y1="350" x2="1100" y2="450" />
-            <line x1="1100" y1="450" x2="1000" y2="600" />
-            <line x1="850" y1="80" x2="700" y2="180" />
-            <line x1="700" y1="180" x2="950" y2="350" />
-            <line x1="700" y1="180" x2="600" y2="350" />
-            <line x1="600" y1="350" x2="750" y2="500" />
-            <line x1="750" y1="500" x2="1000" y2="600" />
-            <line x1="1050" y1="200" x2="1150" y2="100" />
-            <line x1="1100" y1="450" x2="1180" y2="350" />
-            <line x1="600" y1="350" x2="500" y2="250" />
-            <line x1="750" y1="500" x2="650" y2="650" />
-            <line x1="1000" y1="600" x2="900" y2="720" />
-            <line x1="500" y1="250" x2="400" y2="150" />
-            <line x1="400" y1="150" x2="300" y2="250" />
-            <line x1="300" y1="250" x2="200" y2="180" />
-            <line x1="650" y1="650" x2="500" y2="700" />
-          </g>
-          {/* Nodes — larger ones at intersections */}
-          <g className="text-primary/[0.12]" fill="currentColor">
-            <circle cx="850" cy="80" r="4" />
-            <circle cx="1050" cy="200" r="5" />
-            <circle cx="950" cy="350" r="6" />
-            <circle cx="1100" cy="450" r="4" />
-            <circle cx="1000" cy="600" r="5" />
-            <circle cx="700" cy="180" r="4" />
-            <circle cx="600" cy="350" r="5" />
-            <circle cx="750" cy="500" r="4" />
-            <circle cx="1150" cy="100" r="3" />
-            <circle cx="1180" cy="350" r="3" />
-            <circle cx="500" cy="250" r="4" />
-            <circle cx="650" cy="650" r="3" />
-            <circle cx="900" cy="720" r="3" />
-            <circle cx="400" cy="150" r="3" />
-            <circle cx="300" cy="250" r="3" />
-            <circle cx="200" cy="180" r="2" />
-            <circle cx="500" cy="700" r="2" />
-          </g>
-          {/* Accent rings on key nodes */}
-          <g className="text-primary/[0.06]" fill="none" stroke="currentColor" strokeWidth="1">
-            <circle cx="950" cy="350" r="16" />
-            <circle cx="1050" cy="200" r="12" />
-            <circle cx="600" cy="350" r="12" />
-            <circle cx="1000" cy="600" r="14" />
-          </g>
-        </svg>
+      {/* Subtle gradient accents */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <div className="absolute top-0 right-0 w-[60%] h-full bg-gradient-to-bl from-rose-100/40 via-blue-100/20 to-transparent dark:from-rose-500/[0.06] dark:via-blue-500/[0.03] dark:to-transparent" />
+        <div className="absolute bottom-0 right-[10%] w-[40%] h-[60%] bg-gradient-to-tl from-emerald-100/30 via-transparent to-transparent dark:from-emerald-500/[0.04] dark:via-transparent dark:to-transparent" />
       </div>
 
       <div className="relative max-w-6xl mx-auto px-4 md:px-8 py-20 w-full">
@@ -112,7 +64,7 @@ export function Hero() {
               <div className="mt-8 flex gap-4 flex-wrap">
                 <Link
                   href="/sign-up"
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all duration-200 hover:shadow-lg hover:shadow-primary/20"
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all duration-200 hover:shadow-lg hover:shadow-primary/20"
                 >
                   Start for free
                   <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -121,7 +73,7 @@ export function Hero() {
                 </Link>
                 <a
                   href="#features"
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition-colors"
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-full border border-border text-foreground font-medium hover:bg-muted transition-colors"
                 >
                   See how it works
                 </a>
@@ -154,25 +106,31 @@ export function Hero() {
 
           {/* Right column: Screenshot */}
           <ScrollReveal delay={300} direction="right">
-            <div className="relative">
-              <div className="absolute -top-3 -right-3 w-full h-full rounded-xl border border-primary/15 bg-primary/[0.03]" />
-              <div className="relative bg-card border border-border rounded-xl shadow-2xl overflow-hidden transform rotate-1 hover:rotate-0 transition-transform duration-500">
-                {/* Browser title bar */}
-                <div className="h-10 bg-muted border-b border-border flex items-center px-4 gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-400" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                  <div className="w-3 h-3 rounded-full bg-green-400" />
-                  <div className="ml-3 flex-1 h-5 bg-background/60 rounded-md max-w-[200px]" />
-                </div>
+            <div className="relative rounded-2xl overflow-hidden">
+              {/* Pastel gradient backdrop */}
+              <div className="absolute inset-0 bg-gradient-to-br from-rose-200/80 via-blue-200/60 to-emerald-200/70 dark:from-rose-500/20 dark:via-blue-500/15 dark:to-emerald-500/20" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-violet-200/40 via-transparent to-amber-100/50 dark:from-violet-500/10 dark:via-transparent dark:to-amber-500/10" />
 
-                <Image
-                  src="/screenshots/dashboard.png"
-                  alt="Pulse Pro dashboard showing project overview"
-                  width={1920}
-                  height={1200}
-                  className="w-full h-auto"
-                  priority
-                />
+              {/* Floating browser card */}
+              <div className="relative p-4 md:p-6">
+                <div className="bg-white rounded-xl shadow-2xl overflow-hidden border border-black/5">
+                  {/* Browser chrome */}
+                  <div className="h-9 bg-gray-100 border-b border-gray-200 flex items-center px-4 gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
+                    <div className="ml-3 flex-1 h-4 bg-gray-200/60 rounded max-w-[180px]" />
+                  </div>
+
+                  <Image
+                    src="/screenshots/dashboard.png"
+                    alt="Pulse Pro dashboard showing project overview"
+                    width={1920}
+                    height={1200}
+                    className="w-full h-auto"
+                    priority
+                  />
+                </div>
               </div>
             </div>
           </ScrollReveal>

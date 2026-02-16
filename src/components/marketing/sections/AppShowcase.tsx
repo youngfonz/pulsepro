@@ -44,7 +44,7 @@ export function AppShowcase() {
         <ScrollReveal delay={200} direction="none">
           <div className="flex flex-col items-center mt-10">
             {/* Tab buttons */}
-            <div className="flex justify-center gap-1">
+            <div className="inline-flex justify-center gap-1 bg-muted/50 rounded-full p-1">
               {screens.map((screen, i) => (
                 <button
                   key={screen.label}
@@ -53,10 +53,10 @@ export function AppShowcase() {
                     setPaused(true);
                   }}
                   className={cn(
-                    'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
+                    'px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200',
                     i === active
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
                   {screen.label}
@@ -64,27 +64,44 @@ export function AppShowcase() {
               ))}
             </div>
 
-            {/* Screenshot container */}
+            {/* Screenshot container with pastel gradient */}
             <div
-              className="mt-6 border border-border rounded-lg overflow-hidden w-full"
+              className="mt-6 relative rounded-2xl overflow-hidden w-full"
               onMouseEnter={() => setPaused(true)}
               onMouseLeave={() => setPaused(false)}
             >
-              <div className="relative aspect-[16/10]">
-                {screens.map((screen, i) => (
-                  <Image
-                    key={screen.src}
-                    src={screen.src}
-                    alt={screen.alt}
-                    width={1920}
-                    height={1200}
-                    className={cn(
-                      'absolute inset-0 w-full h-full object-cover transition-opacity duration-500',
-                      i === active ? 'opacity-100' : 'opacity-0'
-                    )}
-                    priority={i === 0}
-                  />
-                ))}
+              {/* Gradient backdrop */}
+              <div className="absolute inset-0 bg-gradient-to-br from-rose-200/80 via-blue-200/60 to-emerald-200/70 dark:from-rose-500/20 dark:via-blue-500/15 dark:to-emerald-500/20" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-violet-200/40 via-transparent to-amber-100/50 dark:from-violet-500/10 dark:via-transparent dark:to-amber-500/10" />
+
+              {/* Floating browser card */}
+              <div className="relative p-4 md:p-8">
+                <div className="bg-white rounded-xl shadow-2xl overflow-hidden border border-black/5">
+                  {/* Browser chrome */}
+                  <div className="h-9 bg-gray-100 border-b border-gray-200 flex items-center px-4 gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
+                    <div className="ml-3 flex-1 h-4 bg-gray-200/60 rounded max-w-[180px]" />
+                  </div>
+
+                  <div className="relative aspect-[16/10]">
+                    {screens.map((screen, i) => (
+                      <Image
+                        key={screen.src}
+                        src={screen.src}
+                        alt={screen.alt}
+                        width={1920}
+                        height={1200}
+                        className={cn(
+                          'absolute inset-0 w-full h-full object-cover transition-opacity duration-500',
+                          i === active ? 'opacity-100' : 'opacity-0'
+                        )}
+                        priority={i === 0}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
