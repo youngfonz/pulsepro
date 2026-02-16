@@ -21,17 +21,19 @@ export async function POST(request: NextRequest) {
   const chatId = String(message.chat.id)
   const text = message.text.trim()
 
-  // Handle /start <verify_code> for account linking
-  if (text.startsWith('/start')) {
-    const code = text.replace('/start', '').trim()
-    if (code) {
-      return handleVerification(chatId, code)
-    }
+  // Handle /start (welcome message)
+  if (text === '/start') {
     await sendTelegramMessage(
       chatId,
-      `Welcome to Pulse Pro Bot!\n\nTo link your account, go to <b>Settings → Telegram</b> in Pulse Pro and click "Link Telegram".`
+      `Welcome to Pulse Pro Bot!\n\nTo link your account, go to <b>Settings → Telegram</b> in the app, click "Link Telegram", then send the code here.`
     )
     return NextResponse.json({ ok: true })
+  }
+
+  // Handle link codes: LINK-XXXXXX or /start LINK-XXXXXX (from deep link)
+  const linkCodeMatch = text.match(/^(?:\/start\s+)?(LINK-[A-F0-9]{6})$/i)
+  if (linkCodeMatch) {
+    return handleVerification(chatId, linkCodeMatch[1].toUpperCase())
   }
 
   // Look up user by chatId
@@ -42,7 +44,7 @@ export async function POST(request: NextRequest) {
   if (!subscription) {
     await sendTelegramMessage(
       chatId,
-      `Your Telegram isn't linked to a Pulse Pro account yet.\n\nGo to <b>Settings → Telegram</b> in the app to link it.`
+      `Your Telegram isn't linked to a Pulse Pro account yet.\n\nGo to <b>Settings → Telegram</b> in the app, click "Link Telegram", and send the code here.`
     )
     return NextResponse.json({ ok: true })
   }

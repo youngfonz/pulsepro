@@ -16,8 +16,9 @@ export async function generateTelegramLink() {
     return { error: 'Telegram integration is a Pro feature.' }
   }
 
-  // Generate a random verify code
-  const code = crypto.randomBytes(16).toString('hex')
+  // Generate a short, human-readable code (e.g. LINK-A3X7F2)
+  const hex = crypto.randomBytes(3).toString('hex').toUpperCase()
+  const code = `LINK-${hex}`
   const expires = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
 
   await prisma.subscription.update({
@@ -29,9 +30,8 @@ export async function generateTelegramLink() {
   })
 
   const botUsername = process.env.TELEGRAM_BOT_USERNAME || ''
-  const link = `https://t.me/${botUsername}?start=${code}`
 
-  return { link }
+  return { code, botUsername }
 }
 
 export async function unlinkTelegram() {
