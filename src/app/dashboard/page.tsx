@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { DashboardCalendar } from '@/components/DashboardCalendar'
 import { DashboardGreeting } from '@/components/DashboardGreeting'
 import { OnboardingOverlay } from '@/components/OnboardingOverlay'
+import { requireUserId } from '@/lib/auth'
 import {
   getDashboardStats,
   getProjectsDueThisWeek,
@@ -20,6 +21,7 @@ import { InsightsPanel } from '@/components/InsightsPanel'
 import { statusColors, statusLabels, priorityColors, priorityLabels, formatDate } from '@/lib/utils'
 
 export default async function DashboardPage() {
+  const userId = await requireUserId()
   // Assign any orphaned records to the current user
   await backfillUserId()
 
@@ -36,7 +38,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-4 md:space-y-6">
-      <OnboardingOverlay />
+      <OnboardingOverlay userId={userId} />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <DashboardGreeting />
         <div className="flex gap-2 sm:gap-3">

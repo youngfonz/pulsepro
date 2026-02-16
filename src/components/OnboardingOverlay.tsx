@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
-const ONBOARDING_KEY = 'pulse-onboarding-complete'
+const ONBOARDING_KEY_PREFIX = 'pulse-onboarding-complete'
 
 const steps = [
   {
@@ -25,15 +25,17 @@ const steps = [
   },
 ]
 
-export function OnboardingOverlay() {
+export function OnboardingOverlay({ userId }: { userId: string }) {
   const [currentStep, setCurrentStep] = useState(0)
   const [visible, setVisible] = useState(false)
 
+  const storageKey = `${ONBOARDING_KEY_PREFIX}-${userId}`
+
   useEffect(() => {
-    if (typeof window !== 'undefined' && !localStorage.getItem(ONBOARDING_KEY)) {
+    if (typeof window !== 'undefined' && !localStorage.getItem(storageKey)) {
       setVisible(true)
     }
-  }, [])
+  }, [storageKey])
 
   if (!visible) return null
 
@@ -43,7 +45,7 @@ export function OnboardingOverlay() {
 
   const handleNext = () => {
     if (isLastStep) {
-      localStorage.setItem(ONBOARDING_KEY, 'true')
+      localStorage.setItem(storageKey, 'true')
       setVisible(false)
     } else {
       setCurrentStep(currentStep + 1)
@@ -57,7 +59,7 @@ export function OnboardingOverlay() {
   }
 
   const handleClose = () => {
-    localStorage.setItem(ONBOARDING_KEY, 'true')
+    localStorage.setItem(storageKey, 'true')
     setVisible(false)
   }
 
