@@ -374,7 +374,7 @@ export async function getAllTasks(options?: {
   sort?: string
 }) {
   const userId = await requireUserId()
-  const where: Record<string, unknown> = { userId }
+  const where: Record<string, unknown> = { userId, url: null }
 
   if (options?.date) {
     const targetDate = new Date(options.date)
