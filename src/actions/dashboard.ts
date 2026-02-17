@@ -18,8 +18,8 @@ export async function getDashboardStats() {
       prisma.client.count({ where: { userId, status: 'active' } }),
       prisma.project.count({ where: { userId } }),
       prisma.project.count({ where: { userId, status: { in: ['in_progress', 'not_started'] } } }),
-      prisma.task.count({ where: { userId } }),
-      prisma.task.count({ where: { userId, completed: false } }),
+      prisma.task.count({ where: { userId, url: null } }),
+      prisma.task.count({ where: { userId, url: null, completed: false } }),
     ])
 
     return {
@@ -91,6 +91,7 @@ export async function getTasksDueToday() {
     return prisma.task.findMany({
       where: {
         userId,
+        url: null,
         completed: false,
         dueDate: {
           gte: today,
@@ -123,6 +124,7 @@ export async function getOverdueTasks() {
     return prisma.task.findMany({
       where: {
         userId,
+        url: null,
         completed: false,
         dueDate: {
           lt: today,
@@ -188,6 +190,7 @@ export async function getTasksDueThisWeek() {
     return prisma.task.count({
       where: {
         userId,
+        url: null,
         completed: false,
         dueDate: {
           gte: today,
