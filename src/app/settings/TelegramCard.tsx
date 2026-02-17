@@ -195,6 +195,7 @@ export function TelegramCard() {
             <div><code className="text-foreground">tasks</code> — List pending tasks</div>
             <div><code className="text-foreground">today</code> — Tasks due today</div>
             <div><code className="text-foreground">overdue</code> — Overdue tasks</div>
+            <div><code className="text-foreground">bookmarks</code> — Recent bookmarks</div>
             <div><code className="text-foreground">done N</code> — Mark task #N complete</div>
             <div><code className="text-foreground">add Project: Title</code> — Create a task</div>
           </div>

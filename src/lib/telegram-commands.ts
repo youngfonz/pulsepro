@@ -2,6 +2,7 @@ export type Command =
   | { type: 'tasks' }
   | { type: 'today' }
   | { type: 'overdue' }
+  | { type: 'bookmarks' }
   | { type: 'done'; index: number }
   | { type: 'add'; projectName: string; taskTitle: string }
   | { type: 'help' }
@@ -20,6 +21,10 @@ export function parseCommand(text: string): Command {
 
   if (trimmed === 'overdue' || trimmed === '/overdue') {
     return { type: 'overdue' }
+  }
+
+  if (trimmed === 'bookmarks' || trimmed === '/bookmarks') {
+    return { type: 'bookmarks' }
   }
 
   if (trimmed === 'help' || trimmed === '/help') {

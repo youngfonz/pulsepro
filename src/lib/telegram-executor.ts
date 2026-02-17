@@ -31,6 +31,8 @@ export async function executeCommand(
       return handleToday(userId, chatId)
     case 'overdue':
       return handleOverdue(userId, chatId)
+    case 'bookmarks':
+      return handleBookmarks(userId)
     case 'done':
       return handleDone(userId, chatId, command.index)
     case 'add':
@@ -122,6 +124,24 @@ async function handleOverdue(userId: string, chatId: string): Promise<string> {
   return `<b>Overdue Tasks</b>\n\n${lines.join('\n\n')}\n\nReply <b>done N</b> to mark one complete.`
 }
 
+async function handleBookmarks(userId: string): Promise<string> {
+  const bookmarks = await prisma.task.findMany({
+    where: { userId, url: { not: null } },
+    include: { project: { select: { name: true } } },
+    orderBy: { createdAt: 'desc' },
+    take: 10,
+  })
+
+  if (bookmarks.length === 0) {
+    return `No bookmarks saved yet.`
+  }
+
+  const lines = bookmarks.map(
+    (b, i) => `${i + 1}. <a href="${b.url}">${b.title}</a>\n   <i>${b.project.name}</i>`
+  )
+  return `<b>Recent Bookmarks</b>\n\n${lines.join('\n\n')}`
+}
+
 async function handleDone(
   userId: string,
   chatId: string,
@@ -206,6 +226,7 @@ function handleHelp(): string {
     `<b>tasks</b> — List pending tasks`,
     `<b>today</b> — Tasks due today`,
     `<b>overdue</b> — Overdue tasks`,
+    `<b>bookmarks</b> — Recent bookmarks`,
     `<b>done N</b> — Mark task #N complete`,
     `<b>add Project: Title</b> — Create a task`,
     `<b>help</b> — Show this message`,
