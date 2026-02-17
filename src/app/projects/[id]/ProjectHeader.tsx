@@ -14,6 +14,7 @@ interface Project {
   id: string
   name: string
   description: string | null
+  notes: string | null
   status: string
   priority: string
   dueDate: Date | null
@@ -54,6 +55,7 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
   const [isEditingDescription, setIsEditingDescription] = useState(false)
   const [name, setName] = useState(project.name)
   const [description, setDescription] = useState(project.description || '')
+  const [status, setStatus] = useState(project.status)
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
   const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
@@ -62,7 +64,8 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
     const formData = new FormData()
     formData.set('name', field === 'name' ? value : project.name)
     formData.set('description', field === 'description' ? value : project.description || '')
-    formData.set('status', project.status)
+    formData.set('notes', project.notes || '')
+    formData.set('status', status)
     formData.set('priority', project.priority)
     formData.set('clientId', project.client.id)
     if (project.dueDate) {
@@ -100,9 +103,12 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
   }
 
   const handleStatusChange = (newStatus: string) => {
+    setStatus(newStatus)
+
     const formData = new FormData()
     formData.set('name', project.name)
     formData.set('description', project.description || '')
+    formData.set('notes', project.notes || '')
     formData.set('status', newStatus)
     formData.set('priority', project.priority)
     formData.set('clientId', project.client.id)
@@ -166,9 +172,9 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
             </Link>
             <span className="text-muted-foreground/40">/</span>
             <select
-              value={project.status}
+              value={status}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className={`text-xs px-2 py-0.5 rounded font-medium cursor-pointer border-0 ${statusColors[project.status]}`}
+              className={`text-xs px-2 py-0.5 rounded font-medium cursor-pointer border-0 ${statusColors[status]}`}
             >
               {Object.entries(statusLabels).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
