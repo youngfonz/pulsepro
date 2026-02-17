@@ -103,9 +103,13 @@ export async function toggleTask(id: string) {
 
     if (!task) return
 
+    const newCompleted = !task.completed
     await prisma.task.update({
       where: { id },
-      data: { completed: !task.completed },
+      data: {
+        completed: newCompleted,
+        status: newCompleted ? 'done' : 'todo',
+      },
     })
     revalidatePath(`/projects/${task.projectId}`)
     revalidatePath(`/tasks/${id}`)

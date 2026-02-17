@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { TaskList } from './TaskList'
+import { TaskBoard } from './TaskBoard'
 import { AddTaskForm } from './AddTaskForm'
 import { AddBookmarkForm } from './AddBookmarkForm'
 import { TimeTracker } from './TimeTracker'
@@ -13,6 +14,8 @@ interface Task {
   description: string | null
   notes: string | null
   completed: boolean
+  status: string
+  sortOrder: number
   priority: string
   startDate: Date | null
   dueDate: Date | null
@@ -47,6 +50,7 @@ interface ProjectTabsProps {
 
 export function ProjectTabs({ projectId, tasks, timeEntries, images }: ProjectTabsProps) {
   const [activeTab, setActiveTab] = useState<'tasks' | 'bookmarks' | 'time' | 'files'>('tasks')
+  const [taskView, setTaskView] = useState<'list' | 'board'>('list')
 
   // Separate regular tasks from bookmarks
   const regularTasks = tasks.filter(task => !task.url)
@@ -91,9 +95,35 @@ export function ProjectTabs({ projectId, tasks, timeEntries, images }: ProjectTa
       <div className="mt-6">
         {activeTab === 'tasks' && (
           <div className="space-y-6">
-            <AddTaskForm projectId={projectId} />
+            <div className="flex items-center justify-between">
+              <AddTaskForm projectId={projectId} />
+              <div className="flex items-center border border-border rounded-md overflow-hidden">
+                <button
+                  onClick={() => setTaskView('list')}
+                  className={`p-1.5 ${taskView === 'list' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                  title="List view"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setTaskView('board')}
+                  className={`p-1.5 ${taskView === 'board' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                  title="Board view"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 4v16M15 4v16M4 9h16M4 15h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
             {regularTasks.length > 0 ? (
-              <TaskList tasks={regularTasks} />
+              taskView === 'list' ? (
+                <TaskList tasks={regularTasks} />
+              ) : (
+                <TaskBoard tasks={regularTasks} />
+              )
             ) : (
               <div className="py-12 text-center text-muted-foreground">
                 No tasks yet. Add your first task above.

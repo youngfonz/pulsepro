@@ -77,6 +77,8 @@ model Task {
   description  String?
   notes        String?
   completed    Boolean  @default(false)
+  status       String   @default("todo") // todo, in_progress, done
+  sortOrder    Int      @default(0)
   priority     String   @default("medium") // low, medium, high
   startDate    DateTime?
   dueDate      DateTime?
