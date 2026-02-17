@@ -119,19 +119,19 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
   }
 
   return (
-    <div className="pb-4">
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex-1">
-          <Link
-            href="/projects"
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-3"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to Projects
-          </Link>
+    <div className="pb-2">
+      <Link
+        href="/projects"
+        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-2"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to Projects
+      </Link>
 
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">
           {isEditingName ? (
             <input
               type="text"
@@ -157,84 +157,47 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
             </h1>
           )}
 
-          {isEditingDescription ? (
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              onBlur={handleDescriptionSave}
-              rows={2}
-              autoFocus
-              className="mt-1 w-full text-sm text-muted-foreground border border-border rounded p-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          ) : (
-            <p
-              onClick={() => setIsEditingDescription(true)}
-              className="mt-1 text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+          <div className="flex items-center gap-2 mt-1 flex-wrap text-sm text-muted-foreground">
+            <Link
+              href={`/clients/${project.client.id}`}
+              className="hover:text-foreground transition-colors"
             >
-              {project.description || 'Click to add description...'}
-            </p>
-          )}
-
-          <div className="flex items-center gap-3 mt-3 flex-wrap">
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Client:</span>
-              <Link
-                href={`/clients/${project.client.id}`}
-                className="font-medium text-primary hover:underline"
-              >
-                {project.client.name}
-              </Link>
-            </div>
+              {project.client.name}
+            </Link>
+            <span className="text-muted-foreground/40">/</span>
             <select
               value={project.status}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className={`text-xs px-2 py-1 rounded font-medium cursor-pointer border-0 ${statusColors[project.status]}`}
+              className={`text-xs px-2 py-0.5 rounded font-medium cursor-pointer border-0 ${statusColors[project.status]}`}
             >
               {Object.entries(statusLabels).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
               ))}
             </select>
-            <div className={`text-xs px-2 py-1 rounded font-medium ${priorityColors[project.priority]}`}>
-              {project.priority.charAt(0).toUpperCase() + project.priority.slice(1)} Priority
+            <div className={`text-xs px-2 py-0.5 rounded font-medium ${priorityColors[project.priority]}`}>
+              {project.priority.charAt(0).toUpperCase() + project.priority.slice(1)}
             </div>
+            <span className="text-muted-foreground/40">&middot;</span>
+            <span>{progress}%</span>
+            <div className="w-12 h-1 bg-secondary rounded-full overflow-hidden">
+              <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
+            </div>
+            {project.dueDate && (
+              <>
+                <span className="text-muted-foreground/40">&middot;</span>
+                <span>Due {new Date(project.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+              </>
+            )}
+          </div>
+        </div>
 
-            {/* Discreet delete option */}
-            <button
-              onClick={handleDelete}
-              disabled={isPending}
-              className="text-xs text-muted-foreground hover:text-destructive transition-colors ml-auto"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Compact Stats Bar */}
-      <div className="grid grid-cols-2 gap-3 sm:flex sm:items-center sm:gap-6 mt-4 py-3 border-t border-b border-border text-sm">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">{totalTasks}</span>
-          <span className="text-muted-foreground">tasks</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">{progress}%</span>
-          <span className="text-muted-foreground">complete</span>
-          <div className="w-16 h-1.5 bg-secondary rounded-full overflow-hidden">
-            <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">{totalHours.toFixed(1)}h</span>
-          <span className="text-muted-foreground">tracked</span>
-        </div>
-        {project.dueDate && (
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">Due</span>
-            <span className="font-semibold">
-              {new Date(project.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-            </span>
-          </div>
-        )}
+        <button
+          onClick={handleDelete}
+          disabled={isPending}
+          className="text-xs text-muted-foreground hover:text-destructive transition-colors mt-2"
+        >
+          Delete
+        </button>
       </div>
     </div>
   )
