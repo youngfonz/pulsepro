@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Pulse Pro — Project & Task Management",
     description: "Plan, track, and manage your projects and tasks in one place.",
   },
