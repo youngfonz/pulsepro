@@ -58,6 +58,12 @@ function TypeBadge({ type }: { type: string | null }) {
   )
 }
 
+function doneLabel(type: string | null): { done: string; undone: string; progress: string } {
+  if (type === 'youtube') return { done: 'Watched', undone: 'Mark as watched', progress: 'watched' }
+  if (type === 'twitter') return { done: 'Read', undone: 'Mark as read', progress: 'read' }
+  return { done: 'Read', undone: 'Mark as read', progress: 'read' }
+}
+
 function DeleteButton({ bookmarkId }: { bookmarkId: string }) {
   const [isPending, startTransition] = useTransition()
 
@@ -91,8 +97,9 @@ function DeleteButton({ bookmarkId }: { bookmarkId: string }) {
   )
 }
 
-function WatchedButton({ bookmarkId, watched }: { bookmarkId: string; watched: boolean }) {
+function DoneButton({ bookmarkId, done, type }: { bookmarkId: string; done: boolean; type: string | null }) {
   const [isPending, startTransition] = useTransition()
+  const labels = doneLabel(type)
 
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -107,13 +114,13 @@ function WatchedButton({ bookmarkId, watched }: { bookmarkId: string; watched: b
       onClick={handleToggle}
       disabled={isPending}
       className={`p-2 rounded-md transition-colors ${
-        watched
+        done
           ? 'text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10'
           : 'text-muted-foreground hover:text-foreground hover:bg-muted'
       }`}
-      title={watched ? 'Mark as unwatched' : 'Mark as watched'}
+      title={done ? `Undo ${labels.done.toLowerCase()}` : labels.undone}
     >
-      {watched ? (
+      {done ? (
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
           <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0 0 0 12c0 6.627 5.373 12 12 12s12-5.373 12-12S18.627 0 12 0a11.954 11.954 0 0 0-7.834 2.916" clipRule="evenodd" />
@@ -164,10 +171,11 @@ function BookmarkMeta({ bookmark }: { bookmark: Bookmark }) {
 }
 
 function ImageCard({ bookmark }: { bookmark: Bookmark }) {
-  const watched = bookmark.completed
+  const isDone = bookmark.completed
+  const labels = doneLabel(bookmark.bookmarkType)
 
   return (
-    <div className={`group border border-border rounded-lg overflow-hidden hover:border-primary/50 hover:shadow-md transition-all ${watched ? 'opacity-50' : ''}`}>
+    <div className={`group border border-border rounded-lg overflow-hidden hover:border-primary/50 hover:shadow-md transition-all ${isDone ? 'opacity-50' : ''}`}>
       <a
         href={bookmark.url || '#'}
         target="_blank"
@@ -182,9 +190,9 @@ function ImageCard({ bookmark }: { bookmark: Bookmark }) {
           <div className="absolute top-2 left-2">
             <TypeBadge type={bookmark.bookmarkType} />
           </div>
-          {watched && (
+          {isDone && (
             <div className="absolute top-2 right-2 bg-emerald-500 text-white text-xs px-2 py-0.5 rounded font-medium">
-              Watched
+              {labels.done}
             </div>
           )}
         </div>
@@ -197,12 +205,12 @@ function ImageCard({ bookmark }: { bookmark: Bookmark }) {
             rel="noopener noreferrer"
             className="flex-1 min-w-0"
           >
-            <h3 className={`font-medium text-sm line-clamp-2 transition-colors ${watched ? 'line-through text-muted-foreground' : 'group-hover:text-primary'}`}>
+            <h3 className={`font-medium text-sm line-clamp-2 transition-colors ${isDone ? 'line-through text-muted-foreground' : 'group-hover:text-primary'}`}>
               {bookmark.title}
             </h3>
           </a>
           <div className="flex items-center">
-            <WatchedButton bookmarkId={bookmark.id} watched={watched} />
+            <DoneButton bookmarkId={bookmark.id} done={isDone} type={bookmark.bookmarkType} />
             <DeleteButton bookmarkId={bookmark.id} />
           </div>
         </div>
@@ -215,13 +223,13 @@ function ImageCard({ bookmark }: { bookmark: Bookmark }) {
 }
 
 function CompactCard({ bookmark }: { bookmark: Bookmark }) {
-  const watched = bookmark.completed
+  const isDone = bookmark.completed
   const displayUrl = bookmark.url
     ? bookmark.url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]
     : ''
 
   return (
-    <div className={`group flex items-start gap-3 border border-border rounded-lg p-3 hover:border-primary/50 hover:shadow-md transition-all ${watched ? 'opacity-50' : ''}`}>
+    <div className={`group flex items-start gap-3 border border-border rounded-lg p-3 hover:border-primary/50 hover:shadow-md transition-all ${isDone ? 'opacity-50' : ''}`}>
       <a
         href={bookmark.url || '#'}
         target="_blank"
@@ -237,7 +245,7 @@ function CompactCard({ bookmark }: { bookmark: Bookmark }) {
         className="flex-1 min-w-0"
       >
         <div className="flex items-start gap-2">
-          <h3 className={`font-medium text-sm line-clamp-2 transition-colors flex-1 ${watched ? 'line-through text-muted-foreground' : 'group-hover:text-primary'}`}>
+          <h3 className={`font-medium text-sm line-clamp-2 transition-colors flex-1 ${isDone ? 'line-through text-muted-foreground' : 'group-hover:text-primary'}`}>
             {bookmark.title}
           </h3>
           <TypeBadge type={bookmark.bookmarkType} />
@@ -250,7 +258,7 @@ function CompactCard({ bookmark }: { bookmark: Bookmark }) {
         </div>
       </a>
       <div className="flex flex-col items-center">
-        <WatchedButton bookmarkId={bookmark.id} watched={watched} />
+        <DoneButton bookmarkId={bookmark.id} done={isDone} type={bookmark.bookmarkType} />
         <DeleteButton bookmarkId={bookmark.id} />
       </div>
     </div>
@@ -258,10 +266,10 @@ function CompactCard({ bookmark }: { bookmark: Bookmark }) {
 }
 
 export function BookmarksList({ bookmarks }: { bookmarks: Bookmark[] }) {
-  const watchedCount = bookmarks.filter((b) => b.completed).length
+  const doneCount = bookmarks.filter((b) => b.completed).length
   const totalCount = bookmarks.length
 
-  // Sort: unwatched first, watched last
+  // Sort: incomplete first, done last
   const sorted = [...bookmarks].sort((a, b) => {
     if (a.completed === b.completed) return 0
     return a.completed ? 1 : -1
@@ -272,16 +280,16 @@ export function BookmarksList({ bookmarks }: { bookmarks: Bookmark[] }) {
 
   return (
     <div className="space-y-6">
-      {watchedCount > 0 && (
+      {doneCount > 0 && (
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <div className="w-24 h-1.5 bg-secondary rounded-full overflow-hidden">
               <div
                 className="h-full bg-emerald-500 transition-all"
-                style={{ width: `${Math.round((watchedCount / totalCount) * 100)}%` }}
+                style={{ width: `${Math.round((doneCount / totalCount) * 100)}%` }}
               />
             </div>
-            <span>{watchedCount}/{totalCount} watched</span>
+            <span>{doneCount}/{totalCount} done</span>
           </div>
         </div>
       )}
