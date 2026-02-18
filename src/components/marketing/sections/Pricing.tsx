@@ -27,6 +27,7 @@ const plans = [
       'Unlimited clients',
       'Quick Search (\u2318K)',
       'File attachments',
+      'Telegram bot integration',
       'Daily email reminders',
       'Priority support'
     ],

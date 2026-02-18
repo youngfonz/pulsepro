@@ -67,7 +67,7 @@ export async function checkLimit(resource: 'projects' | 'tasks' | 'clients'): Pr
       current = await prisma.project.count({ where: { userId } })
       return { allowed: current < limits.maxProjects, current, limit: limits.maxProjects, plan }
     case 'tasks':
-      current = await prisma.task.count({ where: { userId } })
+      current = await prisma.task.count({ where: { userId, url: null } })
       return { allowed: current < limits.maxTasks, current, limit: limits.maxTasks, plan }
     case 'clients':
       current = await prisma.client.count({ where: { userId } })

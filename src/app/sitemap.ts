@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://project-tracker-rose-five.vercel.app'
+  const baseUrl = 'https://pulsepro.work'
 
   return [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },

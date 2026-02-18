@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: 'https://project-tracker-rose-five.vercel.app/sitemap.xml',
+    sitemap: 'https://pulsepro.work/sitemap.xml',
   }
 }

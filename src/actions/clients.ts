@@ -12,9 +12,9 @@ export async function getClients(search?: string, status?: string, sort?: string
 
     if (search) {
       where.OR = [
-        { name: { contains: search } },
-        { email: { contains: search } },
-        { company: { contains: search } },
+        { name: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { company: { contains: search, mode: 'insensitive' } },
       ]
     }
 
@@ -131,7 +131,7 @@ export async function createClient(formData: FormData) {
     revalidatePath('/clients')
   } catch (error) {
     console.error('Failed to create client:', error)
-    throw new Error('Failed to create client')
+    throw error instanceof Error ? error : new Error('Failed to create client')
   }
 }
 

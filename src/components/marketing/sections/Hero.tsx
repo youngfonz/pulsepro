@@ -42,7 +42,7 @@ export function Hero() {
             <ScrollReveal delay={0}>
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-6">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-sm font-medium text-foreground">Now in public beta</span>
+                <span className="text-sm font-medium text-foreground">Now with Telegram bot integration</span>
               </div>
             </ScrollReveal>
 

@@ -28,13 +28,20 @@ interface Props {
 
 type ViewMode = 'table' | 'grid'
 
+function isProjectCompleted(p: Project): boolean {
+  if (p.status === 'completed') return true
+  if (p.tasks.length > 0 && p.tasks.every(t => t.completed)) return true
+  return false
+}
+
 export function ProjectsView({ projects, currentSort, healthMap }: Props) {
   const [viewMode, setViewMode] = useState<ViewMode>('table')
+  const activeCount = projects.filter(p => !isProjectCompleted(p)).length
 
   return (
     <>
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">All Projects ({projects.length})</h2>
+        <h2 className="text-lg font-semibold">All Projects ({activeCount})</h2>
         <ViewToggle onViewChange={setViewMode} />
       </div>
       <div className="mt-4">

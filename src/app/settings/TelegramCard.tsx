@@ -78,6 +78,7 @@ export function TelegramCard() {
   }
 
   async function handleUnlink() {
+    if (!confirm('Are you sure you want to unlink Telegram? You will stop receiving reminders.')) return
     setActionLoading(true)
     await unlinkTelegram()
     setState((s) => (s ? { ...s, linked: false, remindersEnabled: false } : s))

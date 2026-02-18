@@ -18,8 +18,8 @@ export async function getProjects(filters?: {
 
     if (filters?.search) {
       where.OR = [
-        { name: { contains: filters.search } },
-        { description: { contains: filters.search } },
+        { name: { contains: filters.search, mode: 'insensitive' } },
+        { description: { contains: filters.search, mode: 'insensitive' } },
       ]
     }
 
@@ -239,7 +239,7 @@ export async function createProject(formData: FormData) {
     return project
   } catch (error) {
     console.error('Failed to create project:', error)
-    throw new Error('Failed to create project')
+    throw error instanceof Error ? error : new Error('Failed to create project')
   }
 }
 
@@ -271,6 +271,7 @@ export async function updateProject(id: string, formData: FormData) {
     revalidatePath('/projects')
     revalidatePath(`/projects/${id}`)
     revalidatePath(`/clients/${data.clientId}`)
+    revalidatePath('/dashboard')
   } catch (error) {
     console.error('Failed to update project:', error)
     throw new Error('Failed to update project')
@@ -288,6 +289,8 @@ export async function deleteProject(id: string) {
     })
     revalidatePath('/projects')
     revalidatePath(`/clients/${project.clientId}`)
+    revalidatePath('/dashboard')
+    revalidatePath('/tasks')
   } catch (error) {
     console.error('Failed to delete project:', error)
     throw new Error('Failed to delete project')

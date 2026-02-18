@@ -46,7 +46,7 @@ export async function executeCommand(
 
 async function handleTasks(userId: string, chatId: string): Promise<string> {
   const tasks = await prisma.task.findMany({
-    where: { userId, completed: false },
+    where: { userId, completed: false, url: null },
     include: { project: { select: { name: true } } },
     orderBy: { createdAt: 'desc' },
     take: 10,
@@ -74,6 +74,7 @@ async function handleToday(userId: string, chatId: string): Promise<string> {
     where: {
       userId,
       completed: false,
+      url: null,
       dueDate: { gte: todayStart, lt: todayEnd },
     },
     include: { project: { select: { name: true } } },
@@ -101,6 +102,7 @@ async function handleOverdue(userId: string, chatId: string): Promise<string> {
     where: {
       userId,
       completed: false,
+      url: null,
       dueDate: { lt: todayStart },
     },
     include: { project: { select: { name: true } } },

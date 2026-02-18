@@ -618,9 +618,9 @@ export async function getAllBookmarks(filters?: {
       { url: { not: null } },
       {
         OR: [
-          { title: { contains: filters.search } },
-          { description: { contains: filters.search } },
-          { url: { contains: filters.search } },
+          { title: { contains: filters.search, mode: 'insensitive' } },
+          { description: { contains: filters.search, mode: 'insensitive' } },
+          { url: { contains: filters.search, mode: 'insensitive' } },
         ]
       }
     ]

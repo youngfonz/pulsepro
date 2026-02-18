@@ -14,17 +14,17 @@ export function FinalCTA() {
             <div className="absolute inset-0 bg-gradient-to-tr from-violet-200/40 via-transparent to-amber-100/50 dark:from-violet-500/10 dark:via-transparent dark:to-amber-500/10" />
 
             <div className="relative px-8 py-16 md:py-20 text-center">
-              <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white tracking-tight">
+              <h2 className="text-3xl md:text-4xl font-semibold text-foreground tracking-tight">
                 You don&apos;t need a tool built for a 50-person team.
               </h2>
 
-              <p className="text-base text-gray-600 dark:text-white/70 mt-4 max-w-md mx-auto">
+              <p className="text-base text-muted-foreground mt-4 max-w-md mx-auto">
                 Pulse Pro is built for solo professionals who want to feel in control — not overwhelmed by features they&apos;ll never use. Set up in 5 minutes.
               </p>
 
               <Link
                 href="/sign-up"
-                className="mt-8 inline-flex items-center justify-center px-6 py-3 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium hover:bg-gray-800 dark:hover:bg-white/90 transition-colors shadow-lg"
+                className="mt-8 inline-flex items-center justify-center px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors shadow-lg"
               >
                 Start for free
                 <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -32,7 +32,7 @@ export function FinalCTA() {
                 </svg>
               </Link>
 
-              <p className="mt-4 text-sm text-gray-500 dark:text-white/50">
+              <p className="mt-4 text-sm text-muted-foreground/70">
                 No credit card required
               </p>
             </div>

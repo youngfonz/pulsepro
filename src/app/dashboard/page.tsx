@@ -49,7 +49,7 @@ export default async function DashboardPage() {
               {overdueTasks.map((task) => (
                 <Link
                   key={task.id}
-                  href={`/projects/${task.project.id}`}
+                  href={`/tasks/${task.id}`}
                   className="block px-4 py-3 sm:px-6 hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -100,7 +100,7 @@ export default async function DashboardPage() {
                       {tasksDueToday.map((task) => (
                         <Link
                           key={task.id}
-                          href={`/projects/${task.project.id}`}
+                          href={`/tasks/${task.id}`}
                           className="flex items-center gap-3 px-4 py-2.5 sm:px-6 hover:bg-muted transition-colors"
                         >
                           <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

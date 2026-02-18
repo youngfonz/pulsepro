@@ -294,7 +294,7 @@ export async function backfillUserId() {
 
   const total = clients.count + projects.count + tasks.count
   if (total > 0) {
-    console.log(`Backfilled ${clients.count} clients, ${projects.count} projects, ${tasks.count} tasks to user ${userId}`)
+    console.info(`Backfilled ${clients.count} clients, ${projects.count} projects, ${tasks.count} tasks to user ${userId}`)
   }
 
   return total

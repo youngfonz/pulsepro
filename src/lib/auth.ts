@@ -1,4 +1,5 @@
 import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
 
 const clerkEnabled = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 
@@ -14,7 +15,7 @@ export async function requireUserId(): Promise<string> {
   const { userId } = await auth()
 
   if (!userId) {
-    throw new Error('Unauthorized')
+    redirect('/sign-in')
   }
 
   return userId
