@@ -59,7 +59,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
 function SortableCard({ id, children }: { id: string; children: ReactNode }) {
   const { editing, toggleHidden } = useContext(DashboardContext)
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, disabled: !editing })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -70,33 +70,31 @@ function SortableCard({ id, children }: { id: string; children: ReactNode }) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative ${isDragging ? 'z-10 opacity-60 scale-[1.02]' : ''} ${editing ? 'ring-1 ring-border ring-dashed rounded-lg' : ''}`}
+      className={`relative group/card ${isDragging ? 'z-10 opacity-60 scale-[1.02]' : ''}`}
     >
+      {/* Drag handle — always available on hover */}
+      <button
+        {...attributes}
+        {...listeners}
+        className="absolute top-1 left-1/2 -translate-x-1/2 z-10 opacity-0 group-hover/card:opacity-100 focus:opacity-100 cursor-grab active:cursor-grabbing px-4 py-1 rounded-b-md text-muted-foreground/40 hover:text-muted-foreground transition-opacity"
+        title="Drag to reorder"
+      >
+        <svg className="w-5 h-1.5" viewBox="0 0 20 6" fill="currentColor">
+          <rect x="0" y="0" width="20" height="2" rx="1" />
+          <rect x="0" y="4" width="20" height="2" rx="1" />
+        </svg>
+      </button>
+      {/* Hide button — only in customize mode */}
       {editing && (
-        <>
-          {/* Drag handle — visible in edit mode */}
-          <button
-            {...attributes}
-            {...listeners}
-            className="absolute top-0 left-1/2 -translate-x-1/2 z-10 cursor-grab active:cursor-grabbing px-5 py-1.5 rounded-b-md bg-muted/80 text-muted-foreground hover:text-foreground transition-colors"
-            title="Drag to reorder"
-          >
-            <svg className="w-5 h-1.5" viewBox="0 0 20 6" fill="currentColor">
-              <rect x="0" y="0" width="20" height="2" rx="1" />
-              <rect x="0" y="4" width="20" height="2" rx="1" />
-            </svg>
-          </button>
-          {/* Hide button */}
-          <button
-            onClick={() => toggleHidden(id)}
-            className="absolute top-2 right-2 z-10 p-1 rounded-md bg-muted/80 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            title={`Hide ${SECTION_LABELS[id] || id}`}
-          >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </>
+        <button
+          onClick={() => toggleHidden(id)}
+          className="absolute top-2 right-2 z-10 p-1 rounded-md bg-muted/80 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          title={`Hide ${SECTION_LABELS[id] || id}`}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       )}
       {children}
     </div>
