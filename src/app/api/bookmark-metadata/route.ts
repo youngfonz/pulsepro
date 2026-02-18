@@ -8,6 +8,33 @@ interface BookmarkMetadata {
   type: 'youtube' | 'twitter' | 'website';
 }
 
+function isUnsafeUrl(url: string): boolean {
+  try {
+    const urlObj = new URL(url);
+    const hostname = urlObj.hostname.toLowerCase();
+
+    // Block non-http(s) protocols
+    if (!['http:', 'https:'].includes(urlObj.protocol)) return true;
+
+    // Block private/internal IPs and localhost
+    if (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname === '0.0.0.0' ||
+      hostname.startsWith('10.') ||
+      hostname.startsWith('192.168.') ||
+      hostname.startsWith('172.') ||
+      hostname.endsWith('.local') ||
+      hostname.endsWith('.internal') ||
+      hostname === '[::1]'
+    ) return true;
+
+    return false;
+  } catch {
+    return true;
+  }
+}
+
 function getBookmarkType(url: string): 'youtube' | 'twitter' | 'website' | null {
   try {
     const urlObj = new URL(url);
@@ -184,6 +211,13 @@ export async function POST(request: NextRequest) {
     if (!url || typeof url !== 'string') {
       return NextResponse.json(
         { error: 'URL is required' },
+        { status: 400 }
+      );
+    }
+
+    if (isUnsafeUrl(url)) {
+      return NextResponse.json(
+        { error: 'Invalid URL' },
         { status: 400 }
       );
     }

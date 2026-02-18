@@ -1,11 +1,14 @@
 'use client'
 
+import { useTransition } from 'react'
 import Link from 'next/link'
+import { deleteTask, toggleTask } from '@/actions/tasks'
 
 interface Bookmark {
   id: string
   title: string
   description: string | null
+  completed: boolean
   url: string | null
   bookmarkType: string | null
   thumbnailUrl: string | null
@@ -55,6 +58,75 @@ function TypeBadge({ type }: { type: string | null }) {
   )
 }
 
+function DeleteButton({ bookmarkId }: { bookmarkId: string }) {
+  const [isPending, startTransition] = useTransition()
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!confirm('Delete this bookmark?')) return
+    startTransition(async () => {
+      await deleteTask(bookmarkId)
+    })
+  }
+
+  return (
+    <button
+      onClick={handleDelete}
+      disabled={isPending}
+      className="p-2 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+      title="Delete bookmark"
+    >
+      {isPending ? (
+        <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        </svg>
+      ) : (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+      )}
+    </button>
+  )
+}
+
+function WatchedButton({ bookmarkId, watched }: { bookmarkId: string; watched: boolean }) {
+  const [isPending, startTransition] = useTransition()
+
+  const handleToggle = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    startTransition(async () => {
+      await toggleTask(bookmarkId)
+    })
+  }
+
+  return (
+    <button
+      onClick={handleToggle}
+      disabled={isPending}
+      className={`p-2 rounded-md transition-colors ${
+        watched
+          ? 'text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10'
+          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+      }`}
+      title={watched ? 'Mark as unwatched' : 'Mark as watched'}
+    >
+      {watched ? (
+        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0 0 0 12c0 6.627 5.373 12 12 12s12-5.373 12-12S18.627 0 12 0a11.954 11.954 0 0 0-7.834 2.916" clipRule="evenodd" />
+        </svg>
+      ) : (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      )}
+    </button>
+  )
+}
+
 function BookmarkMeta({ bookmark }: { bookmark: Bookmark }) {
   return (
     <>
@@ -92,53 +164,80 @@ function BookmarkMeta({ bookmark }: { bookmark: Bookmark }) {
 }
 
 function ImageCard({ bookmark }: { bookmark: Bookmark }) {
+  const watched = bookmark.completed
+
   return (
-    <a
-      href={bookmark.url || '#'}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group block border border-border rounded-lg overflow-hidden hover:border-primary/50 hover:shadow-md transition-all"
-    >
-      <div className="aspect-video bg-muted relative overflow-hidden">
-        <img
-          src={bookmark.thumbnailUrl!}
-          alt=""
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-        <div className="absolute top-2 left-2">
-          <TypeBadge type={bookmark.bookmarkType} />
+    <div className={`group border border-border rounded-lg overflow-hidden hover:border-primary/50 hover:shadow-md transition-all ${watched ? 'opacity-50' : ''}`}>
+      <a
+        href={bookmark.url || '#'}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <div className="aspect-video bg-muted relative overflow-hidden">
+          <img
+            src={bookmark.thumbnailUrl!}
+            alt=""
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          <div className="absolute top-2 left-2">
+            <TypeBadge type={bookmark.bookmarkType} />
+          </div>
+          {watched && (
+            <div className="absolute top-2 right-2 bg-emerald-500 text-white text-xs px-2 py-0.5 rounded font-medium">
+              Watched
+            </div>
+          )}
         </div>
-      </div>
+      </a>
       <div className="p-3">
-        <h3 className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-colors">
-          {bookmark.title}
-        </h3>
+        <div className="flex items-start justify-between gap-2">
+          <a
+            href={bookmark.url || '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 min-w-0"
+          >
+            <h3 className={`font-medium text-sm line-clamp-2 transition-colors ${watched ? 'line-through text-muted-foreground' : 'group-hover:text-primary'}`}>
+              {bookmark.title}
+            </h3>
+          </a>
+          <div className="flex items-center">
+            <WatchedButton bookmarkId={bookmark.id} watched={watched} />
+            <DeleteButton bookmarkId={bookmark.id} />
+          </div>
+        </div>
         <div className="mt-2">
           <BookmarkMeta bookmark={bookmark} />
         </div>
       </div>
-    </a>
+    </div>
   )
 }
 
 function CompactCard({ bookmark }: { bookmark: Bookmark }) {
+  const watched = bookmark.completed
   const displayUrl = bookmark.url
     ? bookmark.url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]
     : ''
 
   return (
-    <a
-      href={bookmark.url || '#'}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group flex items-start gap-3 border border-border rounded-lg p-3 hover:border-primary/50 hover:shadow-md transition-all"
-    >
-      <div className="flex-shrink-0 w-10 h-10 rounded-md bg-muted flex items-center justify-center">
+    <div className={`group flex items-start gap-3 border border-border rounded-lg p-3 hover:border-primary/50 hover:shadow-md transition-all ${watched ? 'opacity-50' : ''}`}>
+      <a
+        href={bookmark.url || '#'}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex-shrink-0 w-10 h-10 rounded-md bg-muted flex items-center justify-center"
+      >
         <TypeIcon type={bookmark.bookmarkType} size="sm" />
-      </div>
-      <div className="flex-1 min-w-0">
+      </a>
+      <a
+        href={bookmark.url || '#'}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex-1 min-w-0"
+      >
         <div className="flex items-start gap-2">
-          <h3 className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-colors flex-1">
+          <h3 className={`font-medium text-sm line-clamp-2 transition-colors flex-1 ${watched ? 'line-through text-muted-foreground' : 'group-hover:text-primary'}`}>
             {bookmark.title}
           </h3>
           <TypeBadge type={bookmark.bookmarkType} />
@@ -149,17 +248,43 @@ function CompactCard({ bookmark }: { bookmark: Bookmark }) {
         <div className="mt-1.5">
           <BookmarkMeta bookmark={bookmark} />
         </div>
+      </a>
+      <div className="flex flex-col items-center">
+        <WatchedButton bookmarkId={bookmark.id} watched={watched} />
+        <DeleteButton bookmarkId={bookmark.id} />
       </div>
-    </a>
+    </div>
   )
 }
 
 export function BookmarksList({ bookmarks }: { bookmarks: Bookmark[] }) {
-  const withImages = bookmarks.filter((b) => b.thumbnailUrl)
-  const withoutImages = bookmarks.filter((b) => !b.thumbnailUrl)
+  const watchedCount = bookmarks.filter((b) => b.completed).length
+  const totalCount = bookmarks.length
+
+  // Sort: unwatched first, watched last
+  const sorted = [...bookmarks].sort((a, b) => {
+    if (a.completed === b.completed) return 0
+    return a.completed ? 1 : -1
+  })
+
+  const withImages = sorted.filter((b) => b.thumbnailUrl)
+  const withoutImages = sorted.filter((b) => !b.thumbnailUrl)
 
   return (
     <div className="space-y-6">
+      {watchedCount > 0 && (
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <div className="w-24 h-1.5 bg-secondary rounded-full overflow-hidden">
+              <div
+                className="h-full bg-emerald-500 transition-all"
+                style={{ width: `${Math.round((watchedCount / totalCount) * 100)}%` }}
+              />
+            </div>
+            <span>{watchedCount}/{totalCount} watched</span>
+          </div>
+        </div>
+      )}
       {withImages.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {withImages.map((bookmark) => (

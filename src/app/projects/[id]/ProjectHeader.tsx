@@ -52,46 +52,31 @@ const priorityColors: Record<string, string> = {
 
 export function ProjectHeader({ project, clients, completedTasks, totalTasks, totalHours }: ProjectHeaderProps) {
   const [isEditingName, setIsEditingName] = useState(false)
-  const [isEditingDescription, setIsEditingDescription] = useState(false)
   const [name, setName] = useState(project.name)
-  const [description, setDescription] = useState(project.description || '')
-  const [status, setStatus] = useState(project.status)
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
   const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
 
-  const handleUpdateField = (field: string, value: string) => {
-    const formData = new FormData()
-    formData.set('name', field === 'name' ? value : project.name)
-    formData.set('description', field === 'description' ? value : project.description || '')
-    formData.set('notes', project.notes || '')
-    formData.set('status', status)
-    formData.set('priority', project.priority)
-    formData.set('clientId', project.client.id)
-    if (project.dueDate) {
-      formData.set('dueDate', new Date(project.dueDate).toISOString().split('T')[0])
-    }
-    if (project.budget) {
-      formData.set('budget', project.budget.toString())
-    }
-
-    startTransition(async () => {
-      await updateProject(project.id, formData)
-    })
-  }
-
   const handleNameSave = () => {
     if (name.trim() && name !== project.name) {
-      handleUpdateField('name', name)
+      const formData = new FormData()
+      formData.set('name', name)
+      formData.set('description', project.description || '')
+      formData.set('notes', project.notes || '')
+      formData.set('status', project.status)
+      formData.set('priority', project.priority)
+      formData.set('clientId', project.client.id)
+      if (project.dueDate) {
+        formData.set('dueDate', new Date(project.dueDate).toISOString().split('T')[0])
+      }
+      if (project.budget) {
+        formData.set('budget', project.budget.toString())
+      }
+      startTransition(async () => {
+        await updateProject(project.id, formData)
+      })
     }
     setIsEditingName(false)
-  }
-
-  const handleDescriptionSave = () => {
-    if (description !== project.description) {
-      handleUpdateField('description', description)
-    }
-    setIsEditingDescription(false)
   }
 
   const handleDelete = async () => {
@@ -99,28 +84,6 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
     startTransition(async () => {
       await deleteProject(project.id)
       router.push('/projects')
-    })
-  }
-
-  const handleStatusChange = (newStatus: string) => {
-    setStatus(newStatus)
-
-    const formData = new FormData()
-    formData.set('name', project.name)
-    formData.set('description', project.description || '')
-    formData.set('notes', project.notes || '')
-    formData.set('status', newStatus)
-    formData.set('priority', project.priority)
-    formData.set('clientId', project.client.id)
-    if (project.dueDate) {
-      formData.set('dueDate', new Date(project.dueDate).toISOString().split('T')[0])
-    }
-    if (project.budget) {
-      formData.set('budget', project.budget.toString())
-    }
-
-    startTransition(async () => {
-      await updateProject(project.id, formData)
     })
   }
 
@@ -171,15 +134,9 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
               {project.client.name}
             </Link>
             <span className="text-muted-foreground/40">/</span>
-            <select
-              value={status}
-              onChange={(e) => handleStatusChange(e.target.value)}
-              className={`text-xs px-2 py-0.5 rounded font-medium cursor-pointer border-0 ${statusColors[status]}`}
-            >
-              {Object.entries(statusLabels).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
+            <div className={`text-xs px-2 py-0.5 rounded font-medium ${statusColors[project.status]}`}>
+              {statusLabels[project.status] || project.status}
+            </div>
             <div className={`text-xs px-2 py-0.5 rounded font-medium ${priorityColors[project.priority]}`}>
               {project.priority.charAt(0).toUpperCase() + project.priority.slice(1)}
             </div>

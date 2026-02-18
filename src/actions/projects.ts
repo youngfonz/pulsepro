@@ -192,6 +192,11 @@ export async function createProject(formData: FormData) {
   try {
     const userId = await requireUserId()
 
+    // Verify client belongs to this user
+    const clientId = formData.get('clientId') as string
+    const client = await prisma.client.findFirst({ where: { id: clientId, userId } })
+    if (!client) throw new Error('Client not found')
+
     const limit = await checkLimit('projects')
     if (!limit.allowed) {
       throw new Error(`Free plan limit: ${limit.limit} projects. Upgrade to Pro for unlimited projects.`)

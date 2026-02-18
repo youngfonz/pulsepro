@@ -29,6 +29,10 @@ export async function createTask(projectId: string, formData: FormData) {
   try {
     const userId = await requireUserId()
 
+    // Verify project belongs to this user
+    const project = await prisma.project.findFirst({ where: { id: projectId, userId } })
+    if (!project) throw new Error('Project not found')
+
     const limit = await checkLimit('tasks')
     if (!limit.allowed) {
       throw new Error(`Free plan limit: ${limit.limit} tasks. Upgrade to Pro for unlimited tasks.`)
@@ -565,6 +569,10 @@ export async function createBookmarkTask(
 ) {
   try {
     const userId = await requireUserId()
+
+    // Verify project belongs to this user
+    const project = await prisma.project.findFirst({ where: { id: projectId, userId } })
+    if (!project) throw new Error('Project not found')
 
     const limit = await checkLimit('tasks')
     if (!limit.allowed) {

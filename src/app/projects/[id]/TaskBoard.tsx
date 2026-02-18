@@ -122,7 +122,7 @@ export function TaskBoard({ tasks }: { tasks: Task[] }) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="grid grid-cols-3 gap-4">
+      <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3">
         {COLUMNS.map((col) => (
           <Column
             key={col.id}
@@ -147,7 +147,7 @@ function Column({ id, label, tasks, count }: { id: string; label: string; tasks:
   return (
     <div
       ref={setNodeRef}
-      className={`rounded-lg border border-border p-3 min-h-[200px] transition-colors ${
+      className={`rounded-lg border border-border p-3 min-h-[200px] min-w-[220px] flex-1 transition-colors ${
         isOver ? 'bg-primary/5 border-primary/30' : 'bg-muted/30'
       }`}
     >
