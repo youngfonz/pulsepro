@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, useRef, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import { DndContext, closestCenter, type DragEndEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { SortableContext, useSortable, arrayMove, rectSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -15,16 +15,21 @@ const SECTION_LABELS: Record<string, string> = {
 
 interface DashboardContextType {
   hidden: string[]
+  editing: boolean
   toggleHidden: (id: string) => void
+  setEditing: (editing: boolean) => void
 }
 
 const DashboardContext = createContext<DashboardContextType>({
   hidden: [],
+  editing: false,
   toggleHidden: () => {},
+  setEditing: () => {},
 })
 
 export function DashboardProvider({ children }: { children: ReactNode }) {
   const [hidden, setHidden] = useState<string[]>([])
+  const [editing, setEditing] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -44,7 +49,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <DashboardContext.Provider value={{ hidden: mounted ? hidden : [], toggleHidden }}>
+    <DashboardContext.Provider value={{ hidden: mounted ? hidden : [], editing, toggleHidden, setEditing }}>
       {children}
     </DashboardContext.Provider>
   )
@@ -53,7 +58,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 // --- Sortable card wrapper ---
 
 function SortableCard({ id, children }: { id: string; children: ReactNode }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
+  const { editing, toggleHidden } = useContext(DashboardContext)
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, disabled: !editing })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -64,21 +70,55 @@ function SortableCard({ id, children }: { id: string; children: ReactNode }) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative group/card ${isDragging ? 'z-10 opacity-60 scale-[1.02]' : ''}`}
+      className={`relative ${isDragging ? 'z-10 opacity-60 scale-[1.02]' : ''} ${editing ? 'ring-1 ring-border ring-dashed rounded-lg' : ''}`}
     >
-      <button
-        {...attributes}
-        {...listeners}
-        className="absolute top-1 left-1/2 -translate-x-1/2 z-10 opacity-0 group-hover/card:opacity-100 focus:opacity-100 cursor-grab active:cursor-grabbing px-4 py-1 rounded-b-md text-muted-foreground/40 hover:text-muted-foreground transition-opacity"
-        title="Drag to reorder"
-      >
-        <svg className="w-5 h-1.5" viewBox="0 0 20 6" fill="currentColor">
-          <rect x="0" y="0" width="20" height="2" rx="1" />
-          <rect x="0" y="4" width="20" height="2" rx="1" />
-        </svg>
-      </button>
+      {editing && (
+        <>
+          {/* Drag handle — visible in edit mode */}
+          <button
+            {...attributes}
+            {...listeners}
+            className="absolute top-0 left-1/2 -translate-x-1/2 z-10 cursor-grab active:cursor-grabbing px-5 py-1.5 rounded-b-md bg-muted/80 text-muted-foreground hover:text-foreground transition-colors"
+            title="Drag to reorder"
+          >
+            <svg className="w-5 h-1.5" viewBox="0 0 20 6" fill="currentColor">
+              <rect x="0" y="0" width="20" height="2" rx="1" />
+              <rect x="0" y="4" width="20" height="2" rx="1" />
+            </svg>
+          </button>
+          {/* Hide button */}
+          <button
+            onClick={() => toggleHidden(id)}
+            className="absolute top-2 right-2 z-10 p-1 rounded-md bg-muted/80 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            title={`Hide ${SECTION_LABELS[id] || id}`}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </>
+      )}
       {children}
     </div>
+  )
+}
+
+// --- Hidden section placeholder ---
+
+function HiddenSectionCard({ id }: { id: string }) {
+  const { toggleHidden } = useContext(DashboardContext)
+  const label = SECTION_LABELS[id] || id
+
+  return (
+    <button
+      onClick={() => toggleHidden(id)}
+      className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-border py-8 text-sm text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
+    >
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+      </svg>
+      Show {label}
+    </button>
   )
 }
 
@@ -90,7 +130,7 @@ export interface DashboardSectionDef {
 }
 
 export function DashboardGrid({ sections }: { sections: DashboardSectionDef[] }) {
-  const { hidden } = useContext(DashboardContext)
+  const { hidden, editing } = useContext(DashboardContext)
   const [order, setOrder] = useState<string[]>([])
   const [mounted, setMounted] = useState(false)
 
@@ -109,6 +149,9 @@ export function DashboardGrid({ sections }: { sections: DashboardSectionDef[] })
 
   // Filter out hidden sections
   const visible = sections.filter(s => !hidden.includes(s.id))
+
+  // IDs of sections that are hidden but exist in the data
+  const hiddenSectionIds = sections.filter(s => hidden.includes(s.id)).map(s => s.id)
 
   // Sort by stored order, append any new sections at the end
   const sorted = mounted && order.length > 0
@@ -142,65 +185,49 @@ export function DashboardGrid({ sections }: { sections: DashboardSectionDef[] })
               {section.content}
             </SortableCard>
           ))}
+          {editing && hiddenSectionIds.map(id => (
+            <HiddenSectionCard key={id} id={id} />
+          ))}
         </div>
       </SortableContext>
     </DndContext>
   )
 }
 
-// --- Customize dropdown ---
+// --- Customize toggle ---
 
 export function DashboardCustomize() {
-  const { hidden, toggleHidden } = useContext(DashboardContext)
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const handle = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    if (open) document.addEventListener('mousedown', handle)
-    return () => document.removeEventListener('mousedown', handle)
-  }, [open])
+  const { editing, setEditing, hidden } = useContext(DashboardContext)
 
   return (
-    <div className="relative" ref={ref}>
-      <button
-        onClick={() => setOpen(!open)}
-        className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-        title="Customize dashboard"
-      >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      </button>
-      {open && (
-        <div className="absolute right-0 mt-1 w-52 rounded-lg border border-border bg-background shadow-lg z-20 py-1">
-          <p className="px-3 py-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">Show sections</p>
-          {Object.entries(SECTION_LABELS).map(([id, label]) => {
-            const visible = !hidden.includes(id)
-            return (
-              <button
-                key={id}
-                onClick={() => toggleHidden(id)}
-                className="flex items-center gap-2.5 w-full px-3 py-2 text-sm hover:bg-muted transition-colors text-left"
-              >
-                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-                  visible ? 'border-primary bg-primary' : 'border-muted-foreground/30'
-                }`}>
-                  {visible && (
-                    <svg className="w-3 h-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
-                </div>
-                <span className={visible ? 'text-foreground' : 'text-muted-foreground'}>{label}</span>
-              </button>
-            )
-          })}
-        </div>
+    <button
+      onClick={() => setEditing(!editing)}
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm transition-colors ${
+        editing
+          ? 'bg-primary text-primary-foreground'
+          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+      }`}
+    >
+      {editing ? (
+        <>
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          Done
+        </>
+      ) : (
+        <>
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
+          </svg>
+          Customize
+          {hidden.length > 0 && (
+            <span className="ml-0.5 text-xs bg-muted text-muted-foreground rounded-full px-1.5 py-0.5 leading-none">
+              {hidden.length}
+            </span>
+          )}
+        </>
       )}
-    </div>
+    </button>
   )
 }
