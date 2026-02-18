@@ -30,6 +30,7 @@ export async function GET(request: NextRequest) {
       where: {
         userId: OWNER_USER_ID,
         completed: false,
+        url: null,
         dueDate: { lt: todayStart },
       },
       include: { project: { select: { id: true, name: true } } },
@@ -39,6 +40,7 @@ export async function GET(request: NextRequest) {
       where: {
         userId: OWNER_USER_ID,
         completed: false,
+        url: null,
         dueDate: { gte: todayStart, lt: todayEnd },
       },
       include: { project: { select: { id: true, name: true } } },
@@ -80,10 +82,10 @@ export async function GET(request: NextRequest) {
   for (const sub of telegramSubs) {
     const [userOverdue, userDueToday] = await Promise.all([
       prisma.task.count({
-        where: { userId: sub.userId, completed: false, dueDate: { lt: todayStart } },
+        where: { userId: sub.userId, completed: false, url: null, dueDate: { lt: todayStart } },
       }),
       prisma.task.count({
-        where: { userId: sub.userId, completed: false, dueDate: { gte: todayStart, lt: todayEnd } },
+        where: { userId: sub.userId, completed: false, url: null, dueDate: { gte: todayStart, lt: todayEnd } },
       }),
     ])
 
