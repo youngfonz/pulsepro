@@ -40,7 +40,7 @@ export default async function DashboardPage() {
         <Card className="h-full border-l-2 border-l-rose-500/40">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-rose-600 dark:text-rose-400 text-base">Overdue</CardTitle>
-            <Link href="/tasks" className="text-sm text-rose-600/70 dark:text-rose-400/70 hover:text-rose-600 dark:hover:text-rose-400">
+            <Link href="/tasks" className="text-sm text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300">
               View all
             </Link>
           </CardHeader>
@@ -61,7 +61,7 @@ export default async function DashboardPage() {
                       {priorityLabels[task.priority]}
                     </Badge>
                   </div>
-                  <p className="mt-1 text-xs text-rose-600/70 dark:text-rose-400/70">
+                  <p className="mt-1 text-xs text-rose-500 dark:text-rose-400">
                     Due {formatDate(task.dueDate)}
                   </p>
                 </Link>
@@ -86,7 +86,7 @@ export default async function DashboardPage() {
           <CardContent className="p-0">
             {tasksDueToday.length === 0 && projectsDueThisWeek.length === 0 ? (
               <div className="px-6 py-10 flex flex-col items-center justify-center text-center">
-                <svg className="w-8 h-8 text-emerald-500/60 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <svg className="w-8 h-8 text-emerald-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <p className="text-sm text-muted-foreground">Nothing due this week</p>
@@ -193,7 +193,7 @@ export default async function DashboardPage() {
                   </div>
                   <div className="text-right flex-shrink-0">
                     {project.label === 'completed' ? (
-                      <Badge className="border border-emerald-500/50 text-emerald-600 bg-emerald-500/5 text-xs">
+                      <Badge className="border border-emerald-500/30 text-emerald-500 dark:text-emerald-400 bg-emerald-500/10 text-xs">
                         Done
                       </Badge>
                     ) : project.overdueTasks > 0 ? (
