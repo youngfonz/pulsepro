@@ -24,7 +24,22 @@ export async function getProjects(filters?: {
     }
 
     if (filters?.status && filters.status !== 'all') {
-      where.status = filters.status
+      if (filters.status === 'completed') {
+        // Match projects with status 'completed' OR all tasks done
+        const completedCondition = {
+          OR: [
+            { status: 'completed' },
+            { tasks: { every: { completed: true }, some: {} } },
+          ],
+        }
+        where.AND = [...((where.AND as Record<string, unknown>[]) || []), completedCondition]
+      } else {
+        // For non-completed statuses, exclude projects where all tasks are done
+        where.status = filters.status
+        where.NOT = {
+          tasks: { every: { completed: true }, some: {} },
+        }
+      }
     }
 
     if (filters?.priority && filters.priority !== 'all') {
