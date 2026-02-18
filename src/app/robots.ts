@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: 'https://pulsepro.work/sitemap.xml',
+    sitemap: 'https://www.pulsepro.work/sitemap.xml',
   }
 }
