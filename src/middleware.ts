@@ -10,6 +10,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhook/polar',
   '/api/cron/daily-reminder',
   '/api/webhook/telegram',
+  '/api/og',
 ])
 
 const middleware = clerkEnabled
