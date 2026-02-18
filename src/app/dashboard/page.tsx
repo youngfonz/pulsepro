@@ -20,6 +20,28 @@ import {
 import { InsightsPanel } from '@/components/InsightsPanel'
 import { statusColors, statusLabels, priorityColors, priorityLabels, formatDate } from '@/lib/utils'
 
+function ProgressRing({ value, max, size = 48, label, className = '' }: { value: number; max: number; size?: number; label?: string; className?: string }) {
+  const strokeWidth = 3.5
+  const radius = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * radius
+  const percentage = max > 0 ? Math.min(value / max, 1) : 0
+  const offset = circumference - percentage * circumference
+
+  return (
+    <div className={`relative flex-shrink-0 ${className}`} style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={radius} strokeWidth={strokeWidth} fill="none" className="stroke-muted" />
+        {max > 0 && (
+          <circle cx={size / 2} cy={size / 2} r={radius} strokeWidth={strokeWidth} fill="none" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} className="stroke-current" />
+        )}
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-[11px] font-bold">{label ?? `${Math.round(percentage * 100)}%`}</span>
+      </div>
+    </div>
+  )
+}
+
 export default async function DashboardPage() {
   const userId = await requireUserId()
   // Assign any orphaned records to the current user
@@ -68,25 +90,39 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Link href="/projects">
           <Card className="hover:bg-muted/50 transition-colors">
-            <CardContent className="py-4">
-              <p className="text-sm text-muted-foreground">Active Projects</p>
-              <p className="text-2xl font-semibold text-foreground mt-1">{stats.activeProjects}<span className="text-sm font-normal text-muted-foreground">/{stats.totalProjects}</span></p>
+            <CardContent className="py-4 flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Active Projects</p>
+                <p className="text-2xl font-semibold text-foreground mt-1">{stats.activeProjects}<span className="text-sm font-normal text-muted-foreground">/{stats.totalProjects}</span></p>
+              </div>
+              <ProgressRing value={stats.activeProjects} max={stats.totalProjects} className="text-blue-500" />
             </CardContent>
           </Card>
         </Link>
         <Link href="/tasks">
           <Card className="hover:bg-muted/50 transition-colors">
-            <CardContent className="py-4">
-              <p className="text-sm text-muted-foreground">Tasks Completed</p>
-              <p className="text-2xl font-semibold text-foreground mt-1">{stats.totalTasks - stats.pendingTasks}<span className="text-sm font-normal text-muted-foreground">/{stats.totalTasks}</span></p>
+            <CardContent className="py-4 flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Tasks Completed</p>
+                <p className="text-2xl font-semibold text-foreground mt-1">{stats.totalTasks - stats.pendingTasks}<span className="text-sm font-normal text-muted-foreground">/{stats.totalTasks}</span></p>
+              </div>
+              <ProgressRing value={stats.totalTasks - stats.pendingTasks} max={stats.totalTasks} className="text-emerald-500" />
             </CardContent>
           </Card>
         </Link>
         <Link href="/tasks">
           <Card className="hover:bg-muted/50 transition-colors">
-            <CardContent className="py-4">
-              <p className="text-sm text-muted-foreground">Due This Week</p>
-              <p className="text-2xl font-semibold text-foreground mt-1">{tasksDueThisWeekCount}</p>
+            <CardContent className="py-4 flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Due This Week</p>
+                <p className="text-2xl font-semibold text-foreground mt-1">{tasksDueThisWeekCount}</p>
+              </div>
+              <ProgressRing
+                value={tasksDueThisWeekCount}
+                max={Math.max(stats.pendingTasks, 1)}
+                label={String(tasksDueThisWeekCount)}
+                className={tasksDueThisWeekCount === 0 ? 'text-emerald-500' : tasksDueThisWeekCount > 5 ? 'text-amber-500' : 'text-blue-500'}
+              />
             </CardContent>
           </Card>
         </Link>
