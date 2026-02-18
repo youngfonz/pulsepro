@@ -1,11 +1,8 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'Pulse Pro — Project & Task Management'
-export const size = { width: 1200, height: 630 }
-export const contentType = 'image/png'
 
-export default async function Image() {
+export async function GET() {
   return new ImageResponse(
     (
       <div
@@ -20,7 +17,6 @@ export default async function Image() {
           padding: '60px',
         }}
       >
-        {/* Logo mark */}
         <div
           style={{
             display: 'flex',
@@ -57,7 +53,6 @@ export default async function Image() {
           </span>
         </div>
 
-        {/* Tagline */}
         <div
           style={{
             fontSize: '28px',
@@ -71,7 +66,6 @@ export default async function Image() {
           Project management for people who don't need project management.
         </div>
 
-        {/* Feature pills */}
         <div
           style={{
             display: 'flex',
@@ -97,7 +91,6 @@ export default async function Image() {
           )}
         </div>
 
-        {/* Domain */}
         <div
           style={{
             position: 'absolute',
@@ -112,7 +105,8 @@ export default async function Image() {
       </div>
     ),
     {
-      ...size,
+      width: 1200,
+      height: 630,
     }
   )
 }
