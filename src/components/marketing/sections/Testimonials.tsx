@@ -72,6 +72,8 @@ export function Testimonials() {
                   <img
                     src={testimonial.avatar}
                     alt={testimonial.name}
+                    width={36}
+                    height={36}
                     className="w-9 h-9 rounded-full object-cover ring-1 ring-border"
                     loading="lazy"
                   />

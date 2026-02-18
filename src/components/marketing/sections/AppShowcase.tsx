@@ -44,7 +44,7 @@ export function AppShowcase() {
         <ScrollReveal delay={200} direction="none">
           <div className="flex flex-col items-center mt-10">
             {/* Tab buttons */}
-            <div className="inline-flex justify-center gap-1 bg-muted/50 rounded-full p-1">
+            <div className="inline-flex justify-center gap-1 bg-muted/50 rounded-full p-1 overflow-x-auto max-w-full">
               {screens.map((screen, i) => (
                 <button
                   key={screen.label}
@@ -53,7 +53,7 @@ export function AppShowcase() {
                     setPaused(true);
                   }}
                   className={cn(
-                    'px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200',
+                    'px-3 py-1.5 text-xs sm:text-sm sm:px-4 font-medium rounded-full transition-all duration-200 whitespace-nowrap',
                     i === active
                       ? 'bg-background text-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'

@@ -76,7 +76,7 @@ function SortableCard({ id, children }: { id: string; children: ReactNode }) {
       <button
         {...attributes}
         {...listeners}
-        className="absolute top-1 left-1/2 -translate-x-1/2 z-10 opacity-0 group-hover/card:opacity-100 focus:opacity-100 cursor-grab active:cursor-grabbing px-4 py-1 rounded-b-md text-muted-foreground/40 hover:text-muted-foreground transition-opacity"
+        className="absolute top-1 left-1/2 -translate-x-1/2 z-10 opacity-30 sm:opacity-0 sm:group-hover/card:opacity-100 focus:opacity-100 cursor-grab active:cursor-grabbing px-4 py-1 rounded-b-md text-muted-foreground/40 hover:text-muted-foreground transition-opacity"
         title="Drag to reorder"
       >
         <svg className="w-5 h-1.5" viewBox="0 0 20 6" fill="currentColor">

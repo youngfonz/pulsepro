@@ -81,7 +81,7 @@ export function Hero() {
             </ScrollReveal>
 
             <ScrollReveal delay={400}>
-              <div className="mt-8 flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1.5">
                   <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />

@@ -157,7 +157,7 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
         <button
           onClick={handleDelete}
           disabled={isPending}
-          className="text-xs text-muted-foreground hover:text-destructive transition-colors mt-2"
+          className="p-2 -m-2 text-xs text-muted-foreground hover:text-destructive transition-colors mt-2"
         >
           Delete
         </button>
