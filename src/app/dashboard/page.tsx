@@ -114,7 +114,7 @@ export default async function DashboardPage() {
           <Card className="hover:bg-muted/50 transition-colors">
             <CardContent className="py-4 flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Due This Week</p>
+                <p className="text-sm text-muted-foreground">Tasks This Week</p>
                 <p className="text-2xl font-semibold text-foreground mt-1">{tasksDueThisWeekCount}</p>
               </div>
               <ProgressRing
@@ -142,90 +142,74 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Projects Due This Week */}
-        <Card>
+        {/* Upcoming — tasks due today + projects due this week */}
+        <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Projects Due This Week</CardTitle>
-            <Link href="/projects" className="text-sm text-primary hover:text-primary/80">
-              View all
-            </Link>
-          </CardHeader>
-          <CardContent className="p-0">
-            {projectsDueThisWeek.length === 0 ? (
-              <div className="px-6 py-12 flex flex-col items-center justify-center text-center">
-                <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center mb-3">
-                  <svg className="w-6 h-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <p className="text-sm font-medium text-foreground">Week looks clear</p>
-                <p className="text-xs text-muted-foreground mt-1">No project deadlines this week</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-border">
-                {projectsDueThisWeek.map((project) => (
-                  <Link
-                    key={project.id}
-                    href={`/projects/${project.id}`}
-                    className="block px-4 py-3 sm:px-6 hover:bg-muted transition-colors"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <span className="font-medium text-foreground block truncate">{project.name}</span>
-                        <p className="text-sm text-muted-foreground truncate">{project.client.name}</p>
-                      </div>
-                      <Badge className={`${priorityColors[project.priority]} flex-shrink-0`}>
-                        {priorityLabels[project.priority]}
-                      </Badge>
-                    </div>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      Due {formatDate(project.dueDate)}
-                    </p>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Tasks Due Today */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Tasks Due Today</CardTitle>
+            <CardTitle>Upcoming</CardTitle>
             <Link href="/tasks" className="text-sm text-primary hover:text-primary/80">
               View all
             </Link>
           </CardHeader>
           <CardContent className="p-0">
-            {tasksDueToday.length === 0 ? (
-              <div className="px-6 py-12 flex flex-col items-center justify-center text-center">
-                <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center mb-3">
-                  <svg className="w-6 h-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <p className="text-sm font-medium text-foreground">All clear!</p>
-                <p className="text-xs text-muted-foreground mt-1">No tasks due today</p>
+            {tasksDueToday.length === 0 && projectsDueThisWeek.length === 0 ? (
+              <div className="px-6 py-10 flex flex-col items-center justify-center text-center">
+                <svg className="w-8 h-8 text-emerald-500/60 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-sm text-muted-foreground">Nothing due this week</p>
               </div>
             ) : (
-              <div className="divide-y divide-border">
-                {tasksDueToday.map((task) => (
-                  <Link
-                    key={task.id}
-                    href={`/projects/${task.project.id}`}
-                    className="block px-4 py-3 sm:px-6 hover:bg-muted transition-colors"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <span className="font-medium text-foreground block truncate">{task.title}</span>
-                        <p className="text-sm text-muted-foreground truncate">{task.project.name}</p>
-                      </div>
-                      <Badge className={`${priorityColors[task.priority]} flex-shrink-0`}>
-                        {priorityLabels[task.priority]}
-                      </Badge>
+              <div>
+                {tasksDueToday.length > 0 && (
+                  <div>
+                    <p className="px-4 sm:px-6 pt-2 pb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">Due Today</p>
+                    <div className="divide-y divide-border">
+                      {tasksDueToday.map((task) => (
+                        <Link
+                          key={task.id}
+                          href={`/projects/${task.project.id}`}
+                          className="flex items-center gap-3 px-4 py-2.5 sm:px-6 hover:bg-muted transition-colors"
+                        >
+                          <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <div className="flex-1 min-w-0">
+                            <span className="text-sm font-medium text-foreground block truncate">{task.title}</span>
+                            <p className="text-xs text-muted-foreground truncate">{task.project.name}</p>
+                          </div>
+                          <Badge className={`${priorityColors[task.priority]} flex-shrink-0`}>
+                            {priorityLabels[task.priority]}
+                          </Badge>
+                        </Link>
+                      ))}
                     </div>
-                  </Link>
-                ))}
+                  </div>
+                )}
+                {projectsDueThisWeek.length > 0 && (
+                  <div className={tasksDueToday.length > 0 ? 'border-t border-border' : ''}>
+                    <p className="px-4 sm:px-6 pt-3 pb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">Projects This Week</p>
+                    <div className="divide-y divide-border">
+                      {projectsDueThisWeek.map((project) => (
+                        <Link
+                          key={project.id}
+                          href={`/projects/${project.id}`}
+                          className="flex items-center gap-3 px-4 py-2.5 sm:px-6 hover:bg-muted transition-colors"
+                        >
+                          <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                          </svg>
+                          <div className="flex-1 min-w-0">
+                            <span className="text-sm font-medium text-foreground block truncate">{project.name}</span>
+                            <p className="text-xs text-muted-foreground truncate">{project.client.name} · Due {formatDate(project.dueDate)}</p>
+                          </div>
+                          <Badge className={`${priorityColors[project.priority]} flex-shrink-0`}>
+                            {priorityLabels[project.priority]}
+                          </Badge>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
