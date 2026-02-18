@@ -39,8 +39,8 @@ export default async function DashboardPage() {
       content: (
         <Card className="h-full border-l-2 border-l-rose-500/40">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-rose-400 text-base">Overdue</CardTitle>
-            <Link href="/tasks" className="text-sm text-rose-400/70 hover:text-rose-400">
+            <CardTitle className="text-rose-600 dark:text-rose-400 text-base">Overdue</CardTitle>
+            <Link href="/tasks" className="text-sm text-rose-600/70 dark:text-rose-400/70 hover:text-rose-600 dark:hover:text-rose-400">
               View all
             </Link>
           </CardHeader>
@@ -61,7 +61,7 @@ export default async function DashboardPage() {
                       {priorityLabels[task.priority]}
                     </Badge>
                   </div>
-                  <p className="mt-1 text-xs text-rose-400/70">
+                  <p className="mt-1 text-xs text-rose-600/70 dark:text-rose-400/70">
                     Due {formatDate(task.dueDate)}
                   </p>
                 </Link>

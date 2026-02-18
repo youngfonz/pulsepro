@@ -3,10 +3,33 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { getAllTasks, getProjectsForTaskFilter } from '@/actions/tasks'
+import { getDashboardStats, getTasksDueThisWeek } from '@/actions/dashboard'
 import { priorityColors, priorityLabels, formatDate } from '@/lib/utils'
 import { TasksFilter } from './TasksFilter'
 import { TaskCheckbox } from './TaskCheckbox'
 import { AddTaskDialog } from './AddTaskDialog'
+
+function ProgressRing({ value, max, size = 44, label, className = '' }: { value: number; max: number; size?: number; label?: string; className?: string }) {
+  const strokeWidth = 3
+  const radius = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * radius
+  const percentage = max > 0 ? Math.min(value / max, 1) : 0
+  const offset = circumference - percentage * circumference
+
+  return (
+    <div className={`relative flex-shrink-0 ${className}`} style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={radius} strokeWidth={strokeWidth} fill="none" className="stroke-muted" />
+        {max > 0 && (
+          <circle cx={size / 2} cy={size / 2} r={radius} strokeWidth={strokeWidth} fill="none" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} className="stroke-current" />
+        )}
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-[10px] font-bold">{label ?? `${Math.round(percentage * 100)}%`}</span>
+      </div>
+    </div>
+  )
+}
 
 interface Props {
   searchParams: Promise<{
@@ -20,7 +43,7 @@ interface Props {
 
 export default async function TasksPage({ searchParams }: Props) {
   const params = await searchParams
-  const [tasks, projects] = await Promise.all([
+  const [tasks, projects, stats, tasksDueThisWeekCount] = await Promise.all([
     getAllTasks({
       date: params.date,
       status: params.status,
@@ -29,7 +52,11 @@ export default async function TasksPage({ searchParams }: Props) {
       sort: params.sort,
     }),
     getProjectsForTaskFilter(),
+    getDashboardStats(),
+    getTasksDueThisWeek(),
   ])
+
+  const completedTasks = stats.totalTasks - stats.pendingTasks
 
   const dateLabel = params.date
     ? new Date(params.date).toLocaleDateString('en-US', {
@@ -64,6 +91,36 @@ export default async function TasksPage({ searchParams }: Props) {
           )}
         </div>
         <AddTaskDialog projects={projects} />
+      </div>
+
+      {/* Task Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="flex items-center gap-3 rounded-lg border border-border px-4 py-3">
+          <ProgressRing value={completedTasks} max={stats.totalTasks} className="text-emerald-500" />
+          <div>
+            <p className="text-xs text-muted-foreground">Completed</p>
+            <p className="text-lg font-semibold text-foreground">{completedTasks}<span className="text-sm font-normal text-muted-foreground">/{stats.totalTasks}</span></p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 rounded-lg border border-border px-4 py-3">
+          <ProgressRing
+            value={tasksDueThisWeekCount}
+            max={Math.max(stats.pendingTasks, 1)}
+            label={String(tasksDueThisWeekCount)}
+            className={tasksDueThisWeekCount === 0 ? 'text-emerald-500' : tasksDueThisWeekCount > 5 ? 'text-amber-500' : 'text-blue-500'}
+          />
+          <div>
+            <p className="text-xs text-muted-foreground">Due This Week</p>
+            <p className="text-lg font-semibold text-foreground">{tasksDueThisWeekCount}</p>
+          </div>
+        </div>
+        <div className="hidden sm:flex items-center gap-3 rounded-lg border border-border px-4 py-3">
+          <ProgressRing value={stats.activeProjects} max={stats.totalProjects} className="text-blue-500" />
+          <div>
+            <p className="text-xs text-muted-foreground">Active Projects</p>
+            <p className="text-lg font-semibold text-foreground">{stats.activeProjects}<span className="text-sm font-normal text-muted-foreground">/{stats.totalProjects}</span></p>
+          </div>
+        </div>
       </div>
 
       <TasksFilter
