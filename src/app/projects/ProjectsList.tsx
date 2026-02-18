@@ -45,9 +45,15 @@ interface Props {
   healthMap?: Record<string, HealthLabel>
 }
 
+function isProjectCompleted(p: Project): boolean {
+  if (p.status === 'completed') return true
+  if (p.tasks.length > 0 && p.tasks.every(t => t.completed)) return true
+  return false
+}
+
 export function ProjectsList({ projects, currentSort, viewMode, healthMap }: Props) {
-  const activeProjects = projects.filter(p => p.status !== 'completed')
-  const completedProjects = projects.filter(p => p.status === 'completed')
+  const activeProjects = projects.filter(p => !isProjectCompleted(p))
+  const completedProjects = projects.filter(p => isProjectCompleted(p))
 
   return (
     <>
