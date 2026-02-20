@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+function getPlanFromProductId(productId?: string): 'pro' | 'team' {
+  const teamProductId = process.env.POLAR_TEAM_PRODUCT_ID
+  if (teamProductId && productId === teamProductId) return 'team'
+  return 'pro'
+}
+
 export async function POST(req: NextRequest) {
   if (!process.env.POLAR_WEBHOOK_SECRET) {
     return NextResponse.json({ error: 'Webhooks not configured' }, { status: 503 })
@@ -20,13 +26,15 @@ export async function POST(req: NextRequest) {
         return
       }
 
+      const plan = getPlanFromProductId(payload.data.productId)
+
       await prisma.subscription.upsert({
         where: { userId },
         create: {
           userId,
           polarCustomerId: customerId,
           polarSubscriptionId: subscriptionId,
-          plan: 'pro',
+          plan,
           status: 'active',
           currentPeriodEnd: payload.data.currentPeriodEnd
             ? new Date(payload.data.currentPeriodEnd)
@@ -35,7 +43,7 @@ export async function POST(req: NextRequest) {
         update: {
           polarCustomerId: customerId,
           polarSubscriptionId: subscriptionId,
-          plan: 'pro',
+          plan,
           status: 'active',
           currentPeriodEnd: payload.data.currentPeriodEnd
             ? new Date(payload.data.currentPeriodEnd)
@@ -75,19 +83,22 @@ export async function POST(req: NextRequest) {
       const userId = payload.data.metadata?.userId as string | undefined
       if (!userId) return
 
+      const plan = getPlanFromProductId(payload.data.productId)
+
       await prisma.subscription.upsert({
         where: { userId },
         create: {
           userId,
           polarCustomerId: payload.data.customerId,
           polarSubscriptionId: payload.data.id,
-          plan: 'pro',
+          plan,
           status: payload.data.status,
           currentPeriodEnd: payload.data.currentPeriodEnd
             ? new Date(payload.data.currentPeriodEnd)
             : null,
         },
         update: {
+          plan,
           status: payload.data.status,
           currentPeriodEnd: payload.data.currentPeriodEnd
             ? new Date(payload.data.currentPeriodEnd)

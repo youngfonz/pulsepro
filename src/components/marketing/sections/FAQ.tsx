@@ -16,8 +16,8 @@ const faqs = [
     answer: "Yes. The free plan includes 3 projects, 50 tasks, and 1 client — enough to see if Pulse Pro fits your workflow before upgrading."
   },
   {
-    question: "What do I get with the Pro plan?",
-    answer: "Unlimited projects, tasks, and clients. Plus file attachments, daily email reminders so you never miss a deadline, and priority support. Everything you need to manage a full client roster."
+    question: "What do I get with Pro vs Team?",
+    answer: "Pro ($12/mo) gives you unlimited projects, tasks, and clients, plus file attachments, Telegram bot, email reminders, and the ability to share projects with up to 3 collaborators. Team ($29/mo) includes everything in Pro plus up to 10 team members with full role-based access control — viewer, editor, and manager roles."
   },
   {
     question: "Is my data secure?",
@@ -29,7 +29,7 @@ const faqs = [
   },
   {
     question: "Can my team use Pulse Pro?",
-    answer: "Team workspaces with shared projects, task assignment, and manager dashboards are on our roadmap. Right now Pulse Pro is optimized for individuals and solo professionals — but team features are coming."
+    answer: "Yes! Pro users can share projects with up to 3 collaborators. Team plan ($29/mo) supports up to 10 members with role-based access — assign viewer, editor, or manager roles per project. No per-seat fees."
   }
 ]
 
