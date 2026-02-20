@@ -46,7 +46,10 @@ export async function getProjectRole(projectId: string): Promise<ProjectRole | n
     select: { role: true },
   })
 
-  return (access?.role as ProjectRole) ?? null
+  if (!access) return null
+  const validRoles = new Set(['viewer', 'editor', 'manager'])
+  if (!validRoles.has(access.role)) return null
+  return access.role as ProjectRole
 }
 
 /**

@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { requireUserId } from '@/lib/auth'
 import { checkLimit } from '@/lib/subscription'
 import { revalidatePath } from 'next/cache'
-import { getProjectWhereWithAccess, canAccessProject } from '@/lib/access'
+import { getProjectWhereWithAccess, canAccessProject, requireProjectAccess } from '@/lib/access'
 
 export async function getProjects(filters?: {
   search?: string
@@ -15,25 +15,26 @@ export async function getProjects(filters?: {
 }) {
   try {
     const baseWhere = await getProjectWhereWithAccess()
-    const where: Record<string, unknown> = { ...baseWhere }
+    const conditions: Record<string, unknown>[] = [baseWhere]
+    const where: Record<string, unknown> = {}
 
     if (filters?.search) {
-      where.OR = [
-        { name: { contains: filters.search, mode: 'insensitive' } },
-        { description: { contains: filters.search, mode: 'insensitive' } },
-      ]
+      conditions.push({
+        OR: [
+          { name: { contains: filters.search, mode: 'insensitive' } },
+          { description: { contains: filters.search, mode: 'insensitive' } },
+        ]
+      })
     }
 
     if (filters?.status && filters.status !== 'all') {
       if (filters.status === 'completed') {
-        // Match projects with status 'completed' OR all tasks done
-        const completedCondition = {
+        conditions.push({
           OR: [
             { status: 'completed' },
             { tasks: { every: { completed: true }, some: {} } },
           ],
-        }
-        where.AND = [...((where.AND as Record<string, unknown>[]) || []), completedCondition]
+        })
       } else {
         // For non-completed statuses, exclude projects where all tasks are done
         where.status = filters.status
@@ -93,6 +94,8 @@ export async function getProjects(filters?: {
       default:
         orderBy = { createdAt: 'desc' }
     }
+
+    where.AND = conditions
 
     const projects = await prisma.project.findMany({
       where,
@@ -262,7 +265,9 @@ export async function updateProject(id: string, formData: FormData) {
   try {
     const userId = await requireUserId()
     const existing = await prisma.project.findFirst({ where: { id, userId } })
-    if (!existing) return
+    if (!existing) {
+      await requireProjectAccess(id, 'manager')
+    }
 
     const data = {
       name: formData.get('name') as string,
@@ -333,7 +338,9 @@ export async function addProjectImage(projectId: string, path: string, name: str
   try {
     const userId = await requireUserId()
     const project = await prisma.project.findFirst({ where: { id: projectId, userId } })
-    if (!project) return
+    if (!project) {
+      await requireProjectAccess(projectId, 'editor')
+    }
 
     await prisma.projectImage.create({
       data: {
@@ -358,7 +365,9 @@ export async function removeProjectImage(imageId: string) {
     })
 
     if (!image) return
-    if (image.project.userId !== userId) return
+    if (image.project.userId !== userId) {
+      await requireProjectAccess(image.project.id, 'editor')
+    }
 
     await prisma.projectImage.delete({
       where: { id: imageId },
@@ -375,7 +384,9 @@ export async function addTimeEntry(projectId: string, formData: FormData) {
   try {
     const userId = await requireUserId()
     const project = await prisma.project.findFirst({ where: { id: projectId, userId } })
-    if (!project) return
+    if (!project) {
+      await requireProjectAccess(projectId, 'editor')
+    }
 
     const hours = parseFloat(formData.get('hours') as string)
     const description = formData.get('description') as string || null
@@ -405,7 +416,9 @@ export async function deleteTimeEntry(id: string) {
     })
 
     if (!entry) return
-    if (entry.project.userId !== userId) return
+    if (entry.project.userId !== userId) {
+      await requireProjectAccess(entry.project.id, 'editor')
+    }
 
     await prisma.timeEntry.delete({
       where: { id },

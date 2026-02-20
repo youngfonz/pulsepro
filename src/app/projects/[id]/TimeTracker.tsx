@@ -16,9 +16,10 @@ interface TimeEntry {
 interface TimeTrackerProps {
   projectId: string
   timeEntries: TimeEntry[]
+  canEdit?: boolean
 }
 
-export function TimeTracker({ projectId, timeEntries }: TimeTrackerProps) {
+export function TimeTracker({ projectId, timeEntries, canEdit = true }: TimeTrackerProps) {
   const [isAdding, setIsAdding] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -53,7 +54,7 @@ export function TimeTracker({ projectId, timeEntries }: TimeTrackerProps) {
           <p className="text-2xl font-bold text-foreground">{formatHours(totalHours)}</p>
           <p className="text-sm text-muted-foreground">Total hours logged</p>
         </div>
-        {!isAdding && (
+        {!isAdding && canEdit && (
           <Button onClick={() => setIsAdding(true)}>
             + Log Time
           </Button>
@@ -116,15 +117,17 @@ export function TimeTracker({ projectId, timeEntries }: TimeTrackerProps) {
                     <p className="text-sm text-muted-foreground truncate">{entry.description}</p>
                   )}
                 </div>
-                <button
-                  onClick={() => handleDelete(entry.id)}
-                  className="p-1 text-muted-foreground hover:text-destructive transition-colors"
-                  title="Delete entry"
-                >
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                {canEdit && (
+                  <button
+                    onClick={() => handleDelete(entry.id)}
+                    className="p-1 text-muted-foreground hover:text-destructive transition-colors"
+                    title="Delete entry"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
               </div>
             ))}
           </div>
