@@ -15,25 +15,26 @@ export function FinalCTA() {
 
             <div className="relative px-8 py-16 md:py-20 text-center">
               <h2 className="text-3xl md:text-4xl font-semibold text-foreground tracking-tight">
-                You don&apos;t need a tool built for a 50-person team.
+                Stop losing work to tab overload.
               </h2>
 
               <p className="text-base text-muted-foreground mt-4 max-w-md mx-auto">
-                Pulse Pro is built for solo professionals who want to feel in control — not overwhelmed by features they&apos;ll never use. Set up in 5 minutes.
+                Every client, project, and deadline in one place.
+                Set up in 5 minutes. Free forever.
               </p>
 
               <Link
                 href="/sign-up"
                 className="mt-8 inline-flex items-center justify-center px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors shadow-lg"
               >
-                Start for free
+                Get started — it&apos;s free
                 <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </Link>
 
               <p className="mt-4 text-sm text-muted-foreground/70">
-                No credit card required
+                Free forever. No credit card required.
               </p>
             </div>
           </div>

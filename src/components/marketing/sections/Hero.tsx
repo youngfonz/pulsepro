@@ -42,21 +42,21 @@ export function Hero() {
             <ScrollReveal delay={0}>
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-6">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-sm font-medium text-foreground">Now with Telegram bot integration</span>
+                <span className="text-sm font-medium text-foreground">Now with team workspaces</span>
               </div>
             </ScrollReveal>
 
             <ScrollReveal delay={100}>
               <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-foreground leading-[1.1] tracking-tight">
-                Stop juggling clients{' '}
-                <span className="text-primary">in your head</span>.
+                Your clients noticed the{' '}
+                <span className="text-primary">missed deadline</span>.
               </h1>
             </ScrollReveal>
 
             <ScrollReveal delay={200}>
               <p className="text-lg md:text-xl text-muted-foreground mt-6 max-w-xl leading-relaxed">
-                You have 5 clients, 12 deadlines, and zero idea what&apos;s overdue.
-                You don&apos;t need a tool built for 50-person teams — you need to know what&apos;s due today.
+                5 clients. 12 deadlines. Zero visibility.
+                Pulse Pro shows you what&apos;s overdue, what&apos;s next, and who needs what — in under a minute.
               </p>
             </ScrollReveal>
 
@@ -66,7 +66,7 @@ export function Hero() {
                   href="/sign-up"
                   className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all duration-200 hover:shadow-lg hover:shadow-primary/20"
                 >
-                  Start for free
+                  Get started — it&apos;s free
                   <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
@@ -86,6 +86,12 @@ export function Hero() {
                   <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
+                  Free forever
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
                   Setup in 5 minutes
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -93,12 +99,6 @@ export function Hero() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                   No credit card
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                  Cancel anytime
                 </div>
               </div>
             </ScrollReveal>

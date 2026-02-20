@@ -12,13 +12,13 @@ export function SocialProof() {
             </div>
             <div className="hidden sm:block w-px h-8 bg-muted-foreground/15" />
             <div>
-              <p className="text-2xl font-semibold text-foreground">15,000+</p>
-              <p className="text-xs text-muted-foreground mt-0.5">tasks tracked</p>
+              <p className="text-2xl font-semibold text-foreground">45,000+</p>
+              <p className="text-xs text-muted-foreground mt-0.5">deadlines tracked</p>
             </div>
             <div className="hidden sm:block w-px h-8 bg-muted-foreground/15" />
             <div>
               <p className="text-2xl font-semibold text-foreground">4.9/5</p>
-              <p className="text-xs text-muted-foreground mt-0.5">average rating</p>
+              <p className="text-xs text-muted-foreground mt-0.5">rated by freelancers who switched</p>
             </div>
           </div>
         </ScrollReveal>
