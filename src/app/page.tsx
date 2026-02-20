@@ -10,6 +10,7 @@ import { Testimonials } from '@/components/marketing/sections/Testimonials'
 import { Pricing } from '@/components/marketing/sections/Pricing'
 import { FAQ } from '@/components/marketing/sections/FAQ'
 import { TelegramFeature } from '@/components/marketing/sections/TelegramFeature'
+import { WhySwitch } from '@/components/marketing/sections/WhySwitch'
 import { FinalCTA } from '@/components/marketing/sections/FinalCTA'
 
 export default async function MarketingPage() {
@@ -30,6 +31,7 @@ export default async function MarketingPage() {
         <AppShowcase />
         <TelegramFeature />
         <Testimonials />
+        <WhySwitch />
         <Pricing />
         <FAQ />
         <FinalCTA />

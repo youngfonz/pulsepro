@@ -20,7 +20,7 @@ const primaryFeatures = [
       </svg>
     ),
     title: 'Never miss another deadline',
-    description: 'Create tasks, set priorities, and get daily email reminders about what\u2019s due. Stop carrying your to-do list in your head.',
+    description: 'Create tasks, set priorities, and get daily reminders about what\u2019s due. Stop carrying your to-do list in your head.',
     color: 'emerald' as const,
   },
   {
@@ -58,33 +58,33 @@ const colorMap = {
 
 const secondaryFeatures = [
   {
-    title: 'Quick Search (\u2318K)',
-    description: 'Find any project, task, or client instantly',
+    title: 'Find anything in 2 keystrokes',
+    description: 'Projects, tasks, clients \u2014 instantly with \u2318K',
     dot: 'bg-blue-500',
   },
   {
-    title: 'Calendar view',
-    description: 'See all deadlines at a glance',
+    title: 'See your month at a glance',
+    description: 'Every deadline on one calendar',
     dot: 'bg-emerald-500',
   },
   {
-    title: 'Bookmarks',
-    description: 'Save links, articles, and resources to projects',
+    title: 'Save anything to a project',
+    description: 'Bookmark links, articles, and resources',
     dot: 'bg-violet-500',
   },
   {
-    title: 'Daily email reminders',
-    description: 'Know exactly what\u2019s due every morning',
+    title: 'Wake up knowing what\u2019s due',
+    description: 'Daily email with your priorities for the day',
     dot: 'bg-blue-500',
   },
   {
-    title: 'Telegram bot',
-    description: 'Check tasks and mark them done from Telegram',
+    title: 'Manage tasks without opening a browser',
+    description: 'Check off tasks and add new ones from Telegram',
     dot: 'bg-[#2AABEE]',
   },
   {
-    title: 'Dark mode',
-    description: 'Easy on the eyes',
+    title: 'Invite your team',
+    description: 'Shared workspaces with project-level access control',
     dot: 'bg-violet-500',
   },
 ];
