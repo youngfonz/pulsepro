@@ -40,16 +40,19 @@ const colorMap = {
     iconBg: 'bg-blue-500/10',
     iconText: 'text-blue-500',
     border: 'border-t-blue-500',
+    cardBg: 'bg-blue-50/50 dark:bg-blue-950/20',
   },
   emerald: {
     iconBg: 'bg-emerald-500/10',
     iconText: 'text-emerald-500',
     border: 'border-t-emerald-500',
+    cardBg: 'bg-emerald-50/50 dark:bg-emerald-950/20',
   },
   amber: {
     iconBg: 'bg-amber-500/10',
     iconText: 'text-amber-500',
     border: 'border-t-amber-500',
+    cardBg: 'bg-amber-50/50 dark:bg-amber-950/20',
   },
 } as const;
 
@@ -85,7 +88,7 @@ export function Features() {
               return (
                 <div
                   key={feature.title}
-                  className={`border border-border ${colors.border} border-t-2 rounded-xl p-6 bg-card hover:shadow-lg transition-all duration-200`}
+                  className={`border border-border ${colors.border} border-t-2 rounded-xl p-6 ${colors.cardBg} hover:shadow-lg transition-all duration-200`}
                 >
                   <div className={`w-10 h-10 rounded-lg ${colors.iconBg} ${colors.iconText} flex items-center justify-center`}>
                     {feature.icon}
