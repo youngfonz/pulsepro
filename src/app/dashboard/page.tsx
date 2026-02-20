@@ -39,8 +39,18 @@ export default async function DashboardPage() {
 
   const completedTasks = stats.totalTasks - stats.pendingTasks
 
+  // Group overdue tasks by project
+  const overdueByProject = overdueTasks.reduce<Record<string, { name: string; id: string; tasks: typeof overdueTasks }>>((acc, task) => {
+    if (!acc[task.project.id]) {
+      acc[task.project.id] = { name: task.project.name, id: task.project.id, tasks: [] }
+    }
+    acc[task.project.id].tasks.push(task)
+    return acc
+  }, {})
+  const overdueGroups = Object.values(overdueByProject)
+
   const sections: DashboardSectionDef[] = [
-    // Overdue — subtle rose accent, not jarring
+    // Overdue — grouped by project
     ...(overdueTasks.length > 0 ? [{
       id: 'overdue',
       content: (
@@ -53,25 +63,37 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y divide-border">
-              {overdueTasks.map((task) => (
-                <Link
-                  key={task.id}
-                  href={`/tasks/${task.id}`}
-                  className="block px-4 py-3 sm:px-6 hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0 flex-1">
-                      <span className="font-medium text-foreground block truncate">{task.title}</span>
-                      <p className="text-sm text-muted-foreground truncate">{task.project.name}</p>
-                    </div>
-                    <Badge className={`${priorityColors[task.priority]} flex-shrink-0`}>
-                      {priorityLabels[task.priority]}
-                    </Badge>
-                  </div>
-                  <p className="mt-1 text-xs text-rose-500 dark:text-rose-400">
-                    Due {formatDate(task.dueDate)}
-                  </p>
-                </Link>
+              {overdueGroups.map((group) => (
+                <div key={group.id}>
+                  <Link
+                    href={`/projects/${group.id}`}
+                    className="flex items-center justify-between px-4 sm:px-6 pt-3 pb-1 hover:bg-muted/30 transition-colors"
+                  >
+                    <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{group.name}</p>
+                    <span className="text-xs text-rose-500 dark:text-rose-400 font-medium">
+                      {group.tasks.length} task{group.tasks.length > 1 ? 's' : ''}
+                    </span>
+                  </Link>
+                  {group.tasks.map((task) => (
+                    <Link
+                      key={task.id}
+                      href={`/tasks/${task.id}`}
+                      className="block px-4 py-2.5 sm:px-6 hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <span className="font-medium text-foreground block truncate text-sm">{task.title}</span>
+                        </div>
+                        <Badge className={`${priorityColors[task.priority]} flex-shrink-0`}>
+                          {priorityLabels[task.priority]}
+                        </Badge>
+                      </div>
+                      <p className="mt-0.5 text-xs text-rose-500 dark:text-rose-400">
+                        Due {formatDate(task.dueDate)}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
               ))}
             </div>
           </CardContent>

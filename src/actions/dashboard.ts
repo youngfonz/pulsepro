@@ -511,23 +511,12 @@ export async function getSmartInsights(): Promise<Insight[]> {
     now.setHours(0, 0, 0, 0)
     const tomorrow = new Date(now)
     tomorrow.setDate(tomorrow.getDate() + 1)
-    const weekAgo = new Date(now)
-    weekAgo.setDate(weekAgo.getDate() - 7)
-    const weekFromNow = new Date(now)
-    weekFromNow.setDate(weekFromNow.getDate() + 7)
 
     const [
-      overdueTasks,
       highPriorityDueSoon,
       staleProjects,
-      completedThisWeek,
       totalPending,
     ] = await Promise.all([
-      // Overdue tasks grouped by project
-      prisma.task.findMany({
-        where: { userId, completed: false, url: null, dueDate: { lt: now } },
-        include: { project: { select: { id: true, name: true } } },
-      }),
       // High priority tasks due today or tomorrow
       prisma.task.findMany({
         where: {
@@ -549,10 +538,6 @@ export async function getSmartInsights(): Promise<Insight[]> {
         select: { id: true, name: true, updatedAt: true },
         take: 3,
       }),
-      // Tasks completed this week
-      prisma.task.count({
-        where: { userId, completed: true, url: null, updatedAt: { gte: weekAgo } },
-      }),
       // Total pending tasks
       prisma.task.count({
         where: { userId, completed: false, url: null },
@@ -561,25 +546,7 @@ export async function getSmartInsights(): Promise<Insight[]> {
 
     const insights: Insight[] = []
 
-    // 1. Overdue tasks by project (critical)
-    const overdueByProject: Record<string, { name: string; id: string; count: number }> = {}
-    for (const t of overdueTasks) {
-      if (!overdueByProject[t.project.id]) {
-        overdueByProject[t.project.id] = { name: t.project.name, id: t.project.id, count: 0 }
-      }
-      overdueByProject[t.project.id].count++
-    }
-    const worstProject = Object.values(overdueByProject).sort((a, b) => b.count - a.count)[0]
-    if (worstProject) {
-      insights.push({
-        id: 'overdue-project',
-        color: 'red',
-        message: `${worstProject.name} has ${worstProject.count} overdue task${worstProject.count > 1 ? 's' : ''} — needs attention`,
-        href: `/projects/${worstProject.id}`,
-      })
-    }
-
-    // 2. High priority tasks due soon
+    // 1. High priority tasks due soon
     if (highPriorityDueSoon.length > 0) {
       insights.push({
         id: 'high-priority-soon',
@@ -603,17 +570,7 @@ export async function getSmartInsights(): Promise<Insight[]> {
       })
     }
 
-    // 4. Weekly progress
-    if (completedThisWeek > 0) {
-      insights.push({
-        id: 'weekly-progress',
-        color: 'green',
-        message: `You completed ${completedThisWeek} task${completedThisWeek > 1 ? 's' : ''} this week — nice momentum`,
-        href: '/tasks',
-      })
-    }
-
-    // 5. All clear
+    // 4. All clear
     if (insights.length === 0) {
       if (totalPending === 0) {
         insights.push({
