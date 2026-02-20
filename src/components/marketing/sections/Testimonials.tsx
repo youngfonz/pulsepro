@@ -54,7 +54,7 @@ function RotatingText() {
 
 export function Testimonials() {
   return (
-    <section className="py-20 md:py-28 bg-muted/50">
+    <section className="py-20 md:py-28 bg-blue-50/40 dark:bg-blue-950/10">
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <h2 className="text-3xl font-semibold text-foreground tracking-tight text-center">
           Trusted by <RotatingText /> who ship.

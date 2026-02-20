@@ -4,14 +4,14 @@ import { ScrollReveal } from '../ScrollReveal'
 
 export function VoiceFeature() {
   return (
-    <section className="py-20 md:py-28 bg-muted/50">
+    <section className="py-20 md:py-28 bg-blue-50/40 dark:bg-blue-950/10">
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <ScrollReveal delay={0}>
-          <div className="overflow-hidden rounded-2xl bg-slate-900 border border-slate-800/50 p-8 md:p-12">
+          <div className="overflow-hidden rounded-2xl bg-blue-950 border border-blue-900/50 p-8 md:p-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
               {/* Left: copy */}
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 text-slate-300 text-xs font-medium mb-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-900 text-blue-300 text-xs font-medium mb-6">
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                   </svg>
@@ -24,7 +24,7 @@ export function VoiceFeature() {
                   into existence.
                 </h2>
 
-                <p className="text-sm md:text-base text-slate-400 mt-4 max-w-md leading-relaxed">
+                <p className="text-sm md:text-base text-blue-300 mt-4 max-w-md leading-relaxed">
                   Click the mic, say what you need to do, and it&apos;s captured instantly. Works in task creation, project notes, and descriptions. No typing required.
                 </p>
 
@@ -35,8 +35,8 @@ export function VoiceFeature() {
                     'Works in any modern browser — no install',
                   ].map((item) => (
                     <div key={item} className="flex items-center gap-3">
-                      <div className="w-1 h-1 rounded-full bg-slate-600 flex-shrink-0" />
-                      <span className="text-sm text-slate-400">{item}</span>
+                      <div className="w-1 h-1 rounded-full bg-blue-700 flex-shrink-0" />
+                      <span className="text-sm text-blue-300">{item}</span>
                     </div>
                   ))}
                 </div>
@@ -45,11 +45,11 @@ export function VoiceFeature() {
               {/* Right: waveform visualization */}
               <div className="flex flex-col items-center gap-6">
                 {/* Waveform card */}
-                <div className="w-full rounded-xl bg-slate-800/50 border border-slate-700/50 p-6">
+                <div className="w-full rounded-xl bg-blue-900/40 border border-blue-800/50 p-6">
                   {/* Listening indicator */}
                   <div className="flex items-center gap-2 mb-5">
                     <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                    <span className="text-xs text-slate-500 font-medium tracking-wide uppercase">Listening</span>
+                    <span className="text-xs text-blue-400 font-medium tracking-wide uppercase">Listening</span>
                   </div>
 
                   {/* Waveform bars */}
@@ -75,24 +75,24 @@ export function VoiceFeature() {
                   </div>
 
                   {/* Transcript preview */}
-                  <div className="mt-5 pt-4 border-t border-slate-700/50">
-                    <p className="text-sm text-slate-200">
+                  <div className="mt-5 pt-4 border-t border-blue-800/50">
+                    <p className="text-sm text-blue-100">
                       &ldquo;Follow up with Sarah about the brand guidelines by Friday&rdquo;
                     </p>
-                    <p className="text-xs text-slate-500 mt-2">
+                    <p className="text-xs text-blue-400 mt-2">
                       Transcribed to task title
                     </p>
                   </div>
                 </div>
 
                 {/* Controls hint */}
-                <div className="flex items-center gap-4 text-slate-600 text-xs">
+                <div className="flex items-center gap-4 text-blue-500 text-xs">
                   <span className="flex items-center gap-1.5">
-                    <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono text-[10px]">Click</kbd>
+                    <kbd className="px-1.5 py-0.5 rounded bg-blue-900 text-blue-400 font-mono text-[10px]">Click</kbd>
                     to start
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono text-[10px]">Click</kbd>
+                    <kbd className="px-1.5 py-0.5 rounded bg-blue-900 text-blue-400 font-mono text-[10px]">Click</kbd>
                     to stop
                   </span>
                 </div>
