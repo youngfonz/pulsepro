@@ -120,7 +120,7 @@ export function Pricing() {
                 href={plan.href}
                 className={`mt-6 block rounded-full px-5 py-2.5 w-full text-center text-sm font-medium transition-colors ${
                   plan.highlighted
-                    ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    ? 'bg-blue-600 text-white hover:bg-blue-700'
                     : 'border border-border hover:bg-muted'
                 }`}
               >

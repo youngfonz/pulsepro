@@ -91,7 +91,7 @@ export function MarketingNav() {
             </Link>
             <Link
               href="/sign-up"
-              className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-full transition-colors"
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full transition-colors"
             >
               Get Started
             </Link>
@@ -180,7 +180,7 @@ export function MarketingNav() {
                 <Link
                   href="/sign-up"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block w-full px-4 py-2 text-sm font-medium text-center text-primary-foreground bg-primary hover:bg-primary/90 rounded-md transition-colors"
+                  className="block w-full px-4 py-2 text-sm font-medium text-center text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
                 >
                   Get Started
                 </Link>
