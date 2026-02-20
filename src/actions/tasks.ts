@@ -1,14 +1,15 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { requireUserId } from '@/lib/auth'
+import { getAuthContext } from '@/lib/auth'
 import { checkLimit } from '@/lib/subscription'
 import { revalidatePath } from 'next/cache'
 
 export async function getTask(id: string) {
-  const userId = await requireUserId()
+  const { userId, orgId } = await getAuthContext()
+  const scopeWhere = orgId ? { orgId } : { userId }
   return prisma.task.findFirst({
-    where: { id, userId },
+    where: { id, ...scopeWhere },
     include: {
       images: true,
       files: true,
@@ -27,10 +28,11 @@ export async function getTask(id: string) {
 
 export async function createTask(projectId: string, formData: FormData) {
   try {
-    const userId = await requireUserId()
+    const { userId, orgId } = await getAuthContext()
+    const scopeWhere = orgId ? { orgId } : { userId }
 
-    // Verify project belongs to this user
-    const project = await prisma.project.findFirst({ where: { id: projectId, userId } })
+    // Verify project belongs to this scope
+    const project = await prisma.project.findFirst({ where: { id: projectId, ...scopeWhere } })
     if (!project) throw new Error('Project not found')
 
     const limit = await checkLimit('tasks')
@@ -40,6 +42,7 @@ export async function createTask(projectId: string, formData: FormData) {
 
     const data = {
       userId,
+      orgId: orgId || null,
       title: formData.get('title') as string,
       description: formData.get('description') as string || null,
       notes: formData.get('notes') as string || null,
@@ -63,9 +66,10 @@ export async function createTask(projectId: string, formData: FormData) {
 
 export async function updateTask(id: string, formData: FormData) {
   try {
-    const userId = await requireUserId()
+    const { userId, orgId } = await getAuthContext()
+    const scopeWhere = orgId ? { orgId } : { userId }
     const task = await prisma.task.findFirst({
-      where: { id, userId },
+      where: { id, ...scopeWhere },
       select: { projectId: true, url: true },
     })
 
@@ -112,9 +116,10 @@ export async function updateTask(id: string, formData: FormData) {
 
 export async function toggleTask(id: string) {
   try {
-    const userId = await requireUserId()
+    const { userId, orgId } = await getAuthContext()
+    const scopeWhere = orgId ? { orgId } : { userId }
     const task = await prisma.task.findFirst({
-      where: { id, userId },
+      where: { id, ...scopeWhere },
       select: { completed: true, projectId: true },
     })
 
@@ -139,9 +144,10 @@ export async function toggleTask(id: string) {
 
 export async function deleteTask(id: string) {
   try {
-    const userId = await requireUserId()
+    const { userId, orgId } = await getAuthContext()
+    const scopeWhere = orgId ? { orgId } : { userId }
     const task = await prisma.task.findFirst({
-      where: { id, userId },
+      where: { id, ...scopeWhere },
       select: { projectId: true },
     })
 
@@ -160,9 +166,10 @@ export async function deleteTask(id: string) {
 
 export async function addTaskImage(taskId: string, path: string, name: string) {
   try {
-    const userId = await requireUserId()
+    const { userId, orgId } = await getAuthContext()
+    const scopeWhere = orgId ? { orgId } : { userId }
     const task = await prisma.task.findFirst({
-      where: { id: taskId, userId },
+      where: { id: taskId, ...scopeWhere },
       select: { projectId: true },
     })
 
@@ -184,17 +191,18 @@ export async function addTaskImage(taskId: string, path: string, name: string) {
 
 export async function removeTaskImage(imageId: string) {
   try {
-    const userId = await requireUserId()
+    const { userId, orgId } = await getAuthContext()
     const image = await prisma.taskImage.findUnique({
       where: { id: imageId },
       include: {
         task: {
-          select: { projectId: true, userId: true },
+          select: { projectId: true, userId: true, orgId: true },
         },
       },
     })
 
-    if (!image || image.task.userId !== userId) return
+    if (!image) return
+    if (orgId ? image.task.orgId !== orgId : image.task.userId !== userId) return
 
     await prisma.taskImage.delete({
       where: { id: imageId },
@@ -214,9 +222,10 @@ export async function addTaskFile(
   size: number
 ) {
   try {
-    const userId = await requireUserId()
+    const { userId, orgId } = await getAuthContext()
+    const scopeWhere = orgId ? { orgId } : { userId }
     const task = await prisma.task.findFirst({
-      where: { id: taskId, userId },
+      where: { id: taskId, ...scopeWhere },
       select: { projectId: true },
     })
 
@@ -240,17 +249,18 @@ export async function addTaskFile(
 
 export async function removeTaskFile(fileId: string) {
   try {
-    const userId = await requireUserId()
+    const { userId, orgId } = await getAuthContext()
     const file = await prisma.taskFile.findUnique({
       where: { id: fileId },
       include: {
         task: {
-          select: { projectId: true, userId: true },
+          select: { projectId: true, userId: true, orgId: true },
         },
       },
     })
 
-    if (!file || file.task.userId !== userId) return
+    if (!file) return
+    if (orgId ? file.task.orgId !== orgId : file.task.userId !== userId) return
 
     await prisma.taskFile.delete({
       where: { id: fileId },
@@ -263,7 +273,8 @@ export async function removeTaskFile(fileId: string) {
 }
 
 export async function getTasksDueToday() {
-  const userId = await requireUserId()
+  const { userId, orgId } = await getAuthContext()
+  const scopeWhere = orgId ? { orgId } : { userId }
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const tomorrow = new Date(today)
@@ -271,7 +282,7 @@ export async function getTasksDueToday() {
 
   return prisma.task.findMany({
     where: {
-      userId,
+      ...scopeWhere,
       completed: false,
       dueDate: {
         gte: today,
@@ -291,13 +302,14 @@ export async function getTasksDueToday() {
 }
 
 export async function getOverdueTasks() {
-  const userId = await requireUserId()
+  const { userId, orgId } = await getAuthContext()
+  const scopeWhere = orgId ? { orgId } : { userId }
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
   return prisma.task.findMany({
     where: {
-      userId,
+      ...scopeWhere,
       completed: false,
       dueDate: {
         lt: today,
@@ -316,9 +328,10 @@ export async function getOverdueTasks() {
 }
 
 export async function getAllTasksForGantt() {
-  const userId = await requireUserId()
+  const { userId, orgId } = await getAuthContext()
+  const scopeWhere = orgId ? { orgId } : { userId }
   return prisma.task.findMany({
-    where: { userId },
+    where: scopeWhere,
     include: {
       project: {
         select: {
@@ -343,13 +356,14 @@ export async function getAllTasksForGantt() {
 }
 
 export async function getTasksForCalendar(year: number, month: number) {
-  const userId = await requireUserId()
+  const { userId, orgId } = await getAuthContext()
+  const scopeWhere = orgId ? { orgId } : { userId }
   const startOfMonth = new Date(year, month, 1)
   const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59)
 
   return prisma.task.findMany({
     where: {
-      userId,
+      ...scopeWhere,
       OR: [
         {
           dueDate: {
@@ -390,8 +404,9 @@ export async function getAllTasks(options?: {
   projectId?: string
   sort?: string
 }) {
-  const userId = await requireUserId()
-  const where: Record<string, unknown> = { userId, url: null }
+  const { userId, orgId } = await getAuthContext()
+  const scopeWhere = orgId ? { orgId } : { userId }
+  const where: Record<string, unknown> = { ...scopeWhere, url: null }
 
   if (options?.date) {
     const targetDate = new Date(options.date)
@@ -503,9 +518,10 @@ export async function getAllTasks(options?: {
 }
 
 export async function getProjectsForTaskFilter() {
-  const userId = await requireUserId()
+  const { userId, orgId } = await getAuthContext()
+  const scopeWhere = orgId ? { orgId } : { userId }
   return prisma.project.findMany({
-    where: { userId },
+    where: scopeWhere,
     select: {
       id: true,
       name: true,
@@ -521,9 +537,10 @@ export async function getProjectsForTaskFilter() {
 
 export async function addTaskComment(taskId: string, content: string) {
   try {
-    const userId = await requireUserId()
+    const { userId, orgId } = await getAuthContext()
+    const scopeWhere = orgId ? { orgId } : { userId }
     const task = await prisma.task.findFirst({
-      where: { id: taskId, userId },
+      where: { id: taskId, ...scopeWhere },
       select: { projectId: true },
     })
 
@@ -544,17 +561,18 @@ export async function addTaskComment(taskId: string, content: string) {
 
 export async function deleteTaskComment(commentId: string) {
   try {
-    const userId = await requireUserId()
+    const { userId, orgId } = await getAuthContext()
     const comment = await prisma.taskComment.findUnique({
       where: { id: commentId },
       include: {
         task: {
-          select: { projectId: true, userId: true },
+          select: { projectId: true, userId: true, orgId: true },
         },
       },
     })
 
-    if (!comment || comment.task.userId !== userId) return
+    if (!comment) return
+    if (orgId ? comment.task.orgId !== orgId : comment.task.userId !== userId) return
 
     await prisma.taskComment.delete({
       where: { id: commentId },
@@ -581,10 +599,11 @@ export async function createBookmarkTask(
   }
 ) {
   try {
-    const userId = await requireUserId()
+    const { userId, orgId } = await getAuthContext()
+    const scopeWhere = orgId ? { orgId } : { userId }
 
-    // Verify project belongs to this user
-    const project = await prisma.project.findFirst({ where: { id: projectId, userId } })
+    // Verify project belongs to this scope
+    const project = await prisma.project.findFirst({ where: { id: projectId, ...scopeWhere } })
     if (!project) throw new Error('Project not found')
 
     const limit = await checkLimit('tasks')
@@ -594,6 +613,7 @@ export async function createBookmarkTask(
 
     const taskData = {
       userId,
+      orgId: orgId || null,
       title: data.title,
       description: data.description || null,
       notes: data.notes || null,
@@ -620,9 +640,10 @@ export async function getAllBookmarks(filters?: {
   bookmarkType?: string
   sort?: string
 }) {
-  const userId = await requireUserId()
+  const { userId, orgId } = await getAuthContext()
+  const scopeWhere = orgId ? { orgId } : { userId }
   const where: Record<string, unknown> = {
-    userId,
+    ...scopeWhere,
     url: { not: null }
   }
 
@@ -681,10 +702,11 @@ export async function getAllBookmarks(filters?: {
 }
 
 export async function getAllTags() {
-  const userId = await requireUserId()
+  const { userId, orgId } = await getAuthContext()
+  const scopeWhere = orgId ? { orgId } : { userId }
   const tasks = await prisma.task.findMany({
     where: {
-      userId,
+      ...scopeWhere,
       tags: {
         isEmpty: false,
       },
