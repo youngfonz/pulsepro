@@ -64,18 +64,14 @@ export function AppShowcase() {
               ))}
             </div>
 
-            {/* Screenshot container with pastel gradient */}
+            {/* Screenshot container */}
             <div
-              className="mt-6 relative rounded-2xl overflow-hidden w-full"
+              className="mt-6 rounded-2xl overflow-hidden w-full bg-muted"
               onMouseEnter={() => setPaused(true)}
               onMouseLeave={() => setPaused(false)}
             >
-              {/* Gradient backdrop */}
-              <div className="absolute inset-0 bg-gradient-to-br from-rose-200/80 via-blue-200/60 to-emerald-200/70 dark:from-rose-500/20 dark:via-blue-500/15 dark:to-emerald-500/20" />
-              <div className="absolute inset-0 bg-gradient-to-tr from-violet-200/40 via-transparent to-amber-100/50 dark:from-violet-500/10 dark:via-transparent dark:to-amber-500/10" />
-
               {/* Floating browser card */}
-              <div className="relative p-4 md:p-8">
+              <div className="p-4 md:p-8">
                 <div className="bg-white rounded-xl shadow-2xl overflow-hidden border border-black/5">
                   {/* Browser chrome */}
                   <div className="h-9 bg-gray-100 border-b border-gray-200 flex items-center px-4 gap-2">
