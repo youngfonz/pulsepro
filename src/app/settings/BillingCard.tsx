@@ -7,6 +7,12 @@ import { getSubscriptionStatus, getUsageLimits } from '@/actions/subscription'
 type SubscriptionData = Awaited<ReturnType<typeof getSubscriptionStatus>>
 type UsageData = Awaited<ReturnType<typeof getUsageLimits>>
 
+const PLAN_DISPLAY = {
+  free: { label: 'Free', price: null, badge: 'bg-muted text-muted-foreground' },
+  pro: { label: 'Pro', price: '$12/month', badge: 'bg-emerald-500/10 text-emerald-500' },
+  team: { label: 'Team', price: '$29/month', badge: 'bg-blue-500/10 text-blue-500' },
+} as const
+
 export function BillingCard() {
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null)
   const [usage, setUsage] = useState<UsageData | null>(null)
@@ -37,7 +43,9 @@ export function BillingCard() {
     )
   }
 
-  const isPro = subscription?.plan === 'pro'
+  const plan = (subscription?.plan ?? 'free') as keyof typeof PLAN_DISPLAY
+  const display = PLAN_DISPLAY[plan]
+  const isPaid = plan === 'pro' || plan === 'team'
   const isCanceling = subscription?.cancelAtPeriodEnd
 
   return (
@@ -51,24 +59,20 @@ export function BillingCard() {
           <div>
             <p className="text-sm font-medium text-foreground">Current Plan</p>
             <p className="text-xs text-muted-foreground">
-              {isPro
+              {isPaid
                 ? isCanceling
-                  ? 'Pro — cancels at period end'
-                  : 'Pro — $9/month'
+                  ? `${display.label} — cancels at period end`
+                  : `${display.label} — ${display.price}`
                 : 'Free'}
             </p>
           </div>
-          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-            isPro
-              ? 'bg-emerald-500/10 text-emerald-500'
-              : 'bg-muted text-muted-foreground'
-          }`}>
-            {isPro ? 'Pro' : 'Free'}
+          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${display.badge}`}>
+            {display.label}
           </span>
         </div>
 
-        {/* Usage */}
-        {usage && !isPro && (
+        {/* Usage — show for free users */}
+        {usage && !isPaid && (
           <div className="space-y-2 pt-2 border-t border-border">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Usage</p>
             <UsageRow label="Clients" current={usage.clients.current} limit={usage.clients.limit} />
@@ -78,8 +82,8 @@ export function BillingCard() {
         )}
 
         {/* Actions */}
-        <div className="pt-2 border-t border-border">
-          {isPro ? (
+        <div className="pt-2 border-t border-border space-y-2">
+          {isPaid ? (
             <a
               href="/api/portal"
               className="text-sm text-primary hover:underline"
@@ -87,12 +91,32 @@ export function BillingCard() {
               Manage subscription
             </a>
           ) : (
-            <a
-              href={`/api/checkout?products=${process.env.NEXT_PUBLIC_POLAR_PRO_PRODUCT_ID || ''}`}
-              className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
-            >
-              Upgrade to Pro
-            </a>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <a
+                href={`/api/checkout?products=${process.env.NEXT_PUBLIC_POLAR_PRO_PRODUCT_ID || ''}`}
+                className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
+              >
+                Upgrade to Pro — $12/mo
+              </a>
+              <a
+                href={`/api/checkout?products=${process.env.NEXT_PUBLIC_POLAR_TEAM_PRODUCT_ID || ''}`}
+                className="inline-flex items-center justify-center rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
+              >
+                Upgrade to Team — $29/mo
+              </a>
+            </div>
+          )}
+          {plan === 'pro' && (
+            <p className="text-xs text-muted-foreground">
+              Need more team members?{' '}
+              <a
+                href={`/api/checkout?products=${process.env.NEXT_PUBLIC_POLAR_TEAM_PRODUCT_ID || ''}`}
+                className="text-primary hover:underline"
+              >
+                Upgrade to Team ($29/mo)
+              </a>
+              {' '}for up to 10 members.
+            </p>
           )}
         </div>
       </CardContent>

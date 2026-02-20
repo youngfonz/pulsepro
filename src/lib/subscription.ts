@@ -1,18 +1,26 @@
 import { prisma } from '@/lib/prisma'
 import { requireUserId } from '@/lib/auth'
 
-export type Plan = 'free' | 'pro'
+export type Plan = 'free' | 'pro' | 'team'
 
 const PLAN_LIMITS = {
   free: {
     maxProjects: 3,
     maxTasks: 50,
     maxClients: 1,
+    maxCollaborators: 0,
   },
   pro: {
     maxProjects: Infinity,
     maxTasks: Infinity,
     maxClients: Infinity,
+    maxCollaborators: 3,
+  },
+  team: {
+    maxProjects: Infinity,
+    maxTasks: Infinity,
+    maxClients: Infinity,
+    maxCollaborators: 10,
   },
 } as const
 
@@ -49,7 +57,24 @@ export async function getUserPlan(): Promise<Plan> {
 
 export async function canUseTelegram(): Promise<boolean> {
   const plan = await getUserPlan()
-  return plan === 'pro'
+  return plan === 'pro' || plan === 'team'
+}
+
+export async function checkCollaboratorLimit(projectId: string): Promise<{
+  allowed: boolean
+  current: number
+  limit: number
+  plan: Plan
+}> {
+  const plan = await getUserPlan()
+  const limits = PLAN_LIMITS[plan]
+  const current = await prisma.projectAccess.count({ where: { projectId } })
+  return {
+    allowed: current < limits.maxCollaborators,
+    current,
+    limit: limits.maxCollaborators,
+    plan,
+  }
 }
 
 export async function checkLimit(resource: 'projects' | 'tasks' | 'clients'): Promise<{

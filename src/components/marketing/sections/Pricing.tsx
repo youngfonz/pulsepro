@@ -12,28 +12,46 @@ const plans = [
       '3 projects',
       '50 tasks',
       '1 client',
-      'Basic calendar'
+      'Basic calendar',
     ],
     highlighted: false,
     cta: 'Get Started',
+    href: '/sign-up',
   },
   {
     name: 'Pro',
-    price: '$9',
-    description: 'Never miss a deadline again.',
+    price: '$12',
+    badge: 'Most Popular',
+    description: 'Everything you need to manage clients.',
     features: [
-      'Unlimited projects',
-      'Unlimited tasks',
-      'Unlimited clients',
-      'Quick Search (\u2318K)',
+      'Unlimited projects, tasks & clients',
+      'Share with up to 3 collaborators',
       'File attachments',
       'Telegram bot integration',
       'Daily email reminders',
-      'Priority support'
+      'Quick Search (\u2318K)',
+      'Priority support',
     ],
     highlighted: true,
-    cta: 'Get Started',
-  }
+    cta: 'Start Free Trial',
+    href: '/sign-up',
+  },
+  {
+    name: 'Team',
+    price: '$29',
+    description: 'For agencies and small teams.',
+    features: [
+      'Everything in Pro',
+      'Up to 10 team members',
+      'Full role-based access control',
+      'Organization workspace',
+      'Team project sharing',
+      'Priority support',
+    ],
+    highlighted: false,
+    cta: 'Start Free Trial',
+    href: '/sign-up',
+  },
 ]
 
 export function Pricing() {
@@ -47,16 +65,23 @@ export function Pricing() {
           No per-seat fees. No annual contracts. Start free, upgrade when you&apos;re ready.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-12">
           {plans.map((plan, index) => (
             <div
               key={index}
-              className={`${
+              className={`relative ${
                 plan.highlighted
                   ? 'border-2 border-foreground shadow-lg'
                   : 'border border-border'
               } rounded-xl p-8`}
             >
+              {'badge' in plan && plan.badge && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="inline-flex items-center rounded-full bg-foreground text-background px-3 py-0.5 text-xs font-medium">
+                    {plan.badge}
+                  </span>
+                </div>
+              )}
               <div className="text-sm font-medium text-muted-foreground">
                 {plan.name}
               </div>
@@ -92,7 +117,7 @@ export function Pricing() {
               </ul>
 
               <Link
-                href="/sign-up"
+                href={plan.href}
                 className={`mt-6 block rounded-full px-5 py-2.5 w-full text-center text-sm font-medium transition-colors ${
                   plan.highlighted
                     ? 'bg-primary text-primary-foreground hover:bg-primary/90'

@@ -3,6 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { requireUserId, getAuthContext } from '@/lib/auth'
 import { requireProjectAccess } from '@/lib/access'
+import { checkCollaboratorLimit } from '@/lib/subscription'
 import { clerkClient } from '@clerk/nextjs/server'
 import { revalidatePath } from 'next/cache'
 
@@ -24,6 +25,22 @@ export async function grantProjectAccess(
   })
   if (!project) throw new Error('Project not found')
   if (targetUserId === project.userId) throw new Error('User is already the project owner')
+
+  // Check collaborator limit based on plan
+  const existing = await prisma.projectAccess.findUnique({
+    where: { projectId_userId: { projectId, userId: targetUserId } },
+  })
+  if (!existing) {
+    const collabLimit = await checkCollaboratorLimit(projectId)
+    if (!collabLimit.allowed) {
+      if (collabLimit.limit === 0) {
+        throw new Error('Upgrade to Pro to share projects with collaborators.')
+      }
+      throw new Error(
+        `Your ${collabLimit.plan} plan allows ${collabLimit.limit} collaborators per project. Upgrade to add more.`
+      )
+    }
+  }
 
   await prisma.projectAccess.upsert({
     where: { projectId_userId: { projectId, userId: targetUserId } },
