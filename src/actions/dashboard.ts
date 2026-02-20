@@ -515,7 +515,6 @@ export async function getSmartInsights(): Promise<Insight[]> {
     const [
       highPriorityDueSoon,
       staleProjects,
-      totalPending,
     ] = await Promise.all([
       // High priority tasks due today or tomorrow
       prisma.task.findMany({
@@ -537,10 +536,6 @@ export async function getSmartInsights(): Promise<Insight[]> {
         },
         select: { id: true, name: true, updatedAt: true },
         take: 3,
-      }),
-      // Total pending tasks
-      prisma.task.count({
-        where: { userId, completed: false, url: null },
       }),
     ])
 
@@ -568,25 +563,6 @@ export async function getSmartInsights(): Promise<Insight[]> {
         message: `${stalest.name} hasn't been updated in ${daysStale} days`,
         href: `/projects/${stalest.id}`,
       })
-    }
-
-    // 4. All clear
-    if (insights.length === 0) {
-      if (totalPending === 0) {
-        insights.push({
-          id: 'all-done',
-          color: 'green',
-          message: 'All tasks complete — time to plan what\'s next',
-          href: '/projects',
-        })
-      } else {
-        insights.push({
-          id: 'on-track',
-          color: 'green',
-          message: 'No overdue tasks — you\'re on track',
-          href: '/dashboard',
-        })
-      }
     }
 
     return insights.slice(0, 3)
