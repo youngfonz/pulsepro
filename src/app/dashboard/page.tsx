@@ -14,23 +14,30 @@ import {
   getRecentlyViewed,
   getProjectHealth,
   getSmartInsights,
+  getDashboardStats,
+  getTasksDueThisWeek,
   backfillUserId,
 } from '@/actions/dashboard'
 import { InsightsPanel } from '@/components/InsightsPanel'
+import { ProgressRing } from '@/components/ui/ProgressRing'
 import { statusColors, statusLabels, priorityColors, priorityLabels, formatDate } from '@/lib/utils'
 
 export default async function DashboardPage() {
   const userId = await requireUserId()
   await backfillUserId()
 
-  const [projectsDueThisWeek, tasksDueToday, overdueTasks, recentlyViewed, projectHealth, insights] = await Promise.all([
+  const [projectsDueThisWeek, tasksDueToday, overdueTasks, recentlyViewed, projectHealth, insights, stats, tasksDueThisWeekCount] = await Promise.all([
     getProjectsDueThisWeek(),
     getTasksDueToday(),
     getOverdueTasks(),
     getRecentlyViewed(),
     getProjectHealth(),
     getSmartInsights(),
+    getDashboardStats(),
+    getTasksDueThisWeek(),
   ])
+
+  const completedTasks = stats.totalTasks - stats.pendingTasks
 
   const sections: DashboardSectionDef[] = [
     // Overdue — subtle rose accent, not jarring
@@ -328,7 +335,38 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <InsightsPanel insights={insights} />
+        {/* Stat Cards + Insights */}
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="flex items-center gap-3 rounded-lg border border-border px-4 py-3">
+              <ProgressRing value={completedTasks} max={stats.totalTasks} className="text-emerald-500" />
+              <div>
+                <p className="text-xs text-muted-foreground">Completed</p>
+                <p className="text-lg font-semibold text-foreground">{completedTasks}<span className="text-sm font-normal text-muted-foreground">/{stats.totalTasks}</span></p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 rounded-lg border border-border px-4 py-3">
+              <ProgressRing
+                value={tasksDueThisWeekCount}
+                max={Math.max(stats.pendingTasks, 1)}
+                label={String(tasksDueThisWeekCount)}
+                className={tasksDueThisWeekCount === 0 ? 'text-emerald-500' : tasksDueThisWeekCount > 5 ? 'text-amber-500' : 'text-blue-500'}
+              />
+              <div>
+                <p className="text-xs text-muted-foreground">Due This Week</p>
+                <p className="text-lg font-semibold text-foreground">{tasksDueThisWeekCount}</p>
+              </div>
+            </div>
+            <div className="hidden sm:flex items-center gap-3 rounded-lg border border-border px-4 py-3">
+              <ProgressRing value={stats.activeProjects} max={stats.totalProjects} className="text-blue-500" />
+              <div>
+                <p className="text-xs text-muted-foreground">Active Projects</p>
+                <p className="text-lg font-semibold text-foreground">{stats.activeProjects}<span className="text-sm font-normal text-muted-foreground">/{stats.totalProjects}</span></p>
+              </div>
+            </div>
+          </div>
+          <InsightsPanel insights={insights} />
+        </div>
 
         <DashboardGrid sections={sections} />
       </div>

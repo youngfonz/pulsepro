@@ -67,3 +67,22 @@ export async function getScopeWhere(): Promise<{ userId: string } | { orgId: str
   const { userId, orgId } = await getAuthContext()
   return orgId ? { orgId } : { userId }
 }
+
+/**
+ * Checks if the given userId is in the ADMIN_USER_IDS env var.
+ */
+export function isAdminUser(userId: string): boolean {
+  const adminIds = process.env.ADMIN_USER_IDS?.split(',').map(id => id.trim()) ?? []
+  return adminIds.includes(userId)
+}
+
+/**
+ * Requires the current user to be a site admin. Redirects to /dashboard if not.
+ */
+export async function requireAdmin(): Promise<string> {
+  const userId = await requireUserId()
+  if (!isAdminUser(userId)) {
+    redirect('/dashboard')
+  }
+  return userId
+}

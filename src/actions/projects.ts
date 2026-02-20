@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { requireUserId } from '@/lib/auth'
 import { checkLimit } from '@/lib/subscription'
 import { revalidatePath } from 'next/cache'
+import { getProjectWhereWithAccess, canAccessProject } from '@/lib/access'
 
 export async function getProjects(filters?: {
   search?: string
@@ -13,8 +14,8 @@ export async function getProjects(filters?: {
   sort?: string
 }) {
   try {
-    const userId = await requireUserId()
-    const where: Record<string, unknown> = { userId }
+    const baseWhere = await getProjectWhereWithAccess()
+    const where: Record<string, unknown> = { ...baseWhere }
 
     if (filters?.search) {
       where.OR = [
@@ -141,35 +142,49 @@ export async function getProjects(filters?: {
 export async function getProject(id: string) {
   try {
     const userId = await requireUserId()
-    return prisma.project.findFirst({
-      where: { id, userId },
-      include: {
-        client: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        images: true,
-        tasks: {
-          include: {
-            images: true,
-            files: true,
-            comments: {
-              orderBy: { createdAt: 'desc' },
-            },
-          },
-          orderBy: [
-            { completed: 'asc' },
-            { priority: 'desc' },
-            { createdAt: 'desc' },
-          ],
-        },
-        timeEntries: {
-          orderBy: { date: 'desc' },
+    const include = {
+      client: {
+        select: {
+          id: true,
+          name: true,
         },
       },
+      images: true,
+      tasks: {
+        include: {
+          images: true,
+          files: true,
+          comments: {
+            orderBy: { createdAt: 'desc' as const },
+          },
+        },
+        orderBy: [
+          { completed: 'asc' as const },
+          { priority: 'desc' as const },
+          { createdAt: 'desc' as const },
+        ],
+      },
+      timeEntries: {
+        orderBy: { date: 'desc' as const },
+      },
+    }
+
+    let project = await prisma.project.findFirst({
+      where: { id, userId },
+      include,
     })
+
+    if (!project) {
+      const hasAccess = await canAccessProject(id)
+      if (hasAccess) {
+        project = await prisma.project.findFirst({
+          where: { id },
+          include,
+        })
+      }
+    }
+
+    return project
   } catch (error) {
     console.error('Failed to fetch project:', error)
     return null

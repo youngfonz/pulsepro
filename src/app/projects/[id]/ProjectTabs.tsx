@@ -7,6 +7,7 @@ import { AddTaskForm } from './AddTaskForm'
 import { AddBookmarkForm } from './AddBookmarkForm'
 import { TimeTracker } from './TimeTracker'
 import { ProjectImages } from './ProjectImages'
+import { ProjectMembers } from './ProjectMembers'
 
 interface Task {
   id: string
@@ -41,15 +42,36 @@ interface ProjectImage {
   name: string
 }
 
+interface TeamMember {
+  userId: string
+  role: string
+  user: { id: string; name: string; email: string; imageUrl: string }
+}
+
+interface OrgMember {
+  userId: string
+  name: string
+  email: string
+  imageUrl: string
+  role: string
+}
+
 interface ProjectTabsProps {
   projectId: string
   tasks: Task[]
   timeEntries: TimeEntry[]
   images: ProjectImage[]
+  userRole?: 'owner' | 'manager' | 'editor' | 'viewer'
+  hasOrg?: boolean
+  teamOwner?: { id: string; name: string; email: string; imageUrl: string } | null
+  teamMembers?: TeamMember[]
+  orgMembers?: OrgMember[]
 }
 
-export function ProjectTabs({ projectId, tasks, timeEntries, images }: ProjectTabsProps) {
-  const [activeTab, setActiveTab] = useState<'tasks' | 'bookmarks' | 'time' | 'files'>('tasks')
+export function ProjectTabs({ projectId, tasks, timeEntries, images, userRole = 'owner', hasOrg, teamOwner, teamMembers = [], orgMembers = [] }: ProjectTabsProps) {
+  const showTeamTab = hasOrg || teamMembers.length > 0
+  const canAddContent = userRole !== 'viewer'
+  const [activeTab, setActiveTab] = useState<'tasks' | 'bookmarks' | 'time' | 'files' | 'team'>('tasks')
   const [taskView, setTaskView] = useState<'list' | 'board'>('list')
 
   // Separate regular tasks from bookmarks
@@ -61,6 +83,7 @@ export function ProjectTabs({ projectId, tasks, timeEntries, images }: ProjectTa
     { id: 'bookmarks' as const, name: 'Bookmarks', count: bookmarks.length },
     { id: 'time' as const, name: 'Time Tracking', count: timeEntries.length },
     { id: 'files' as const, name: 'Files', count: images.length },
+    ...(showTeamTab ? [{ id: 'team' as const, name: 'Team', count: teamMembers.length }] : []),
   ]
 
   return (
@@ -96,7 +119,7 @@ export function ProjectTabs({ projectId, tasks, timeEntries, images }: ProjectTa
         {activeTab === 'tasks' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <AddTaskForm projectId={projectId} />
+              {canAddContent ? <AddTaskForm projectId={projectId} /> : <div />}
               <div className="flex items-center border border-border rounded-md overflow-hidden">
                 <button
                   onClick={() => setTaskView('list')}
@@ -134,7 +157,7 @@ export function ProjectTabs({ projectId, tasks, timeEntries, images }: ProjectTa
 
         {activeTab === 'bookmarks' && (
           <div className="space-y-6">
-            <AddBookmarkForm projectId={projectId} />
+            {canAddContent && <AddBookmarkForm projectId={projectId} />}
             {bookmarks.length > 0 ? (
               <TaskList tasks={bookmarks} />
             ) : (
@@ -155,6 +178,17 @@ export function ProjectTabs({ projectId, tasks, timeEntries, images }: ProjectTa
           <div className="max-w-2xl">
             <ProjectImages projectId={projectId} images={images} />
           </div>
+        )}
+
+        {activeTab === 'team' && showTeamTab && (
+          <ProjectMembers
+            projectId={projectId}
+            isOwnerOrManager={userRole === 'owner' || userRole === 'manager'}
+            hasOrg={!!hasOrg}
+            owner={teamOwner ?? null}
+            members={teamMembers}
+            orgMembers={orgMembers}
+          />
         )}
       </div>
     </div>

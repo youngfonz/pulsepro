@@ -19,13 +19,26 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
 
   if (!trimmed || trimmed.length < 2) return []
 
+  const { getAccessibleProjectIds } = await import('@/lib/access')
+  const sharedIds = await getAccessibleProjectIds()
+  const ownerFilter = sharedIds.length > 0
+    ? { OR: [{ userId }, { id: { in: sharedIds } }] }
+    : { userId }
+  const taskOwnerFilter = sharedIds.length > 0
+    ? { OR: [{ userId }, { projectId: { in: sharedIds } }] }
+    : { userId }
+
   const [projects, tasks, clients, bookmarks] = await Promise.all([
     prisma.project.findMany({
       where: {
-        userId,
-        OR: [
-          { name: { contains: trimmed, mode: 'insensitive' } },
-          { description: { contains: trimmed, mode: 'insensitive' } },
+        AND: [
+          ownerFilter,
+          {
+            OR: [
+              { name: { contains: trimmed, mode: 'insensitive' } },
+              { description: { contains: trimmed, mode: 'insensitive' } },
+            ],
+          },
         ],
       },
       select: {
@@ -41,11 +54,15 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
 
     prisma.task.findMany({
       where: {
-        userId,
-        url: null,
-        OR: [
-          { title: { contains: trimmed, mode: 'insensitive' } },
-          { description: { contains: trimmed, mode: 'insensitive' } },
+        AND: [
+          taskOwnerFilter,
+          { url: null },
+          {
+            OR: [
+              { title: { contains: trimmed, mode: 'insensitive' } },
+              { description: { contains: trimmed, mode: 'insensitive' } },
+            ],
+          },
         ],
       },
       select: {
@@ -80,11 +97,15 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
 
     prisma.task.findMany({
       where: {
-        userId,
-        url: { not: null },
-        OR: [
-          { title: { contains: trimmed, mode: 'insensitive' } },
-          { url: { contains: trimmed, mode: 'insensitive' } },
+        AND: [
+          taskOwnerFilter,
+          { url: { not: null } },
+          {
+            OR: [
+              { title: { contains: trimmed, mode: 'insensitive' } },
+              { url: { contains: trimmed, mode: 'insensitive' } },
+            ],
+          },
         ],
       },
       select: {

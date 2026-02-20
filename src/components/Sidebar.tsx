@@ -70,9 +70,10 @@ const getNavigation = (clientCount?: number) => [
 interface SidebarProps {
   clientCount?: number
   clerkEnabled?: boolean
+  isAdmin?: boolean
 }
 
-export function Sidebar({ clientCount, clerkEnabled = false }: SidebarProps) {
+export function Sidebar({ clientCount, clerkEnabled = false, isAdmin = false }: SidebarProps) {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -262,6 +263,25 @@ export function Sidebar({ clientCount, clerkEnabled = false }: SidebarProps) {
             )}
             {!isCollapsed && <span>{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>}
           </button>
+          {isAdmin && (
+            <Link
+              href="/admin"
+              onClick={() => setIsOpen(false)}
+              title={isCollapsed ? 'Admin' : undefined}
+              className={cn(
+                'flex items-center gap-2.5 px-3 py-1.5 text-sm font-medium transition-colors rounded',
+                pathname.startsWith('/admin')
+                  ? 'bg-muted text-foreground'
+                  : 'text-sidebar-foreground hover:bg-secondary hover:text-secondary-foreground',
+                isCollapsed && 'justify-center'
+              )}
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              {!isCollapsed && <span>Admin</span>}
+            </Link>
+          )}
           <Link
             href="/settings"
             onClick={() => setIsOpen(false)}
