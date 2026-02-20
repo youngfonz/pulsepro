@@ -66,12 +66,12 @@ export async function updateTask(id: string, formData: FormData) {
     const userId = await requireUserId()
     const task = await prisma.task.findFirst({
       where: { id, userId },
-      select: { projectId: true },
+      select: { projectId: true, url: true },
     })
 
     if (!task) return
 
-    const data = {
+    const data: Record<string, unknown> = {
       title: formData.get('title') as string,
       description: formData.get('description') as string || null,
       notes: formData.get('notes') as string || null,
@@ -84,6 +84,18 @@ export async function updateTask(id: string, formData: FormData) {
         : null,
     }
 
+    if (task.url) {
+      const tagsRaw = formData.get('tags') as string | null
+      if (tagsRaw !== null) {
+        data.tags = JSON.parse(tagsRaw)
+      }
+
+      const thumbnailUrl = formData.get('thumbnailUrl') as string | null
+      if (thumbnailUrl !== null) {
+        data.thumbnailUrl = thumbnailUrl || null
+      }
+    }
+
     await prisma.task.update({
       where: { id },
       data,
@@ -91,6 +103,7 @@ export async function updateTask(id: string, formData: FormData) {
     revalidatePath(`/projects/${task.projectId}`)
     revalidatePath(`/tasks/${id}`)
     revalidatePath('/tasks')
+    revalidatePath('/bookmarks')
   } catch (error) {
     console.error('updateTask:', error)
     throw new Error('Failed to update task')
