@@ -67,7 +67,7 @@ const secondaryFeatures = [
 
 export function Features() {
   return (
-    <section id="features" className="py-20 md:py-28 bg-muted/50">
+    <section id="features" className="py-20 md:py-28 bg-blue-50/40 dark:bg-blue-950/10">
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         {/* Section heading */}
         <div className="text-center">

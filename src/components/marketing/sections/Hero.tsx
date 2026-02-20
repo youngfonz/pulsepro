@@ -136,7 +136,7 @@ export function Hero() {
 
           {/* Right column: Screenshot */}
           <ScrollReveal delay={300} direction="right">
-            <div className="rounded-2xl overflow-hidden bg-muted">
+            <div className="rounded-2xl overflow-hidden bg-blue-50/60 dark:bg-blue-950/30">
               {/* Floating browser card */}
               <div className="p-4 md:p-6">
                 <div className="bg-white rounded-xl shadow-2xl overflow-hidden border border-black/5">
