@@ -17,6 +17,7 @@ interface Props {
     priority?: 'all' | 'high' | 'medium' | 'low'
     projectId?: string
     sort?: string
+    add?: string
   }>
 }
 
@@ -69,7 +70,7 @@ export default async function TasksPage({ searchParams }: Props) {
             </p>
           )}
         </div>
-        <AddTaskDialog projects={projects} />
+        <AddTaskDialog projects={projects} defaultOpen={params.add === 'true'} />
       </div>
 
       {/* Task Stats */}

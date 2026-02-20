@@ -20,11 +20,12 @@ interface Project {
 
 interface AddTaskDialogProps {
   projects: Project[]
+  defaultOpen?: boolean
 }
 
-export function AddTaskDialog({ projects }: AddTaskDialogProps) {
+export function AddTaskDialog({ projects, defaultOpen = false }: AddTaskDialogProps) {
   const router = useRouter()
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(defaultOpen)
   const [isPending, startTransition] = useTransition()
 
   // Controlled form state for voice input
