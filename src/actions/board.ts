@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { getAuthContext } from '@/lib/auth'
+import { requireUserId } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
 
 export async function updateTaskStatus(
@@ -9,10 +9,9 @@ export async function updateTaskStatus(
   status: string,
   sortOrder: number
 ) {
-  const { userId, orgId } = await getAuthContext()
-  const scopeWhere = orgId ? { orgId } : { userId }
+  const userId = await requireUserId()
   const task = await prisma.task.findFirst({
-    where: { id: taskId, ...scopeWhere },
+    where: { id: taskId, userId },
     select: { projectId: true },
   })
 

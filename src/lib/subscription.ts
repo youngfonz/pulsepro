@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { getAuthContext } from '@/lib/auth'
+import { requireUserId } from '@/lib/auth'
 
 export type Plan = 'free' | 'pro'
 
@@ -17,7 +17,7 @@ const PLAN_LIMITS = {
 } as const
 
 export async function getUserSubscription() {
-  const { userId } = await getAuthContext()
+  const userId = await requireUserId()
 
   const subscription = await prisma.subscription.findUnique({
     where: { userId },
@@ -56,8 +56,7 @@ export async function checkLimit(resource: 'projects' | 'tasks' | 'clients'): Pr
   limit: number
   plan: Plan
 }> {
-  const { userId, orgId } = await getAuthContext()
-  const scopeWhere = orgId ? { orgId } : { userId }
+  const userId = await requireUserId()
   const plan = await getUserPlan()
   const limits = PLAN_LIMITS[plan]
 
@@ -65,13 +64,13 @@ export async function checkLimit(resource: 'projects' | 'tasks' | 'clients'): Pr
 
   switch (resource) {
     case 'projects':
-      current = await prisma.project.count({ where: scopeWhere })
+      current = await prisma.project.count({ where: { userId } })
       return { allowed: current < limits.maxProjects, current, limit: limits.maxProjects, plan }
     case 'tasks':
-      current = await prisma.task.count({ where: { ...scopeWhere, url: null } })
+      current = await prisma.task.count({ where: { userId, url: null } })
       return { allowed: current < limits.maxTasks, current, limit: limits.maxTasks, plan }
     case 'clients':
-      current = await prisma.client.count({ where: scopeWhere })
+      current = await prisma.client.count({ where: { userId } })
       return { allowed: current < limits.maxClients, current, limit: limits.maxClients, plan }
   }
 }

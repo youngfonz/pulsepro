@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { getAuthContext } from '@/lib/auth'
+import { requireUserId } from '@/lib/auth'
 import { checkLimit } from '@/lib/subscription'
 import { revalidatePath } from 'next/cache'
 
@@ -13,9 +13,8 @@ export async function getProjects(filters?: {
   sort?: string
 }) {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
-    const where: Record<string, unknown> = { ...scopeWhere }
+    const userId = await requireUserId()
+    const where: Record<string, unknown> = { userId }
 
     if (filters?.search) {
       where.OR = [
@@ -141,10 +140,9 @@ export async function getProjects(filters?: {
 
 export async function getProject(id: string) {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
+    const userId = await requireUserId()
     return prisma.project.findFirst({
-      where: { id, ...scopeWhere },
+      where: { id, userId },
       include: {
         client: {
           select: {
@@ -180,10 +178,9 @@ export async function getProject(id: string) {
 
 export async function getProjectsForGantt() {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
+    const userId = await requireUserId()
     return prisma.project.findMany({
-      where: scopeWhere,
+      where: { userId },
       include: {
         client: {
           select: {
@@ -208,12 +205,11 @@ export async function getProjectsForGantt() {
 
 export async function createProject(formData: FormData) {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
+    const userId = await requireUserId()
 
     // Verify client belongs to this scope
     const clientId = formData.get('clientId') as string
-    const client = await prisma.client.findFirst({ where: { id: clientId, ...scopeWhere } })
+    const client = await prisma.client.findFirst({ where: { id: clientId, userId } })
     if (!client) throw new Error('Client not found')
 
     const limit = await checkLimit('projects')
@@ -223,7 +219,6 @@ export async function createProject(formData: FormData) {
 
     const data = {
       userId,
-      orgId: orgId || null,
       name: formData.get('name') as string,
       description: formData.get('description') as string || null,
       notes: formData.get('notes') as string || null,
@@ -250,9 +245,8 @@ export async function createProject(formData: FormData) {
 
 export async function updateProject(id: string, formData: FormData) {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
-    const existing = await prisma.project.findFirst({ where: { id, ...scopeWhere } })
+    const userId = await requireUserId()
+    const existing = await prisma.project.findFirst({ where: { id, userId } })
     if (!existing) return
 
     const data = {
@@ -286,9 +280,8 @@ export async function updateProject(id: string, formData: FormData) {
 
 export async function deleteProject(id: string) {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
-    const project = await prisma.project.findFirst({ where: { id, ...scopeWhere } })
+    const userId = await requireUserId()
+    const project = await prisma.project.findFirst({ where: { id, userId } })
     if (!project) return
 
     await prisma.project.delete({
@@ -306,10 +299,9 @@ export async function deleteProject(id: string) {
 
 export async function getClientsForSelect() {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
+    const userId = await requireUserId()
     return prisma.client.findMany({
-      where: { ...scopeWhere, status: 'active' },
+      where: { userId, status: 'active' },
       select: {
         id: true,
         name: true,
@@ -324,9 +316,8 @@ export async function getClientsForSelect() {
 
 export async function addProjectImage(projectId: string, path: string, name: string) {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
-    const project = await prisma.project.findFirst({ where: { id: projectId, ...scopeWhere } })
+    const userId = await requireUserId()
+    const project = await prisma.project.findFirst({ where: { id: projectId, userId } })
     if (!project) return
 
     await prisma.projectImage.create({
@@ -345,14 +336,14 @@ export async function addProjectImage(projectId: string, path: string, name: str
 
 export async function removeProjectImage(imageId: string) {
   try {
-    const { userId, orgId } = await getAuthContext()
+    const userId = await requireUserId()
     const image = await prisma.projectImage.findUnique({
       where: { id: imageId },
-      include: { project: { select: { id: true, userId: true, orgId: true } } },
+      include: { project: { select: { id: true, userId: true } } },
     })
 
     if (!image) return
-    if (orgId ? image.project.orgId !== orgId : image.project.userId !== userId) return
+    if (image.project.userId !== userId) return
 
     await prisma.projectImage.delete({
       where: { id: imageId },
@@ -367,9 +358,8 @@ export async function removeProjectImage(imageId: string) {
 // Time Entry Actions
 export async function addTimeEntry(projectId: string, formData: FormData) {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
-    const project = await prisma.project.findFirst({ where: { id: projectId, ...scopeWhere } })
+    const userId = await requireUserId()
+    const project = await prisma.project.findFirst({ where: { id: projectId, userId } })
     if (!project) return
 
     const hours = parseFloat(formData.get('hours') as string)
@@ -393,14 +383,14 @@ export async function addTimeEntry(projectId: string, formData: FormData) {
 
 export async function deleteTimeEntry(id: string) {
   try {
-    const { userId, orgId } = await getAuthContext()
+    const userId = await requireUserId()
     const entry = await prisma.timeEntry.findUnique({
       where: { id },
-      include: { project: { select: { id: true, userId: true, orgId: true } } },
+      include: { project: { select: { id: true, userId: true } } },
     })
 
     if (!entry) return
-    if (orgId ? entry.project.orgId !== orgId : entry.project.userId !== userId) return
+    if (entry.project.userId !== userId) return
 
     await prisma.timeEntry.delete({
       where: { id },

@@ -1,15 +1,14 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { getAuthContext } from '@/lib/auth'
+import { requireUserId } from '@/lib/auth'
 import { checkLimit } from '@/lib/subscription'
 import { revalidatePath } from 'next/cache'
 
 export async function getClients(search?: string, status?: string, sort?: string) {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
-    const where: Record<string, unknown> = { ...scopeWhere }
+    const userId = await requireUserId()
+    const where: Record<string, unknown> = { userId }
 
     if (search) {
       where.OR = [
@@ -88,10 +87,9 @@ export async function getClients(search?: string, status?: string, sort?: string
 
 export async function getClient(id: string) {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
+    const userId = await requireUserId()
     return prisma.client.findFirst({
-      where: { id, ...scopeWhere },
+      where: { id, userId },
       include: {
         projects: {
           include: {
@@ -111,7 +109,7 @@ export async function getClient(id: string) {
 
 export async function createClient(formData: FormData) {
   try {
-    const { userId, orgId } = await getAuthContext()
+    const userId = await requireUserId()
 
     const limit = await checkLimit('clients')
     if (!limit.allowed) {
@@ -120,7 +118,6 @@ export async function createClient(formData: FormData) {
 
     const data = {
       userId,
-      orgId: orgId || null,
       name: formData.get('name') as string,
       email: formData.get('email') as string || null,
       phone: formData.get('phone') as string || null,
@@ -140,9 +137,8 @@ export async function createClient(formData: FormData) {
 
 export async function updateClient(id: string, formData: FormData) {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
-    const existing = await prisma.client.findFirst({ where: { id, ...scopeWhere } })
+    const userId = await requireUserId()
+    const existing = await prisma.client.findFirst({ where: { id, userId } })
     if (!existing) return
 
     const data = {
@@ -169,9 +165,8 @@ export async function updateClient(id: string, formData: FormData) {
 
 export async function deleteClient(id: string) {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
-    const existing = await prisma.client.findFirst({ where: { id, ...scopeWhere } })
+    const userId = await requireUserId()
+    const existing = await prisma.client.findFirst({ where: { id, userId } })
     if (!existing) return
 
     await prisma.client.delete({
