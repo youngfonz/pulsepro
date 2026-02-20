@@ -12,6 +12,7 @@ import { FAQ } from '@/components/marketing/sections/FAQ'
 import { VoiceFeature } from '@/components/marketing/sections/VoiceFeature'
 import { TelegramFeature } from '@/components/marketing/sections/TelegramFeature'
 import { WhySwitch } from '@/components/marketing/sections/WhySwitch'
+import { StatsImpact } from '@/components/marketing/sections/StatsImpact'
 import { FinalCTA } from '@/components/marketing/sections/FinalCTA'
 
 export default async function MarketingPage() {
@@ -29,6 +30,7 @@ export default async function MarketingPage() {
         <Hero />
         <SocialProof />
         <Features />
+        <StatsImpact />
         <AppShowcase />
         <VoiceFeature />
         <TelegramFeature />
