@@ -56,7 +56,7 @@ const plans = [
 
 export function Pricing() {
   return (
-    <section id="pricing" className="py-20 md:py-28 bg-blue-50/40 dark:bg-blue-950/10">
+    <section id="pricing" className="py-20 md:py-28 bg-muted/30">
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <h2 className="text-3xl font-semibold text-foreground text-center tracking-tight">
           Simple pricing
@@ -120,7 +120,7 @@ export function Pricing() {
                 href={plan.href}
                 className={`mt-6 block rounded-full px-5 py-2.5 w-full text-center text-sm font-medium transition-colors ${
                   plan.highlighted
-                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                     : 'border border-border hover:bg-muted'
                 }`}
               >

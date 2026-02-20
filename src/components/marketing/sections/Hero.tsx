@@ -32,7 +32,7 @@ function RotatingBadge() {
 
   return (
     <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-6">
-      <span className="w-2 h-2 rounded-full bg-highlight animate-pulse" />
+      <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
       <span
         className="text-sm font-medium text-foreground transition-opacity duration-300"
         style={{ opacity: visible ? 1 : 0 }}
@@ -94,7 +94,7 @@ export function Hero() {
               <div className="mt-8 flex gap-4 flex-wrap">
                 <Link
                   href="/sign-up"
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-blue-600 text-white font-medium hover:bg-blue-700 transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/25"
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all duration-200 hover:shadow-lg hover:shadow-primary/25"
                 >
                   Get started — it&apos;s free
                   <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -136,7 +136,7 @@ export function Hero() {
 
           {/* Right column: Screenshot */}
           <ScrollReveal delay={300} direction="right">
-            <div className="rounded-2xl overflow-hidden bg-blue-50/60 dark:bg-blue-950/30">
+            <div className="rounded-2xl overflow-hidden bg-muted">
               {/* Floating browser card */}
               <div className="p-4 md:p-6">
                 <div className="bg-white rounded-xl shadow-2xl overflow-hidden border border-black/5">

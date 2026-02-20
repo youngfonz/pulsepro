@@ -66,7 +66,7 @@ export function AppShowcase() {
 
             {/* Screenshot container */}
             <div
-              className="mt-6 rounded-2xl overflow-hidden w-full bg-blue-50/60 dark:bg-blue-950/30"
+              className="mt-6 rounded-2xl overflow-hidden w-full bg-muted"
               onMouseEnter={() => setPaused(true)}
               onMouseLeave={() => setPaused(false)}
             >
