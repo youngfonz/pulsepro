@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { getAuthContext } from '@/lib/auth'
+import { requireUserId } from '@/lib/auth'
 
 export interface SearchResult {
   id: string
@@ -14,8 +14,7 @@ export interface SearchResult {
 }
 
 export async function globalSearch(query: string): Promise<SearchResult[]> {
-  const { userId, orgId } = await getAuthContext()
-  const scopeWhere = orgId ? { orgId } : { userId }
+  const userId = await requireUserId()
   const trimmed = query.trim()
 
   if (!trimmed || trimmed.length < 2) return []
@@ -23,7 +22,7 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
   const [projects, tasks, clients, bookmarks] = await Promise.all([
     prisma.project.findMany({
       where: {
-        ...scopeWhere,
+        userId,
         OR: [
           { name: { contains: trimmed, mode: 'insensitive' } },
           { description: { contains: trimmed, mode: 'insensitive' } },
@@ -42,7 +41,7 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
 
     prisma.task.findMany({
       where: {
-        ...scopeWhere,
+        userId,
         url: null,
         OR: [
           { title: { contains: trimmed, mode: 'insensitive' } },
@@ -62,7 +61,7 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
 
     prisma.client.findMany({
       where: {
-        ...scopeWhere,
+        userId,
         OR: [
           { name: { contains: trimmed, mode: 'insensitive' } },
           { company: { contains: trimmed, mode: 'insensitive' } },
@@ -81,7 +80,7 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
 
     prisma.task.findMany({
       where: {
-        ...scopeWhere,
+        userId,
         url: { not: null },
         OR: [
           { title: { contains: trimmed, mode: 'insensitive' } },

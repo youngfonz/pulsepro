@@ -1,12 +1,11 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { getAuthContext, requireUserId } from '@/lib/auth'
+import { requireUserId } from '@/lib/auth'
 
 export async function getDashboardStats() {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
+    const userId = await requireUserId()
     const [
       totalClients,
       activeClients,
@@ -15,12 +14,12 @@ export async function getDashboardStats() {
       totalTasks,
       pendingTasks,
     ] = await Promise.all([
-      prisma.client.count({ where: scopeWhere }),
-      prisma.client.count({ where: { ...scopeWhere, status: 'active' } }),
-      prisma.project.count({ where: scopeWhere }),
-      prisma.project.count({ where: { ...scopeWhere, status: { in: ['in_progress', 'not_started'] } } }),
-      prisma.task.count({ where: { ...scopeWhere, url: null } }),
-      prisma.task.count({ where: { ...scopeWhere, url: null, completed: false } }),
+      prisma.client.count({ where: { userId } }),
+      prisma.client.count({ where: { userId, status: 'active' } }),
+      prisma.project.count({ where: { userId } }),
+      prisma.project.count({ where: { userId, status: { in: ['in_progress', 'not_started'] } } }),
+      prisma.task.count({ where: { userId, url: null } }),
+      prisma.task.count({ where: { userId, url: null, completed: false } }),
     ])
 
     return {
@@ -46,8 +45,7 @@ export async function getDashboardStats() {
 
 export async function getProjectsDueThisWeek() {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
+    const userId = await requireUserId()
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const weekFromNow = new Date(today)
@@ -55,7 +53,7 @@ export async function getProjectsDueThisWeek() {
 
     return prisma.project.findMany({
       where: {
-        ...scopeWhere,
+        userId,
         status: { notIn: ['completed'] },
         dueDate: {
           gte: today,
@@ -84,8 +82,7 @@ export async function getProjectsDueThisWeek() {
 
 export async function getTasksDueToday() {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
+    const userId = await requireUserId()
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const tomorrow = new Date(today)
@@ -93,7 +90,7 @@ export async function getTasksDueToday() {
 
     return prisma.task.findMany({
       where: {
-        ...scopeWhere,
+        userId,
         url: null,
         completed: false,
         dueDate: {
@@ -120,14 +117,13 @@ export async function getTasksDueToday() {
 
 export async function getOverdueTasks() {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
+    const userId = await requireUserId()
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
     return prisma.task.findMany({
       where: {
-        ...scopeWhere,
+        userId,
         url: null,
         completed: false,
         dueDate: {
@@ -153,10 +149,9 @@ export async function getOverdueTasks() {
 
 export async function getRecentProjects() {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
+    const userId = await requireUserId()
     return prisma.project.findMany({
-      where: scopeWhere,
+      where: { userId },
       include: {
         client: {
           select: {
@@ -176,9 +171,8 @@ export async function getRecentProjects() {
 
 export async function getClientCount() {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
-    return await prisma.client.count({ where: scopeWhere })
+    const userId = await requireUserId()
+    return await prisma.client.count({ where: { userId } })
   } catch (error) {
     // Return 0 if database is not available (e.g., during build time)
     return 0
@@ -187,8 +181,7 @@ export async function getClientCount() {
 
 export async function getTasksDueThisWeek() {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
+    const userId = await requireUserId()
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const weekFromNow = new Date(today)
@@ -196,7 +189,7 @@ export async function getTasksDueThisWeek() {
 
     return prisma.task.count({
       where: {
-        ...scopeWhere,
+        userId,
         url: null,
         completed: false,
         dueDate: {
@@ -224,26 +217,25 @@ export type RecentItem = {
 
 export async function getRecentlyViewed(): Promise<RecentItem[]> {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
+    const userId = await requireUserId()
     const [projects, tasks, bookmarks] = await Promise.all([
       // Recent projects
       prisma.project.findMany({
-        where: scopeWhere,
+        where: { userId },
         include: { client: { select: { name: true } } },
         orderBy: { updatedAt: 'desc' },
         take: 5,
       }),
       // Recent tasks (non-bookmark)
       prisma.task.findMany({
-        where: { ...scopeWhere, url: null },
+        where: { userId, url: null },
         include: { project: { select: { id: true, name: true } } },
         orderBy: { updatedAt: 'desc' },
         take: 5,
       }),
       // Recent bookmarks
       prisma.task.findMany({
-        where: { ...scopeWhere, url: { not: null } },
+        where: { userId, url: { not: null } },
         include: { project: { select: { id: true, name: true } } },
         orderBy: { updatedAt: 'desc' },
         take: 5,
@@ -324,13 +316,12 @@ export type ProjectHealth = {
 
 export async function getProjectHealth(): Promise<ProjectHealth[]> {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
+    const userId = await requireUserId()
     const now = new Date()
     now.setHours(0, 0, 0, 0)
 
     const projects = await prisma.project.findMany({
-      where: { ...scopeWhere, status: { notIn: ['completed'] } },
+      where: { userId, status: { notIn: ['completed'] } },
       include: {
         client: { select: { name: true } },
         tasks: {
@@ -415,7 +406,7 @@ export async function getProjectHealth(): Promise<ProjectHealth[]> {
 
     // Also add completed projects
     const completedProjects = await prisma.project.findMany({
-      where: { ...scopeWhere, status: 'completed' },
+      where: { userId, status: 'completed' },
       include: {
         client: { select: { name: true } },
         _count: { select: { tasks: true } },
@@ -458,8 +449,7 @@ export type Insight = {
 
 export async function getSmartInsights(): Promise<Insight[]> {
   try {
-    const { userId, orgId } = await getAuthContext()
-    const scopeWhere = orgId ? { orgId } : { userId }
+    const userId = await requireUserId()
     const now = new Date()
     now.setHours(0, 0, 0, 0)
     const tomorrow = new Date(now)
@@ -478,13 +468,13 @@ export async function getSmartInsights(): Promise<Insight[]> {
     ] = await Promise.all([
       // Overdue tasks grouped by project
       prisma.task.findMany({
-        where: { ...scopeWhere, completed: false, url: null, dueDate: { lt: now } },
+        where: { userId, completed: false, url: null, dueDate: { lt: now } },
         include: { project: { select: { id: true, name: true } } },
       }),
       // High priority tasks due today or tomorrow
       prisma.task.findMany({
         where: {
-          ...scopeWhere,
+          userId,
           completed: false,
           url: null,
           priority: 'high',
@@ -495,7 +485,7 @@ export async function getSmartInsights(): Promise<Insight[]> {
       // Projects not updated in 10+ days
       prisma.project.findMany({
         where: {
-          ...scopeWhere,
+          userId,
           status: { notIn: ['completed'] },
           updatedAt: { lt: new Date(now.getTime() - 10 * 86400000) },
         },
@@ -504,11 +494,11 @@ export async function getSmartInsights(): Promise<Insight[]> {
       }),
       // Tasks completed this week
       prisma.task.count({
-        where: { ...scopeWhere, completed: true, url: null, updatedAt: { gte: weekAgo } },
+        where: { userId, completed: true, url: null, updatedAt: { gte: weekAgo } },
       }),
       // Total pending tasks
       prisma.task.count({
-        where: { ...scopeWhere, completed: false, url: null },
+        where: { userId, completed: false, url: null },
       }),
     ])
 

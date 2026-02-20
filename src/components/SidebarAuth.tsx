@@ -1,6 +1,6 @@
 'use client'
 
-import { SignInButton, SignedIn, SignedOut, UserButton, OrganizationSwitcher } from '@clerk/nextjs'
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import { cn } from '@/lib/utils'
 
 interface SidebarAuthProps {
@@ -31,29 +31,6 @@ export function SidebarAuth({ isCollapsed }: SidebarAuthProps) {
         </SignInButton>
       </SignedOut>
       <SignedIn>
-        <div className={cn(
-          "w-full",
-          isCollapsed ? "flex justify-center" : ""
-        )}>
-          <OrganizationSwitcher
-            hidePersonal={false}
-            afterCreateOrganizationUrl="/dashboard"
-            afterSelectOrganizationUrl="/dashboard"
-            afterLeaveOrganizationUrl="/dashboard"
-            appearance={{
-              elements: {
-                rootBox: "w-full",
-                organizationSwitcherTrigger: cn(
-                  "flex items-center gap-2 w-full rounded-lg transition-colors hover:bg-secondary/80 focus:outline-none focus:ring-0 text-sidebar-foreground",
-                  isCollapsed ? "justify-center p-2" : "px-3 py-2"
-                ),
-                organizationSwitcherPopoverCard: "shadow-lg",
-                organizationPreviewTextContainer: isCollapsed ? "hidden" : "",
-                organizationSwitcherTriggerIcon: isCollapsed ? "hidden" : "",
-              }
-            }}
-          />
-        </div>
         <div className={cn(
           "flex items-center w-full rounded-lg",
           isCollapsed ? "justify-center" : ""
