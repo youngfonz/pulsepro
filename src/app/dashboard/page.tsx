@@ -18,7 +18,6 @@ import {
   getTasksDueThisWeek,
 } from '@/actions/dashboard'
 import { InsightsPanel } from '@/components/InsightsPanel'
-import { ProgressRing } from '@/components/ui/ProgressRing'
 import { statusColors, statusLabels, priorityColors, priorityLabels, formatDate } from '@/lib/utils'
 
 export default async function DashboardPage() {
@@ -355,36 +354,106 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Stat Cards + Insights */}
+        {/* Activity Rings + Insights */}
         <div className="space-y-3">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <div className="flex items-center gap-3 rounded-lg border border-border px-4 py-3">
-              <ProgressRing value={completedTasks} max={stats.totalTasks} className="text-emerald-500" />
-              <div>
-                <p className="text-xs text-muted-foreground">Completed</p>
-                <p className="text-lg font-semibold text-foreground">{completedTasks}<span className="text-sm font-normal text-muted-foreground">/{stats.totalTasks}</span></p>
+          <Card className="border-border/50 overflow-hidden">
+            <CardContent className="p-6">
+              <div className="flex flex-col sm:flex-row items-center gap-8">
+                {/* Activity Rings */}
+                <div className="relative w-36 h-36 flex-shrink-0">
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 blur-xl opacity-20">
+                    <svg viewBox="0 0 100 100" className="w-full h-full">
+                      <circle cx="50" cy="50" r="42" fill="none" stroke="#f43f5e" strokeWidth="6" />
+                      <circle cx="50" cy="50" r="32" fill="none" stroke="#3b82f6" strokeWidth="6" />
+                      <circle cx="50" cy="50" r="22" fill="none" stroke="#22c55e" strokeWidth="6" />
+                    </svg>
+                  </div>
+
+                  {/* Background rings */}
+                  <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" className="text-rose-500/15" strokeWidth="6" />
+                    <circle cx="50" cy="50" r="32" fill="none" stroke="currentColor" className="text-blue-500/15" strokeWidth="6" />
+                    <circle cx="50" cy="50" r="22" fill="none" stroke="currentColor" className="text-emerald-500/15" strokeWidth="6" />
+                  </svg>
+
+                  {/* Progress rings */}
+                  <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full -rotate-90">
+                    <circle
+                      cx="50" cy="50" r="42"
+                      fill="none"
+                      stroke="url(#projectGradient)"
+                      strokeWidth="6"
+                      strokeLinecap="round"
+                      strokeDasharray={`${stats.totalProjects > 0 ? (stats.activeProjects / stats.totalProjects) * 264 : 0} 264`}
+                    />
+                    <circle
+                      cx="50" cy="50" r="32"
+                      fill="none"
+                      stroke="url(#taskGradient)"
+                      strokeWidth="6"
+                      strokeLinecap="round"
+                      strokeDasharray={`${stats.totalTasks > 0 ? (completedTasks / stats.totalTasks) * 201 : 0} 201`}
+                    />
+                    <circle
+                      cx="50" cy="50" r="22"
+                      fill="none"
+                      stroke="url(#dueGradient)"
+                      strokeWidth="6"
+                      strokeLinecap="round"
+                      strokeDasharray={`${stats.pendingTasks > 0 ? Math.min((tasksDueThisWeekCount / stats.pendingTasks) * 138, 138) : 0} 138`}
+                    />
+                    <defs>
+                      <linearGradient id="projectGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#fb7185" />
+                        <stop offset="100%" stopColor="#f43f5e" />
+                      </linearGradient>
+                      <linearGradient id="taskGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#60a5fa" />
+                        <stop offset="100%" stopColor="#3b82f6" />
+                      </linearGradient>
+                      <linearGradient id="dueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#4ade80" />
+                        <stop offset="100%" stopColor="#22c55e" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+
+                  {/* Center number */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xl font-bold text-foreground">{tasksDueThisWeekCount}</span>
+                  </div>
+                </div>
+
+                {/* Stats Legend */}
+                <div className="flex-1 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
+                  <Link href="/projects" className="group flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className="w-2.5 h-2.5 rounded-full bg-rose-500 flex-shrink-0" />
+                    <div>
+                      <div className="text-lg font-semibold text-foreground">{stats.activeProjects}<span className="text-sm font-normal text-muted-foreground">/{stats.totalProjects}</span></div>
+                      <div className="text-xs text-muted-foreground">Active Projects</div>
+                    </div>
+                  </Link>
+
+                  <Link href="/tasks" className="group flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500 flex-shrink-0" />
+                    <div>
+                      <div className="text-lg font-semibold text-foreground">{completedTasks}<span className="text-sm font-normal text-muted-foreground">/{stats.totalTasks}</span></div>
+                      <div className="text-xs text-muted-foreground">Tasks Done</div>
+                    </div>
+                  </Link>
+
+                  <div className="flex items-center gap-3 p-2">
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0" />
+                    <div>
+                      <div className="text-lg font-semibold text-foreground">{tasksDueThisWeekCount}</div>
+                      <div className="text-xs text-muted-foreground">Due This Week</div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3 rounded-lg border border-border px-4 py-3">
-              <ProgressRing
-                value={tasksDueThisWeekCount}
-                max={Math.max(stats.pendingTasks, 1)}
-                label={String(tasksDueThisWeekCount)}
-                className={tasksDueThisWeekCount === 0 ? 'text-emerald-500' : tasksDueThisWeekCount > 5 ? 'text-amber-500' : 'text-blue-500'}
-              />
-              <div>
-                <p className="text-xs text-muted-foreground">Due This Week</p>
-                <p className="text-lg font-semibold text-foreground">{tasksDueThisWeekCount}</p>
-              </div>
-            </div>
-            <div className="hidden sm:flex items-center gap-3 rounded-lg border border-border px-4 py-3">
-              <ProgressRing value={stats.activeProjects} max={stats.totalProjects} className="text-blue-500" />
-              <div>
-                <p className="text-xs text-muted-foreground">Active Projects</p>
-                <p className="text-lg font-semibold text-foreground">{stats.activeProjects}<span className="text-sm font-normal text-muted-foreground">/{stats.totalProjects}</span></p>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
           <InsightsPanel insights={insights} />
         </div>
 
