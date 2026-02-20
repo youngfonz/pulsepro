@@ -43,7 +43,7 @@ function RotatingText() {
 
   return (
     <span
-      className={`inline-block text-highlight transition-all duration-300 ${
+      className={`inline-block text-primary transition-all duration-300 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'
       }`}
     >
@@ -54,7 +54,7 @@ function RotatingText() {
 
 export function Testimonials() {
   return (
-    <section className="py-20 md:py-28 bg-blue-50/40 dark:bg-blue-950/10">
+    <section className="py-20 md:py-28 bg-muted/30">
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <h2 className="text-3xl font-semibold text-foreground tracking-tight text-center">
           Trusted by <RotatingText /> who ship.

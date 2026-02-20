@@ -4,7 +4,7 @@ import { ScrollReveal } from '../ScrollReveal'
 
 export function VoiceFeature() {
   return (
-    <section className="py-20 md:py-28 bg-blue-50/40 dark:bg-blue-950/10">
+    <section className="py-20 md:py-28 bg-muted/30">
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <ScrollReveal delay={0}>
           <div className="overflow-hidden rounded-2xl bg-blue-950 border border-blue-900/50 p-8 md:p-12">
