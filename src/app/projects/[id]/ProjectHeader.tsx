@@ -28,6 +28,7 @@ interface ProjectHeaderProps {
   completedTasks: number
   totalTasks: number
   totalHours: number
+  userRole?: 'owner' | 'manager' | 'editor' | 'viewer'
 }
 
 const statusLabels: Record<string, string> = {
@@ -50,12 +51,14 @@ const priorityColors: Record<string, string> = {
   high: 'border border-rose-500/50 text-rose-600 dark:text-rose-400 bg-rose-500/5',
 }
 
-export function ProjectHeader({ project, clients, completedTasks, totalTasks, totalHours }: ProjectHeaderProps) {
+export function ProjectHeader({ project, clients, completedTasks, totalTasks, totalHours, userRole = 'owner' }: ProjectHeaderProps) {
   const [isEditingName, setIsEditingName] = useState(false)
   const [name, setName] = useState(project.name)
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
   const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
+  const canEdit = userRole === 'owner' || userRole === 'manager'
+  const canDelete = userRole === 'owner' || userRole === 'manager'
 
   const handleNameSave = () => {
     if (name.trim() && name !== project.name) {
@@ -101,7 +104,7 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
 
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          {isEditingName ? (
+          {isEditingName && canEdit ? (
             <input
               type="text"
               value={name}
@@ -119,8 +122,8 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
             />
           ) : (
             <h1
-              onClick={() => setIsEditingName(true)}
-              className="text-xl sm:text-2xl font-bold cursor-pointer hover:text-primary transition-colors"
+              onClick={canEdit ? () => setIsEditingName(true) : undefined}
+              className={`text-xl sm:text-2xl font-bold ${canEdit ? 'cursor-pointer hover:text-primary' : ''} transition-colors`}
             >
               {project.name}
             </h1>
@@ -154,13 +157,15 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
           </div>
         </div>
 
-        <button
-          onClick={handleDelete}
-          disabled={isPending}
-          className="p-2 -m-2 text-xs text-muted-foreground hover:text-destructive transition-colors mt-2"
-        >
-          Delete
-        </button>
+        {canDelete && (
+          <button
+            onClick={handleDelete}
+            disabled={isPending}
+            className="p-2 -m-2 text-xs text-muted-foreground hover:text-destructive transition-colors mt-2"
+          >
+            Delete
+          </button>
+        )}
       </div>
     </div>
   )

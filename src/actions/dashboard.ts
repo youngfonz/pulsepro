@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { requireUserId } from '@/lib/auth'
+import { getAccessibleProjectIds } from '@/lib/access'
 
 export async function getDashboardStats() {
   try {
@@ -9,10 +10,10 @@ export async function getDashboardStats() {
     const [
       totalClients,
       activeClients,
-      totalProjects,
-      activeProjects,
-      totalTasks,
-      pendingTasks,
+      ownedTotalProjects,
+      ownedActiveProjects,
+      ownedTotalTasks,
+      ownedPendingTasks,
     ] = await Promise.all([
       prisma.client.count({ where: { userId } }),
       prisma.client.count({ where: { userId, status: 'active' } }),
@@ -21,6 +22,25 @@ export async function getDashboardStats() {
       prisma.task.count({ where: { userId, url: null } }),
       prisma.task.count({ where: { userId, url: null, completed: false } }),
     ])
+
+    let totalProjects = ownedTotalProjects
+    let activeProjects = ownedActiveProjects
+    let totalTasks = ownedTotalTasks
+    let pendingTasks = ownedPendingTasks
+
+    const sharedIds = await getAccessibleProjectIds()
+    if (sharedIds.length > 0) {
+      const [sharedProjects, sharedActive, sharedTasks, sharedPending] = await Promise.all([
+        prisma.project.count({ where: { id: { in: sharedIds } } }),
+        prisma.project.count({ where: { id: { in: sharedIds }, status: { in: ['in_progress', 'not_started'] } } }),
+        prisma.task.count({ where: { projectId: { in: sharedIds }, url: null } }),
+        prisma.task.count({ where: { projectId: { in: sharedIds }, url: null, completed: false } }),
+      ])
+      totalProjects += sharedProjects
+      activeProjects += sharedActive
+      totalTasks += sharedTasks
+      pendingTasks += sharedPending
+    }
 
     return {
       totalClients,
@@ -51,7 +71,7 @@ export async function getProjectsDueThisWeek() {
     const weekFromNow = new Date(today)
     weekFromNow.setDate(weekFromNow.getDate() + 7)
 
-    return prisma.project.findMany({
+    const results = await prisma.project.findMany({
       where: {
         userId,
         status: { notIn: ['completed'] },
@@ -74,6 +94,26 @@ export async function getProjectsDueThisWeek() {
       orderBy: { dueDate: 'asc' },
       take: 5,
     })
+
+    const sharedIds = await getAccessibleProjectIds()
+    if (sharedIds.length > 0) {
+      const sharedDue = await prisma.project.findMany({
+        where: {
+          id: { in: sharedIds },
+          status: { notIn: ['completed'] },
+          dueDate: { gte: today, lte: weekFromNow },
+        },
+        include: {
+          client: { select: { id: true, name: true } },
+          _count: { select: { tasks: true } },
+        },
+        orderBy: { dueDate: 'asc' },
+        take: 5,
+      })
+      results.push(...sharedDue)
+    }
+
+    return results
   } catch (error) {
     console.error('Failed to fetch projects due this week:', error)
     return []
@@ -320,7 +360,7 @@ export async function getProjectHealth(): Promise<ProjectHealth[]> {
     const now = new Date()
     now.setHours(0, 0, 0, 0)
 
-    const projects = await prisma.project.findMany({
+    const ownedProjects = await prisma.project.findMany({
       where: { userId, status: { notIn: ['completed'] } },
       include: {
         client: { select: { name: true } },
@@ -331,6 +371,23 @@ export async function getProjectHealth(): Promise<ProjectHealth[]> {
       },
       orderBy: { updatedAt: 'desc' },
     })
+
+    const projects = [...ownedProjects]
+    const sharedIds = await getAccessibleProjectIds()
+    if (sharedIds.length > 0) {
+      const sharedProjects = await prisma.project.findMany({
+        where: { id: { in: sharedIds }, status: { notIn: ['completed'] } },
+        include: {
+          client: { select: { name: true } },
+          tasks: {
+            where: { url: null },
+            select: { completed: true, dueDate: true, priority: true },
+          },
+        },
+        orderBy: { updatedAt: 'desc' },
+      })
+      projects.push(...sharedProjects)
+    }
 
     const results: ProjectHealth[] = projects.map((project) => {
       const total = project.tasks.length

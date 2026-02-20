@@ -10,10 +10,21 @@ export async function updateTaskStatus(
   sortOrder: number
 ) {
   const userId = await requireUserId()
-  const task = await prisma.task.findFirst({
+  let task = await prisma.task.findFirst({
     where: { id: taskId, userId },
     select: { projectId: true },
   })
+
+  if (!task) {
+    const { getAccessibleProjectIds } = await import('@/lib/access')
+    const sharedIds = await getAccessibleProjectIds()
+    if (sharedIds.length > 0) {
+      task = await prisma.task.findFirst({
+        where: { id: taskId, projectId: { in: sharedIds } },
+        select: { projectId: true },
+      })
+    }
+  }
 
   if (!task) return
 

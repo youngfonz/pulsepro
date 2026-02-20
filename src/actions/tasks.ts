@@ -4,25 +4,37 @@ import { prisma } from '@/lib/prisma'
 import { requireUserId } from '@/lib/auth'
 import { checkLimit } from '@/lib/subscription'
 import { revalidatePath } from 'next/cache'
+import { getAccessibleProjectIds } from '@/lib/access'
 
 export async function getTask(id: string) {
   const userId = await requireUserId()
-  return prisma.task.findFirst({
-    where: { id, userId },
-    include: {
-      images: true,
-      files: true,
-      comments: {
-        orderBy: { createdAt: 'desc' },
-      },
-      project: {
-        select: {
-          id: true,
-          name: true,
-        },
+  const include = {
+    images: true,
+    files: true,
+    comments: {
+      orderBy: { createdAt: 'desc' as const },
+    },
+    project: {
+      select: {
+        id: true,
+        name: true,
       },
     },
-  })
+  }
+
+  let task = await prisma.task.findFirst({ where: { id, userId }, include })
+
+  if (!task) {
+    const sharedIds = await getAccessibleProjectIds()
+    if (sharedIds.length > 0) {
+      task = await prisma.task.findFirst({
+        where: { id, projectId: { in: sharedIds } },
+        include,
+      })
+    }
+  }
+
+  return task
 }
 
 export async function createTask(projectId: string, formData: FormData) {
@@ -393,7 +405,11 @@ export async function getAllTasks(options?: {
   sort?: string
 }) {
   const userId = await requireUserId()
-  const where: Record<string, unknown> = { userId, url: null }
+  const sharedIds = await getAccessibleProjectIds()
+  const ownershipFilter = sharedIds.length > 0
+    ? { OR: [{ userId }, { projectId: { in: sharedIds } }] }
+    : { userId }
+  const where: Record<string, unknown> = { ...ownershipFilter, url: null }
 
   if (options?.date) {
     const targetDate = new Date(options.date)
@@ -624,8 +640,12 @@ export async function getAllBookmarks(filters?: {
   sort?: string
 }) {
   const userId = await requireUserId()
+  const sharedIds = await getAccessibleProjectIds()
+  const ownershipFilter = sharedIds.length > 0
+    ? { OR: [{ userId }, { projectId: { in: sharedIds } }] }
+    : { userId }
   const where: Record<string, unknown> = {
-    userId,
+    ...ownershipFilter,
     url: { not: null }
   }
 

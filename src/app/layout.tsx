@@ -6,6 +6,8 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { LayoutWrapper } from "@/components/LayoutWrapper";
 import { AuthGuard } from "@/components/AuthGuard";
 import { getClientCount } from "@/actions/dashboard";
+import { auth } from "@clerk/nextjs/server";
+import { isAdminUser } from "@/lib/auth";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -45,9 +47,19 @@ export default async function RootLayout({
   const clientCount = await getClientCount();
   const clerkEnabled = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
+  let isAdmin = false;
+  if (clerkEnabled) {
+    try {
+      const { userId } = await auth();
+      isAdmin = userId ? isAdminUser(userId) : false;
+    } catch {
+      // auth() may fail on public routes — safe to ignore
+    }
+  }
+
   const innerContent = (
     <ThemeProvider>
-      <LayoutWrapper clientCount={clientCount} clerkEnabled={clerkEnabled}>
+      <LayoutWrapper clientCount={clientCount} clerkEnabled={clerkEnabled} isAdmin={isAdmin}>
         {children}
       </LayoutWrapper>
     </ThemeProvider>
