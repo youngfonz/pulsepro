@@ -1,14 +1,20 @@
 'use client'
 
-import { useTransition } from 'react'
+import { useState, useTransition, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { deleteTask, toggleTask } from '@/actions/tasks'
+import { deleteTask, toggleTask, updateTask, getAllTags } from '@/actions/tasks'
+import { Modal } from '@/components/ui/Modal'
+import { TagInput } from '@/components/ui/TagInput'
 
 interface Bookmark {
   id: string
   title: string
   description: string | null
+  notes: string | null
   completed: boolean
+  priority: string
+  startDate: Date | null
+  dueDate: Date | null
   url: string | null
   bookmarkType: string | null
   thumbnailUrl: string | null
@@ -62,6 +68,20 @@ function doneLabel(type: string | null): { done: string; undone: string; progres
   if (type === 'youtube') return { done: 'Watched', undone: 'Mark as watched', progress: 'watched' }
   if (type === 'twitter') return { done: 'Read', undone: 'Mark as read', progress: 'read' }
   return { done: 'Read', undone: 'Mark as read', progress: 'read' }
+}
+
+function EditButton({ onClick }: { onClick: (e: React.MouseEvent) => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+      title="Edit bookmark"
+    >
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+    </button>
+  )
 }
 
 function DeleteButton({ bookmarkId }: { bookmarkId: string }) {
@@ -134,6 +154,171 @@ function DoneButton({ bookmarkId, done, type }: { bookmarkId: string; done: bool
   )
 }
 
+function BookmarkEditModal({
+  bookmark,
+  isOpen,
+  onClose,
+}: {
+  bookmark: Bookmark
+  isOpen: boolean
+  onClose: () => void
+}) {
+  const [isPending, startTransition] = useTransition()
+  const [title, setTitle] = useState(bookmark.title)
+  const [tags, setTags] = useState<string[]>(bookmark.tags)
+  const [allTags, setAllTags] = useState<string[]>([])
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(bookmark.thumbnailUrl)
+  const [thumbnailUploading, setThumbnailUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (isOpen) {
+      setTitle(bookmark.title)
+      setTags(bookmark.tags)
+      setThumbnailUrl(bookmark.thumbnailUrl)
+      getAllTags().then(setAllTags)
+    }
+  }, [isOpen, bookmark.title, bookmark.tags, bookmark.thumbnailUrl])
+
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !file.type.startsWith('image/') || file.size > 2 * 1024 * 1024) return
+
+    setThumbnailUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('type', 'tasks')
+      const response = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await response.json()
+      if (response.ok) setThumbnailUrl(data.path)
+    } finally {
+      setThumbnailUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const formatDateForInput = (date: Date | null) => {
+    if (!date) return ''
+    return new Date(date).toISOString().split('T')[0]
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const formData = new FormData()
+    formData.append('title', title)
+    formData.append('description', bookmark.description ?? '')
+    formData.append('notes', bookmark.notes ?? '')
+    formData.append('priority', bookmark.priority)
+    if (bookmark.startDate) {
+      formData.append('startDate', formatDateForInput(bookmark.startDate))
+    }
+    if (bookmark.dueDate) {
+      formData.append('dueDate', formatDateForInput(bookmark.dueDate))
+    }
+    formData.append('tags', JSON.stringify(tags))
+    formData.append('thumbnailUrl', thumbnailUrl ?? '')
+
+    startTransition(async () => {
+      await updateTask(bookmark.id, formData)
+      onClose()
+    })
+  }
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Edit Bookmark" className="max-w-md">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">Title</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            className="w-full p-2 border border-input rounded-md text-sm bg-background text-foreground"
+          />
+        </div>
+
+        {/* Thumbnail */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-foreground">Thumbnail</label>
+          {thumbnailUrl ? (
+            <div className="relative inline-block">
+              <img src={thumbnailUrl} alt="" className="w-32 h-20 object-cover rounded border border-border" />
+              <button
+                type="button"
+                onClick={() => setThumbnailUrl(null)}
+                className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center hover:bg-destructive/80"
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          ) : (
+            <div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleThumbnailUpload}
+                className="hidden"
+                disabled={thumbnailUploading}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={thumbnailUploading}
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors disabled:opacity-50"
+              >
+                {thumbnailUploading ? (
+                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                )}
+                {thumbnailUploading ? 'Uploading...' : 'Upload thumbnail'}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Tags */}
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-foreground">Tags</label>
+          <TagInput
+            value={tags}
+            onChange={setTags}
+            suggestions={allTags}
+            placeholder="Add tags..."
+          />
+        </div>
+
+        <div className="flex gap-2 pt-2">
+          <button
+            type="submit"
+            disabled={isPending || !title.trim()}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 text-sm font-medium"
+          >
+            {isPending ? 'Saving...' : 'Save Changes'}
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 border border-border rounded-md hover:bg-secondary text-foreground text-sm"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </Modal>
+  )
+}
+
 function BookmarkMeta({ bookmark }: { bookmark: Bookmark }) {
   return (
     <>
@@ -173,52 +358,67 @@ function BookmarkMeta({ bookmark }: { bookmark: Bookmark }) {
 function ImageCard({ bookmark }: { bookmark: Bookmark }) {
   const isDone = bookmark.completed
   const labels = doneLabel(bookmark.bookmarkType)
+  const [isEditing, setIsEditing] = useState(false)
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsEditing(true)
+  }
 
   return (
-    <div className={`group border border-border rounded-lg overflow-hidden hover:border-primary/50 hover:shadow-md transition-all ${isDone ? 'opacity-50' : ''}`}>
-      <a
-        href={bookmark.url || '#'}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <div className="aspect-video bg-muted relative overflow-hidden">
-          <img
-            src={bookmark.thumbnailUrl!}
-            alt=""
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-          <div className="absolute top-2 left-2">
-            <TypeBadge type={bookmark.bookmarkType} />
-          </div>
-          {isDone && (
-            <div className="absolute top-2 right-2 bg-emerald-500 text-white text-xs px-2 py-0.5 rounded font-medium">
-              {labels.done}
+    <>
+      <div className={`group border border-border rounded-lg overflow-hidden hover:border-primary/50 hover:shadow-md transition-all ${isDone ? 'opacity-50' : ''}`}>
+        <a
+          href={bookmark.url || '#'}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <div className="aspect-video bg-muted relative overflow-hidden">
+            <img
+              src={bookmark.thumbnailUrl!}
+              alt=""
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+            <div className="absolute top-2 left-2">
+              <TypeBadge type={bookmark.bookmarkType} />
             </div>
-          )}
-        </div>
-      </a>
-      <div className="p-3">
-        <div className="flex items-start justify-between gap-2">
-          <a
-            href={bookmark.url || '#'}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 min-w-0"
-          >
-            <h3 className={`font-medium text-sm line-clamp-2 transition-colors ${isDone ? 'line-through text-muted-foreground' : 'group-hover:text-primary'}`}>
-              {bookmark.title}
-            </h3>
-          </a>
-          <div className="flex items-center">
-            <DoneButton bookmarkId={bookmark.id} done={isDone} type={bookmark.bookmarkType} />
-            <DeleteButton bookmarkId={bookmark.id} />
+            {isDone && (
+              <div className="absolute top-2 right-2 bg-emerald-500 text-white text-xs px-2 py-0.5 rounded font-medium">
+                {labels.done}
+              </div>
+            )}
           </div>
-        </div>
-        <div className="mt-2">
-          <BookmarkMeta bookmark={bookmark} />
+        </a>
+        <div className="p-3">
+          <div className="flex items-start justify-between gap-2">
+            <a
+              href={bookmark.url || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 min-w-0"
+            >
+              <h3 className={`font-medium text-sm line-clamp-2 transition-colors ${isDone ? 'line-through text-muted-foreground' : 'group-hover:text-primary'}`}>
+                {bookmark.title}
+              </h3>
+            </a>
+            <div className="flex items-center">
+              <EditButton onClick={handleEdit} />
+              <DoneButton bookmarkId={bookmark.id} done={isDone} type={bookmark.bookmarkType} />
+              <DeleteButton bookmarkId={bookmark.id} />
+            </div>
+          </div>
+          <div className="mt-2">
+            <BookmarkMeta bookmark={bookmark} />
+          </div>
         </div>
       </div>
-    </div>
+      <BookmarkEditModal
+        bookmark={bookmark}
+        isOpen={isEditing}
+        onClose={() => setIsEditing(false)}
+      />
+    </>
   )
 }
 
@@ -227,41 +427,56 @@ function CompactCard({ bookmark }: { bookmark: Bookmark }) {
   const displayUrl = bookmark.url
     ? bookmark.url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]
     : ''
+  const [isEditing, setIsEditing] = useState(false)
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsEditing(true)
+  }
 
   return (
-    <div className={`group flex items-start gap-3 border border-border rounded-lg p-3 hover:border-primary/50 hover:shadow-md transition-all ${isDone ? 'opacity-50' : ''}`}>
-      <a
-        href={bookmark.url || '#'}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex-shrink-0 w-10 h-10 rounded-md bg-muted flex items-center justify-center"
-      >
-        <TypeIcon type={bookmark.bookmarkType} size="sm" />
-      </a>
-      <a
-        href={bookmark.url || '#'}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex-1 min-w-0"
-      >
-        <div className="flex items-start gap-2">
-          <h3 className={`font-medium text-sm line-clamp-2 transition-colors flex-1 ${isDone ? 'line-through text-muted-foreground' : 'group-hover:text-primary'}`}>
-            {bookmark.title}
-          </h3>
-          <TypeBadge type={bookmark.bookmarkType} />
+    <>
+      <div className={`group flex items-start gap-3 border border-border rounded-lg p-3 hover:border-primary/50 hover:shadow-md transition-all ${isDone ? 'opacity-50' : ''}`}>
+        <a
+          href={bookmark.url || '#'}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-shrink-0 w-10 h-10 rounded-md bg-muted flex items-center justify-center"
+        >
+          <TypeIcon type={bookmark.bookmarkType} size="sm" />
+        </a>
+        <a
+          href={bookmark.url || '#'}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 min-w-0"
+        >
+          <div className="flex items-start gap-2">
+            <h3 className={`font-medium text-sm line-clamp-2 transition-colors flex-1 ${isDone ? 'line-through text-muted-foreground' : 'group-hover:text-primary'}`}>
+              {bookmark.title}
+            </h3>
+            <TypeBadge type={bookmark.bookmarkType} />
+          </div>
+          {displayUrl && (
+            <p className="text-xs text-muted-foreground mt-0.5 truncate">{displayUrl}</p>
+          )}
+          <div className="mt-1.5">
+            <BookmarkMeta bookmark={bookmark} />
+          </div>
+        </a>
+        <div className="flex flex-col items-center">
+          <EditButton onClick={handleEdit} />
+          <DoneButton bookmarkId={bookmark.id} done={isDone} type={bookmark.bookmarkType} />
+          <DeleteButton bookmarkId={bookmark.id} />
         </div>
-        {displayUrl && (
-          <p className="text-xs text-muted-foreground mt-0.5 truncate">{displayUrl}</p>
-        )}
-        <div className="mt-1.5">
-          <BookmarkMeta bookmark={bookmark} />
-        </div>
-      </a>
-      <div className="flex flex-col items-center">
-        <DoneButton bookmarkId={bookmark.id} done={isDone} type={bookmark.bookmarkType} />
-        <DeleteButton bookmarkId={bookmark.id} />
       </div>
-    </div>
+      <BookmarkEditModal
+        bookmark={bookmark}
+        isOpen={isEditing}
+        onClose={() => setIsEditing(false)}
+      />
+    </>
   )
 }
 

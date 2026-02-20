@@ -26,12 +26,14 @@ export async function POST(request: NextRequest) {
       'image/png',
       'image/gif',
       'image/webp',
-      'application/pdf'
+      'application/pdf',
+      'text/markdown',
+      'text/x-markdown',
     ]
 
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json({
-        error: 'Invalid file type. Only images (JPEG, PNG, GIF, WebP) and PDFs are allowed'
+        error: 'Invalid file type. Only images (JPEG, PNG, GIF, WebP), PDFs, and Markdown files are allowed'
       }, { status: 400 })
     }
 

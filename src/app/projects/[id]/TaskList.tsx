@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -9,7 +9,8 @@ import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { Modal } from '@/components/ui/Modal'
 import { FileUpload } from '@/components/ui/FileUpload'
-import { toggleTask, deleteTask, updateTask, addTaskImage, removeTaskImage, addTaskFile, removeTaskFile, addTaskComment, deleteTaskComment } from '@/actions/tasks'
+import { TagInput } from '@/components/ui/TagInput'
+import { toggleTask, deleteTask, updateTask, addTaskImage, removeTaskImage, addTaskFile, removeTaskFile, addTaskComment, deleteTaskComment, getAllTags } from '@/actions/tasks'
 import { priorityColors, priorityLabels, formatDate, isOverdue, formatFileSize, getFileIcon } from '@/lib/utils'
 
 interface TaskImage {
@@ -266,7 +267,7 @@ function TaskItem({ task }: { task: Task }) {
       <Modal
         isOpen={isEditing}
         onClose={() => setIsEditing(false)}
-        title="Edit Task"
+        title={isBookmark ? 'Edit Bookmark' : 'Edit Task'}
         className="max-w-lg"
       >
         <TaskEditForm
@@ -283,12 +284,47 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
   const [images, setImages] = useState<TaskImage[]>(task.images)
   const [files, setFiles] = useState<TaskFile[]>(task.files)
 
+  const isBookmark = !!task.url && !!task.bookmarkType
+  const [tags, setTags] = useState<string[]>(task.tags)
+  const [allTags, setAllTags] = useState<string[]>([])
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(task.thumbnailUrl)
+  const [thumbnailUploading, setThumbnailUploading] = useState(false)
+  const thumbnailFileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (isBookmark) {
+      getAllTags().then(setAllTags)
+    }
+  }, [isBookmark])
+
   const formatDateForInput = (date: Date | null) => {
     if (!date) return ''
     return new Date(date).toISOString().split('T')[0]
   }
 
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !file.type.startsWith('image/') || file.size > 2 * 1024 * 1024) return
+
+    setThumbnailUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('type', 'tasks')
+      const response = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await response.json()
+      if (response.ok) setThumbnailUrl(data.path)
+    } finally {
+      setThumbnailUploading(false)
+      if (thumbnailFileInputRef.current) thumbnailFileInputRef.current.value = ''
+    }
+  }
+
   const handleSubmit = async (formData: FormData) => {
+    if (isBookmark) {
+      formData.append('tags', JSON.stringify(tags))
+      formData.append('thumbnailUrl', thumbnailUrl ?? '')
+    }
     startTransition(async () => {
       await updateTask(task.id, formData)
       onClose()
@@ -371,6 +407,69 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
         defaultValue={formatDateForInput(task.dueDate)}
       />
 
+      {isBookmark && (
+        <>
+          {/* Thumbnail */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-foreground">Thumbnail</label>
+            {thumbnailUrl ? (
+              <div className="relative inline-block">
+                <img src={thumbnailUrl} alt="" className="w-32 h-20 object-cover rounded border border-border" />
+                <button
+                  type="button"
+                  onClick={() => setThumbnailUrl(null)}
+                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center hover:bg-destructive/80"
+                >
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <div>
+                <input
+                  ref={thumbnailFileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleThumbnailUpload}
+                  className="hidden"
+                  disabled={thumbnailUploading}
+                />
+                <button
+                  type="button"
+                  onClick={() => thumbnailFileInputRef.current?.click()}
+                  disabled={thumbnailUploading}
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors disabled:opacity-50"
+                >
+                  {thumbnailUploading ? (
+                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  )}
+                  {thumbnailUploading ? 'Uploading...' : 'Upload thumbnail'}
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Tags */}
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-foreground">Tags</label>
+            <TagInput
+              value={tags}
+              onChange={setTags}
+              suggestions={allTags}
+              placeholder="Add tags..."
+            />
+          </div>
+        </>
+      )}
+
       {/* Task Images */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-foreground">Images</label>
@@ -421,9 +520,9 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
         </div>
         <FileUpload
           onUploadComplete={handleFileUploadComplete}
-          accept="image/*,application/pdf"
+          accept="image/*,application/pdf,.md,text/markdown"
           maxSize={10}
-          label="Add file (PDF or Image, up to 10MB)"
+          label="Add file (PDF, Image, or Markdown, up to 10MB)"
         />
       </div>
 
