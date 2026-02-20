@@ -16,13 +16,14 @@ export async function updateTaskStatus(
   })
 
   if (!task) {
-    const { getAccessibleProjectIds } = await import('@/lib/access')
-    const sharedIds = await getAccessibleProjectIds()
-    if (sharedIds.length > 0) {
-      task = await prisma.task.findFirst({
-        where: { id: taskId, projectId: { in: sharedIds } },
-        select: { projectId: true },
-      })
+    const { requireProjectAccess } = await import('@/lib/access')
+    const found = await prisma.task.findFirst({
+      where: { id: taskId },
+      select: { projectId: true },
+    })
+    if (found) {
+      await requireProjectAccess(found.projectId, 'editor')
+      task = found
     }
   }
 

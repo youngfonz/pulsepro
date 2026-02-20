@@ -143,9 +143,9 @@ export function ProjectTabs({ projectId, tasks, timeEntries, images, userRole = 
             </div>
             {regularTasks.length > 0 ? (
               taskView === 'list' ? (
-                <TaskList tasks={regularTasks} />
+                <TaskList tasks={regularTasks} canEdit={canAddContent} />
               ) : (
-                <TaskBoard tasks={regularTasks} />
+                <TaskBoard tasks={regularTasks} canEdit={canAddContent} />
               )
             ) : (
               <div className="py-12 text-center text-muted-foreground">
@@ -159,7 +159,7 @@ export function ProjectTabs({ projectId, tasks, timeEntries, images, userRole = 
           <div className="space-y-6">
             {canAddContent && <AddBookmarkForm projectId={projectId} />}
             {bookmarks.length > 0 ? (
-              <TaskList tasks={bookmarks} />
+              <TaskList tasks={bookmarks} canEdit={canAddContent} />
             ) : (
               <div className="py-12 text-center text-muted-foreground">
                 No bookmarks yet. Add your first bookmark above.
@@ -170,13 +170,13 @@ export function ProjectTabs({ projectId, tasks, timeEntries, images, userRole = 
 
         {activeTab === 'time' && (
           <div className="max-w-2xl">
-            <TimeTracker projectId={projectId} timeEntries={timeEntries} />
+            <TimeTracker projectId={projectId} timeEntries={timeEntries} canEdit={canAddContent} />
           </div>
         )}
 
         {activeTab === 'files' && (
           <div className="max-w-2xl">
-            <ProjectImages projectId={projectId} images={images} />
+            <ProjectImages projectId={projectId} images={images} canEdit={canAddContent} />
           </div>
         )}
 

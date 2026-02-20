@@ -16,7 +16,6 @@ import {
   getSmartInsights,
   getDashboardStats,
   getTasksDueThisWeek,
-  backfillUserId,
 } from '@/actions/dashboard'
 import { InsightsPanel } from '@/components/InsightsPanel'
 import { ProgressRing } from '@/components/ui/ProgressRing'
@@ -24,7 +23,6 @@ import { statusColors, statusLabels, priorityColors, priorityLabels, formatDate 
 
 export default async function DashboardPage() {
   const userId = await requireUserId()
-  await backfillUserId()
 
   const [projectsDueThisWeek, tasksDueToday, overdueTasks, recentlyViewed, projectHealth, insights, stats, tasksDueThisWeekCount] = await Promise.all([
     getProjectsDueThisWeek(),

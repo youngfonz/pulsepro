@@ -11,7 +11,9 @@ export async function grantProjectAccess(
   targetUserId: string,
   role: 'viewer' | 'editor' | 'manager'
 ) {
-  await requireProjectAccess(projectId, 'manager')
+  // Only owners can grant manager role
+  const minRole = role === 'manager' ? 'owner' : 'manager'
+  await requireProjectAccess(projectId, minRole)
   const userId = await requireUserId()
 
   if (targetUserId === userId) throw new Error('Cannot grant access to yourself')

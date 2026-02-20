@@ -319,27 +319,6 @@ export async function getRecentlyViewed(): Promise<RecentItem[]> {
   }
 }
 
-/**
- * One-time backfill: assigns all records with userId=null to the current user.
- * Safe to call multiple times — does nothing if no orphaned records exist.
- */
-export async function backfillUserId() {
-  const userId = await requireUserId()
-
-  const [clients, projects, tasks] = await Promise.all([
-    prisma.client.updateMany({ where: { userId: null }, data: { userId } }),
-    prisma.project.updateMany({ where: { userId: null }, data: { userId } }),
-    prisma.task.updateMany({ where: { userId: null }, data: { userId } }),
-  ])
-
-  const total = clients.count + projects.count + tasks.count
-  if (total > 0) {
-    console.info(`Backfilled ${clients.count} clients, ${projects.count} projects, ${tasks.count} tasks to user ${userId}`)
-  }
-
-  return total
-}
-
 // --- Project Health Scores ---
 
 export type ProjectHealth = {

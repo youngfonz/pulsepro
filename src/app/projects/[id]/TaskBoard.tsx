@@ -41,7 +41,7 @@ function getTaskStatus(task: Task): string {
   return task.status || 'todo'
 }
 
-export function TaskBoard({ tasks }: { tasks: Task[] }) {
+export function TaskBoard({ tasks, canEdit = true }: { tasks: Task[]; canEdit?: boolean }) {
   const [items, setItems] = useState(() => {
     const grouped: Record<string, Task[]> = { todo: [], in_progress: [], done: [] }
     tasks.forEach((t) => {
@@ -118,11 +118,11 @@ export function TaskBoard({ tasks }: { tasks: Task[] }) {
 
   return (
     <DndContext
-      sensors={sensors}
+      sensors={canEdit ? sensors : []}
       collisionDetection={closestCorners}
-      onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
-      onDragEnd={handleDragEnd}
+      onDragStart={canEdit ? handleDragStart : undefined}
+      onDragOver={canEdit ? handleDragOver : undefined}
+      onDragEnd={canEdit ? handleDragEnd : undefined}
     >
       <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3">
         {COLUMNS.map((col) => (
@@ -132,6 +132,7 @@ export function TaskBoard({ tasks }: { tasks: Task[] }) {
             label={col.label}
             tasks={items[col.id]}
             count={items[col.id].length}
+            canEdit={canEdit}
           />
         ))}
       </div>
@@ -143,7 +144,7 @@ export function TaskBoard({ tasks }: { tasks: Task[] }) {
   )
 }
 
-function Column({ id, label, tasks, count }: { id: string; label: string; tasks: Task[]; count: number }) {
+function Column({ id, label, tasks, count, canEdit = true }: { id: string; label: string; tasks: Task[]; count: number; canEdit?: boolean }) {
   const { setNodeRef, isOver } = useDroppable({ id })
 
   return (
@@ -161,16 +162,17 @@ function Column({ id, label, tasks, count }: { id: string; label: string; tasks:
       </div>
       <div className="space-y-2">
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard key={task.id} task={task} canEdit={canEdit} />
         ))}
       </div>
     </div>
   )
 }
 
-function TaskCard({ task }: { task: Task }) {
+function TaskCard({ task, canEdit = true }: { task: Task; canEdit?: boolean }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: task.id,
+    disabled: !canEdit,
   })
 
   const style = transform
@@ -185,9 +187,9 @@ function TaskCard({ task }: { task: Task }) {
       style={style}
       {...listeners}
       {...attributes}
-      className={`bg-background border border-border rounded-md p-3 cursor-grab active:cursor-grabbing transition-shadow hover:shadow-sm ${
-        isDragging ? 'opacity-30' : ''
-      }`}
+      className={`bg-background border border-border rounded-md p-3 transition-shadow hover:shadow-sm ${
+        canEdit ? 'cursor-grab active:cursor-grabbing' : ''
+      } ${isDragging ? 'opacity-30' : ''}`}
     >
       <p className={`text-sm font-medium ${task.completed ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
         {task.title}

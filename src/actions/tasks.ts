@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { requireUserId } from '@/lib/auth'
 import { checkLimit } from '@/lib/subscription'
 import { revalidatePath } from 'next/cache'
-import { getAccessibleProjectIds } from '@/lib/access'
+import { getAccessibleProjectIds, requireProjectAccess } from '@/lib/access'
 
 export async function getTask(id: string) {
   const userId = await requireUserId()
@@ -41,9 +41,15 @@ export async function createTask(projectId: string, formData: FormData) {
   try {
     const userId = await requireUserId()
 
-    // Verify project belongs to this user
+    // Verify project access — owner or editor+
+    let taskUserId = userId
     const project = await prisma.project.findFirst({ where: { id: projectId, userId } })
-    if (!project) throw new Error('Project not found')
+    if (!project) {
+      await requireProjectAccess(projectId, 'editor')
+      const shared = await prisma.project.findUnique({ where: { id: projectId }, select: { userId: true } })
+      if (!shared || !shared.userId) throw new Error('Project not found')
+      taskUserId = shared.userId
+    }
 
     const limit = await checkLimit('tasks')
     if (!limit.allowed) {
@@ -51,7 +57,7 @@ export async function createTask(projectId: string, formData: FormData) {
     }
 
     const data = {
-      userId,
+      userId: taskUserId,
       title: formData.get('title') as string,
       description: formData.get('description') as string || null,
       notes: formData.get('notes') as string || null,
@@ -76,11 +82,15 @@ export async function createTask(projectId: string, formData: FormData) {
 export async function updateTask(id: string, formData: FormData) {
   try {
     const userId = await requireUserId()
-    const task = await prisma.task.findFirst({
+    let task = await prisma.task.findFirst({
       where: { id, userId },
       select: { projectId: true, url: true },
     })
 
+    if (!task) {
+      task = await prisma.task.findFirst({ where: { id }, select: { projectId: true, url: true } })
+      if (task) await requireProjectAccess(task.projectId, 'editor')
+    }
     if (!task) return
 
     const data: Record<string, unknown> = {
@@ -125,11 +135,15 @@ export async function updateTask(id: string, formData: FormData) {
 export async function toggleTask(id: string) {
   try {
     const userId = await requireUserId()
-    const task = await prisma.task.findFirst({
+    let task = await prisma.task.findFirst({
       where: { id, userId },
       select: { completed: true, projectId: true },
     })
 
+    if (!task) {
+      task = await prisma.task.findFirst({ where: { id }, select: { completed: true, projectId: true } })
+      if (task) await requireProjectAccess(task.projectId, 'editor')
+    }
     if (!task) return
 
     const newCompleted = !task.completed
@@ -152,11 +166,15 @@ export async function toggleTask(id: string) {
 export async function deleteTask(id: string) {
   try {
     const userId = await requireUserId()
-    const task = await prisma.task.findFirst({
+    let task = await prisma.task.findFirst({
       where: { id, userId },
       select: { projectId: true },
     })
 
+    if (!task) {
+      task = await prisma.task.findFirst({ where: { id }, select: { projectId: true } })
+      if (task) await requireProjectAccess(task.projectId, 'editor')
+    }
     if (!task) return
 
     await prisma.task.delete({
@@ -173,11 +191,15 @@ export async function deleteTask(id: string) {
 export async function addTaskImage(taskId: string, path: string, name: string) {
   try {
     const userId = await requireUserId()
-    const task = await prisma.task.findFirst({
+    let task = await prisma.task.findFirst({
       where: { id: taskId, userId },
       select: { projectId: true },
     })
 
+    if (!task) {
+      task = await prisma.task.findFirst({ where: { id: taskId }, select: { projectId: true } })
+      if (task) await requireProjectAccess(task.projectId, 'editor')
+    }
     if (!task) return
 
     await prisma.taskImage.create({
@@ -207,7 +229,9 @@ export async function removeTaskImage(imageId: string) {
     })
 
     if (!image) return
-    if (image.task.userId !== userId) return
+    if (image.task.userId !== userId) {
+      await requireProjectAccess(image.task.projectId, 'editor')
+    }
 
     await prisma.taskImage.delete({
       where: { id: imageId },
@@ -228,11 +252,15 @@ export async function addTaskFile(
 ) {
   try {
     const userId = await requireUserId()
-    const task = await prisma.task.findFirst({
+    let task = await prisma.task.findFirst({
       where: { id: taskId, userId },
       select: { projectId: true },
     })
 
+    if (!task) {
+      task = await prisma.task.findFirst({ where: { id: taskId }, select: { projectId: true } })
+      if (task) await requireProjectAccess(task.projectId, 'editor')
+    }
     if (!task) return
 
     await prisma.taskFile.create({
@@ -264,7 +292,9 @@ export async function removeTaskFile(fileId: string) {
     })
 
     if (!file) return
-    if (file.task.userId !== userId) return
+    if (file.task.userId !== userId) {
+      await requireProjectAccess(file.task.projectId, 'editor')
+    }
 
     await prisma.taskFile.delete({
       where: { id: fileId },
@@ -409,7 +439,8 @@ export async function getAllTasks(options?: {
   const ownershipFilter = sharedIds.length > 0
     ? { OR: [{ userId }, { projectId: { in: sharedIds } }] }
     : { userId }
-  const where: Record<string, unknown> = { ...ownershipFilter, url: null }
+  const conditions: Record<string, unknown>[] = [ownershipFilter]
+  const where: Record<string, unknown> = { url: null }
 
   if (options?.date) {
     const targetDate = new Date(options.date)
@@ -417,20 +448,12 @@ export async function getAllTasks(options?: {
     const nextDay = new Date(targetDate)
     nextDay.setDate(nextDay.getDate() + 1)
 
-    where.OR = [
-      {
-        dueDate: {
-          gte: targetDate,
-          lt: nextDay,
-        },
-      },
-      {
-        startDate: {
-          gte: targetDate,
-          lt: nextDay,
-        },
-      },
-    ]
+    conditions.push({
+      OR: [
+        { dueDate: { gte: targetDate, lt: nextDay } },
+        { startDate: { gte: targetDate, lt: nextDay } },
+      ]
+    })
   }
 
   if (options?.status === 'pending') {
@@ -446,6 +469,8 @@ export async function getAllTasks(options?: {
   if (options?.projectId && options.projectId !== 'all') {
     where.projectId = options.projectId
   }
+
+  where.AND = conditions
 
   // Determine sort order
   type OrderBy = Record<string, 'asc' | 'desc' | Record<string, 'asc' | 'desc'>>
@@ -540,11 +565,15 @@ export async function getProjectsForTaskFilter() {
 export async function addTaskComment(taskId: string, content: string) {
   try {
     const userId = await requireUserId()
-    const task = await prisma.task.findFirst({
+    let task = await prisma.task.findFirst({
       where: { id: taskId, userId },
       select: { projectId: true },
     })
 
+    if (!task) {
+      task = await prisma.task.findFirst({ where: { id: taskId }, select: { projectId: true } })
+      if (task) await requireProjectAccess(task.projectId, 'editor')
+    }
     if (!task) return
 
     await prisma.taskComment.create({
@@ -573,7 +602,9 @@ export async function deleteTaskComment(commentId: string) {
     })
 
     if (!comment) return
-    if (comment.task.userId !== userId) return
+    if (comment.task.userId !== userId) {
+      await requireProjectAccess(comment.task.projectId, 'editor')
+    }
 
     await prisma.taskComment.delete({
       where: { id: commentId },
@@ -602,9 +633,15 @@ export async function createBookmarkTask(
   try {
     const userId = await requireUserId()
 
-    // Verify project belongs to this user
+    // Verify project access — owner or editor+
+    let taskUserId = userId
     const project = await prisma.project.findFirst({ where: { id: projectId, userId } })
-    if (!project) throw new Error('Project not found')
+    if (!project) {
+      await requireProjectAccess(projectId, 'editor')
+      const shared = await prisma.project.findUnique({ where: { id: projectId }, select: { userId: true } })
+      if (!shared || !shared.userId) throw new Error('Project not found')
+      taskUserId = shared.userId
+    }
 
     const limit = await checkLimit('tasks')
     if (!limit.allowed) {
@@ -612,7 +649,7 @@ export async function createBookmarkTask(
     }
 
     const taskData = {
-      userId,
+      userId: taskUserId,
       title: data.title,
       description: data.description || null,
       notes: data.notes || null,

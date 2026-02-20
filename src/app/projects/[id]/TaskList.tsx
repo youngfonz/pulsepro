@@ -52,7 +52,7 @@ interface Task {
   comments: TaskComment[]
 }
 
-export function TaskList({ tasks }: { tasks: Task[] }) {
+export function TaskList({ tasks, canEdit = true }: { tasks: Task[]; canEdit?: boolean }) {
   if (tasks.length === 0) {
     return (
       <div className="py-8 text-center text-muted-foreground">
@@ -64,13 +64,13 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
   return (
     <div className="divide-y divide-border">
       {tasks.map((task) => (
-        <TaskItem key={task.id} task={task} />
+        <TaskItem key={task.id} task={task} canEdit={canEdit} />
       ))}
     </div>
   )
 }
 
-function TaskItem({ task }: { task: Task }) {
+function TaskItem({ task, canEdit = true }: { task: Task; canEdit?: boolean }) {
   const [isPending, startTransition] = useTransition()
   const [isEditing, setIsEditing] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
@@ -113,20 +113,34 @@ function TaskItem({ task }: { task: Task }) {
               />
             </button>
           )}
-          <button
-            onClick={handleToggle}
-            className={`mt-0.5 h-5 w-5 flex-shrink-0 rounded border-2 transition-colors ${
+          {canEdit ? (
+            <button
+              onClick={handleToggle}
+              className={`mt-0.5 h-5 w-5 flex-shrink-0 rounded border-2 transition-colors ${
+                task.completed
+                  ? 'border-emerald-500 bg-emerald-500 text-white'
+                  : 'border-border hover:border-primary'
+              }`}
+            >
+              {task.completed && (
+                <svg className="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </button>
+          ) : (
+            <div className={`mt-0.5 h-5 w-5 flex-shrink-0 rounded border-2 ${
               task.completed
                 ? 'border-emerald-500 bg-emerald-500 text-white'
-                : 'border-border hover:border-primary'
-            }`}
-          >
-            {task.completed && (
-              <svg className="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-              </svg>
-            )}
-          </button>
+                : 'border-border'
+            }`}>
+              {task.completed && (
+                <svg className="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-1 sm:gap-2">
               <button
@@ -194,24 +208,28 @@ function TaskItem({ task }: { task: Task }) {
               </p>
             )}
           </div>
-          <button
-            onClick={() => setIsEditing(true)}
-            className="flex-shrink-0 p-1 text-muted-foreground hover:text-link transition-colors"
-            title="Edit task"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-          </button>
-          <button
-            onClick={handleDelete}
-            className="flex-shrink-0 p-1 text-muted-foreground hover:text-destructive transition-colors"
-            title="Delete task"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </button>
+          {canEdit && (
+            <>
+              <button
+                onClick={() => setIsEditing(true)}
+                className="flex-shrink-0 p-1 text-muted-foreground hover:text-link transition-colors"
+                title="Edit task"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </button>
+              <button
+                onClick={handleDelete}
+                className="flex-shrink-0 p-1 text-muted-foreground hover:text-destructive transition-colors"
+                title="Delete task"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </>
+          )}
         </div>
 
         {/* Expanded view with description, notes, images, and files */}
@@ -258,7 +276,7 @@ function TaskItem({ task }: { task: Task }) {
                 </div>
               </div>
             )}
-            <TaskComments taskId={task.id} comments={task.comments} />
+            <TaskComments taskId={task.id} comments={task.comments} canEdit={canEdit} />
           </div>
         )}
       </div>
@@ -538,7 +556,7 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
   )
 }
 
-function TaskComments({ taskId, comments }: { taskId: string; comments: TaskComment[] }) {
+function TaskComments({ taskId, comments, canEdit = true }: { taskId: string; comments: TaskComment[]; canEdit?: boolean }) {
   const [isPending, startTransition] = useTransition()
   const [newComment, setNewComment] = useState('')
   const [localComments, setLocalComments] = useState(comments)
@@ -587,23 +605,25 @@ function TaskComments({ taskId, comments }: { taskId: string; comments: TaskComm
       </p>
 
       {/* Add comment form */}
-      <div className="space-y-2">
-        <Textarea
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Add a comment..."
-          rows={2}
-          className="text-sm"
-        />
-        <Button
-          type="button"
-          size="sm"
-          onClick={handleAddComment}
-          disabled={!newComment.trim() || isPending}
-        >
-          {isPending ? 'Adding...' : 'Add Comment'}
-        </Button>
-      </div>
+      {canEdit && (
+        <div className="space-y-2">
+          <Textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Add a comment..."
+            rows={2}
+            className="text-sm"
+          />
+          <Button
+            type="button"
+            size="sm"
+            onClick={handleAddComment}
+            disabled={!newComment.trim() || isPending}
+          >
+            {isPending ? 'Adding...' : 'Add Comment'}
+          </Button>
+        </div>
+      )}
 
       {/* Comments list */}
       {localComments.length > 0 && (
@@ -617,15 +637,17 @@ function TaskComments({ taskId, comments }: { taskId: string; comments: TaskComm
                 <p className="text-sm text-foreground whitespace-pre-wrap flex-1">
                   {comment.content}
                 </p>
-                <button
-                  onClick={() => handleDeleteComment(comment.id)}
-                  className="flex-shrink-0 p-1 text-muted-foreground hover:text-destructive transition-colors"
-                  title="Delete comment"
-                >
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                {canEdit && (
+                  <button
+                    onClick={() => handleDeleteComment(comment.id)}
+                    className="flex-shrink-0 p-1 text-muted-foreground hover:text-destructive transition-colors"
+                    title="Delete comment"
+                  >
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
               </div>
               <p className="text-xs text-muted-foreground">
                 {formatCommentDate(comment.createdAt)}
