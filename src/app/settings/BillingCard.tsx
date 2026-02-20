@@ -80,18 +80,12 @@ export function BillingCard() {
         {/* Actions */}
         <div className="pt-2 border-t border-border">
           {isPro ? (
-            subscription?.hasPortal ? (
-              <a
-                href="/api/portal"
-                className="text-sm text-primary hover:underline"
-              >
-                Manage subscription
-              </a>
-            ) : (
-              <p className="text-xs text-muted-foreground">
-                Your Pro plan is active. Contact support to manage your subscription.
-              </p>
-            )
+            <a
+              href="/api/portal"
+              className="text-sm text-primary hover:underline"
+            >
+              Manage subscription
+            </a>
           ) : (
             <a
               href={`/api/checkout?products=${process.env.NEXT_PUBLIC_POLAR_PRO_PRODUCT_ID || ''}`}
