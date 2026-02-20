@@ -22,7 +22,7 @@ const tools = [
 
 export function WhySwitch() {
   return (
-    <section className="py-20 md:py-28 border-t border-border">
+    <section className="py-20 md:py-28">
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <div className="text-center">
           <ScrollReveal>
@@ -52,10 +52,10 @@ export function WhySwitch() {
                 <div className="mt-5 space-y-4">
                   <div>
                     <div className="flex items-center gap-2 mb-1.5">
-                      <svg className="w-4 h-4 text-rose-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <svg className="w-4 h-4 text-destructive flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                       </svg>
-                      <span className="text-xs font-medium text-rose-500 uppercase tracking-wide">The problem</span>
+                      <span className="text-xs font-medium text-destructive uppercase tracking-wide">The problem</span>
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       {tool.pain}

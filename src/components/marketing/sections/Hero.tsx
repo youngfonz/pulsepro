@@ -32,7 +32,7 @@ function RotatingBadge() {
 
   return (
     <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-6">
-      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+      <span className="w-2 h-2 rounded-full bg-highlight animate-pulse" />
       <span
         className="text-sm font-medium text-foreground transition-opacity duration-300"
         style={{ opacity: visible ? 1 : 0 }}
@@ -67,14 +67,8 @@ function LogoMarks() {
 
 export function Hero() {
   return (
-    <section className="relative min-h-[calc(100vh-64px)] flex items-center overflow-hidden">
-      {/* Subtle gradient accents */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_80%_20%,rgba(251,207,232,0.3),transparent_70%)] dark:bg-[radial-gradient(ellipse_80%_60%_at_80%_20%,rgba(244,63,94,0.04),transparent_70%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_70%_80%,rgba(167,243,208,0.2),transparent_70%)] dark:bg-[radial-gradient(ellipse_60%_50%_at_70%_80%,rgba(16,185,129,0.03),transparent_70%)]" />
-      </div>
-
-      <div className="relative max-w-6xl mx-auto px-4 md:px-8 py-20 w-full">
+    <section className="min-h-[calc(100vh-64px)] flex items-center">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 py-20 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left column: Text content */}
           <div>
@@ -142,13 +136,9 @@ export function Hero() {
 
           {/* Right column: Screenshot */}
           <ScrollReveal delay={300} direction="right">
-            <div className="relative rounded-2xl overflow-hidden">
-              {/* Pastel gradient backdrop */}
-              <div className="absolute inset-0 bg-gradient-to-br from-rose-200/80 via-blue-200/60 to-emerald-200/70 dark:from-rose-500/20 dark:via-blue-500/15 dark:to-emerald-500/20" />
-              <div className="absolute inset-0 bg-gradient-to-tr from-violet-200/40 via-transparent to-amber-100/50 dark:from-violet-500/10 dark:via-transparent dark:to-amber-500/10" />
-
+            <div className="rounded-2xl overflow-hidden bg-muted">
               {/* Floating browser card */}
-              <div className="relative p-4 md:p-6">
+              <div className="p-4 md:p-6">
                 <div className="bg-white rounded-xl shadow-2xl overflow-hidden border border-black/5">
                   {/* Browser chrome */}
                   <div className="h-9 bg-gray-100 border-b border-gray-200 flex items-center px-4 gap-2">

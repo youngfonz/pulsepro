@@ -59,15 +59,15 @@ export function TelegramFeature() {
 
           {/* Right: mock Telegram chat */}
           <ScrollReveal delay={100}>
-            <div className="bg-[#0f172a] rounded-xl overflow-hidden shadow-2xl border border-white/5">
+            <div className="bg-card rounded-xl overflow-hidden shadow-2xl border border-border">
               {/* Chat header */}
-              <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10">
+              <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
                 <div className="w-9 h-9 rounded-full bg-[#2AABEE] flex items-center justify-center flex-shrink-0">
                   <TelegramIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-white">Pulse Pro Bot</div>
-                  <div className="text-xs text-white/50">bot</div>
+                  <div className="text-sm font-medium text-card-foreground">Pulse Pro Bot</div>
+                  <div className="text-xs text-muted-foreground">bot</div>
                 </div>
               </div>
 
@@ -82,7 +82,7 @@ export function TelegramFeature() {
                       className={`max-w-[80%] rounded-lg px-3 py-2 text-sm leading-relaxed ${
                         msg.from === 'user'
                           ? 'bg-[#2AABEE] text-white rounded-br-sm'
-                          : 'bg-white/10 text-white/90 rounded-bl-sm'
+                          : 'bg-muted text-card-foreground rounded-bl-sm'
                       }`}
                     >
                       <span
@@ -91,7 +91,7 @@ export function TelegramFeature() {
                             .replace(/\n/g, '<br/>')
                             .replace(/<b>/g, '<strong>')
                             .replace(/<\/b>/g, '</strong>')
-                            .replace(/<i>/g, '<em class="text-white/50">')
+                            .replace(/<i>/g, '<em style="opacity:0.5">')
                             .replace(/<\/i>/g, '</em>'),
                         }}
                       />
@@ -101,8 +101,8 @@ export function TelegramFeature() {
               </div>
 
               {/* Input bar */}
-              <div className="flex items-center gap-2 px-4 py-3 border-t border-white/10">
-                <div className="flex-1 bg-white/5 rounded-full px-4 py-2 text-sm text-white/30">
+              <div className="flex items-center gap-2 px-4 py-3 border-t border-border">
+                <div className="flex-1 bg-muted rounded-full px-4 py-2 text-sm text-muted-foreground">
                   Message...
                 </div>
                 <div className="w-8 h-8 rounded-full bg-[#2AABEE] flex items-center justify-center flex-shrink-0">
