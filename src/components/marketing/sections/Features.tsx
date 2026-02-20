@@ -11,6 +11,7 @@ const primaryFeatures = [
     ),
     title: 'See every project at a glance',
     description: 'No more digging through emails to find where things stand. One dashboard shows every active project, deadline, and status.',
+    color: 'blue' as const,
   },
   {
     icon: (
@@ -20,6 +21,7 @@ const primaryFeatures = [
     ),
     title: 'Never miss another deadline',
     description: 'Create tasks, set priorities, and get daily reminders about what\u2019s due. Stop carrying your to-do list in your head.',
+    color: 'emerald' as const,
   },
   {
     icon: (
@@ -29,16 +31,35 @@ const primaryFeatures = [
     ),
     title: 'Keep every client organized',
     description: 'Client details, project history, and active work \u2014 all in one place. Know exactly where things stand before every call.',
+    color: 'amber' as const,
   },
 ];
 
+const colorMap = {
+  blue: {
+    iconBg: 'bg-blue-500/10',
+    iconText: 'text-blue-500',
+    border: 'border-t-blue-500',
+  },
+  emerald: {
+    iconBg: 'bg-emerald-500/10',
+    iconText: 'text-emerald-500',
+    border: 'border-t-emerald-500',
+  },
+  amber: {
+    iconBg: 'bg-amber-500/10',
+    iconText: 'text-amber-500',
+    border: 'border-t-amber-500',
+  },
+} as const;
+
 const secondaryFeatures = [
-  { title: 'Find anything in 2 keystrokes', description: 'Projects, tasks, clients \u2014 instantly with \u2318K' },
-  { title: 'See your month at a glance', description: 'Every deadline on one calendar' },
-  { title: 'Save anything to a project', description: 'Bookmark links, articles, and resources' },
-  { title: 'Wake up knowing what\u2019s due', description: 'Daily email with your priorities for the day' },
-  { title: 'Manage tasks without opening a browser', description: 'Check off tasks and add new ones from Telegram' },
-  { title: 'Invite your team', description: 'Shared workspaces with project-level access control' },
+  { title: 'Find anything in 2 keystrokes', description: 'Projects, tasks, clients \u2014 instantly with \u2318K', dot: 'bg-blue-500' },
+  { title: 'See your month at a glance', description: 'Every deadline on one calendar', dot: 'bg-emerald-500' },
+  { title: 'Save anything to a project', description: 'Bookmark links, articles, and resources', dot: 'bg-amber-500' },
+  { title: 'Wake up knowing what\u2019s due', description: 'Daily email with your priorities for the day', dot: 'bg-blue-500' },
+  { title: 'Manage tasks without opening a browser', description: 'Check off tasks and add new ones from Telegram', dot: 'bg-emerald-500' },
+  { title: 'Invite your team', description: 'Shared workspaces with project-level access control', dot: 'bg-amber-500' },
 ];
 
 export function Features() {
@@ -59,20 +80,23 @@ export function Features() {
         {/* Primary feature cards */}
         <ScrollReveal delay={0}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-14">
-            {primaryFeatures.map((feature) => (
-              <div
-                key={feature.title}
-                className="border border-border border-t-highlight border-t-2 rounded-xl p-6 bg-card hover:shadow-lg transition-all duration-200"
-              >
-                <div className="w-10 h-10 rounded-lg bg-highlight/10 text-highlight flex items-center justify-center">
-                  {feature.icon}
+            {primaryFeatures.map((feature) => {
+              const colors = colorMap[feature.color];
+              return (
+                <div
+                  key={feature.title}
+                  className={`border border-border ${colors.border} border-t-2 rounded-xl p-6 bg-card hover:shadow-lg transition-all duration-200`}
+                >
+                  <div className={`w-10 h-10 rounded-lg ${colors.iconBg} ${colors.iconText} flex items-center justify-center`}>
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-base font-semibold mt-4">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                    {feature.description}
+                  </p>
                 </div>
-                <h3 className="text-base font-semibold mt-4">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </ScrollReveal>
 
@@ -81,7 +105,7 @@ export function Features() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-12">
             {secondaryFeatures.map((feature) => (
               <div key={feature.title} className="p-4 flex gap-3">
-                <div className="w-2 h-2 rounded-full bg-highlight mt-1.5 flex-shrink-0" />
+                <div className={`w-2 h-2 rounded-full ${feature.dot} mt-1.5 flex-shrink-0`} />
                 <div>
                   <h4 className="text-sm font-medium text-foreground">{feature.title}</h4>
                   <p className="text-sm text-muted-foreground mt-1">{feature.description}</p>
