@@ -70,7 +70,7 @@ function SortableCard({ id, children }: { id: string; children: ReactNode }) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative group/card ${isDragging ? 'z-10 opacity-60 scale-[1.02]' : ''}`}
+      className={`relative group/card min-w-0 ${isDragging ? 'z-10 opacity-60 scale-[1.02]' : ''}`}
     >
       {/* Drag handle — always available on hover */}
       <button

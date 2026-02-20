@@ -307,18 +307,18 @@ export default async function DashboardPage() {
         <OnboardingOverlay userId={userId} />
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <DashboardGreeting />
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <DashboardCustomize />
-            <Link href="/tasks" className="flex-1 sm:flex-none">
-              <Button variant="secondary" className="w-full sm:w-auto flex items-center justify-center gap-2">
+            <Link href="/tasks">
+              <Button variant="secondary" className="flex items-center justify-center gap-2">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
                 Add Task
               </Button>
             </Link>
-            <Link href="/projects/new" className="flex-1 sm:flex-none">
-              <Button className="w-full sm:w-auto flex items-center justify-center gap-2">
+            <Link href="/projects/new">
+              <Button className="flex items-center justify-center gap-2">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
