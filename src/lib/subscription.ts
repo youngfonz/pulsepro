@@ -29,6 +29,7 @@ export async function getUserSubscription() {
       status: 'active',
       currentPeriodEnd: null,
       cancelAtPeriodEnd: false,
+      hasPortal: false,
     }
   }
 
@@ -37,6 +38,7 @@ export async function getUserSubscription() {
     status: subscription.status,
     currentPeriodEnd: subscription.currentPeriodEnd,
     cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
+    hasPortal: !!subscription.polarCustomerId,
   }
 }
 
