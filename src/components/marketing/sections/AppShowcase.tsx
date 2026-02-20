@@ -81,7 +81,7 @@ export function AppShowcase() {
                     <div className="ml-3 flex-1 h-4 bg-gray-200/60 rounded max-w-[180px]" />
                   </div>
 
-                  <div className="relative aspect-[16/10]">
+                  <div className="relative aspect-[16/10.5]">
                     {screens.map((screen, i) => (
                       <Image
                         key={screen.src}
@@ -90,7 +90,7 @@ export function AppShowcase() {
                         width={1920}
                         height={1200}
                         className={cn(
-                          'absolute inset-0 w-full h-full object-cover transition-opacity duration-500',
+                          'absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-500',
                           i === active ? 'opacity-100' : 'opacity-0'
                         )}
                         priority={i === 0}
