@@ -1,8 +1,47 @@
 'use client';
 
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ScrollReveal } from '../ScrollReveal';
+
+const announcements = [
+  'Now with team workspaces',
+  'Telegram bot is live',
+  'Voice input — speak your tasks',
+  'Get 400% more done',
+  'Daily email reminders',
+];
+
+function RotatingBadge() {
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  const cycle = useCallback(() => {
+    setVisible(false);
+    setTimeout(() => {
+      setIndex((prev) => (prev + 1) % announcements.length);
+      setVisible(true);
+    }, 300);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(cycle, 3500);
+    return () => clearInterval(timer);
+  }, [cycle]);
+
+  return (
+    <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-6">
+      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+      <span
+        className="text-sm font-medium text-foreground transition-opacity duration-300"
+        style={{ opacity: visible ? 1 : 0 }}
+      >
+        {announcements[index]}
+      </span>
+    </div>
+  );
+}
 
 // Abstract geometric logomarks (original SVGs, not real brands)
 function LogoMarks() {
@@ -40,10 +79,7 @@ export function Hero() {
           {/* Left column: Text content */}
           <div>
             <ScrollReveal delay={0}>
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-6">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-sm font-medium text-foreground">Now with team workspaces</span>
-              </div>
+              <RotatingBadge />
             </ScrollReveal>
 
             <ScrollReveal delay={100}>
