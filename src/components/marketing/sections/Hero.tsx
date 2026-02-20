@@ -94,7 +94,7 @@ export function Hero() {
               <div className="mt-8 flex gap-4 flex-wrap">
                 <Link
                   href="/sign-up"
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all duration-200 hover:shadow-lg hover:shadow-primary/20"
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-blue-600 text-white font-medium hover:bg-blue-700 transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/25"
                 >
                   Get started — it&apos;s free
                   <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
