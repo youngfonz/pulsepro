@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/dashboard', '/projects', '/tasks', '/clients', '/calendar', '/bookmarks', '/settings', '/onboarding'],
+      disallow: ['/dashboard', '/projects', '/tasks', '/clients', '/calendar', '/bookmarks', '/settings', '/onboarding', '/sign-in', '/sign-up'],
     },
     sitemap: 'https://pulsepro.work/sitemap.xml',
   }
