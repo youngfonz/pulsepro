@@ -463,14 +463,10 @@ export default async function DashboardPage() {
               <CardTitle>Insights</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              {insightResult.isPro ? (
-                <InsightsPanelWithAI
-                  initialInsights={insightResult.insights}
-                  needsRefresh={insightResult.needsRefresh}
-                />
-              ) : (
-                <InsightsPanel insights={insightResult.insights} />
-              )}
+              <InsightsPanelWithAI
+                initialInsights={insightResult.insights}
+                needsRefresh={insightResult.needsRefresh}
+              />
             </CardContent>
           </Card>
         </div>

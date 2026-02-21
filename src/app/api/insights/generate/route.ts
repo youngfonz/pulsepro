@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireUserId } from '@/lib/auth'
-import { canUseAIInsights } from '@/lib/subscription'
 import { generateAIInsights, hashInsightContext, type InsightContext } from '@/lib/ai-insights'
 
 const CACHE_TTL_HOURS = 4
@@ -95,11 +94,6 @@ async function gatherInsightContext(userId: string): Promise<InsightContext> {
 export async function POST() {
   try {
     const userId = await requireUserId()
-
-    const isPro = await canUseAIInsights()
-    if (!isPro) {
-      return NextResponse.json({ error: 'Pro feature' }, { status: 403 })
-    }
 
     // Rate limit: check if we generated within the cooldown period
     const cached = await prisma.cachedInsight.findUnique({ where: { userId } })
