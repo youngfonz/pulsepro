@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'About Pulse Pro — Built for Freelancers and Small Teams',
-  description: 'Pulse Pro was built by an entrepreneur, for entrepreneurs. A fast, simple project management tool designed for freelancers, consultants, and small teams who need to stay organized without enterprise complexity.',
+  description: 'A fast, simple project management tool built for freelancers, consultants, and small teams who need to stay organized without enterprise complexity.',
 }
 
 export default function AboutPage() {
@@ -46,6 +46,9 @@ export default function AboutPage() {
             <h2 className="text-xl font-semibold text-foreground">Our team</h2>
             <p>
               We&apos;re a small, independent team and we plan to keep it that way. Every feature we ship is something we&apos;d use ourselves. We listen to feedback from our users and prioritize the changes that make the biggest difference for the people who rely on Pulse Pro every day.
+            </p>
+            <p>
+              No investors dictating our roadmap. No pressure to chase enterprise deals. We stay focused on the people we built this for — independent workers who need a tool that respects their time and works the way they do.
             </p>
           </section>
         </div>

@@ -62,6 +62,20 @@ export default function ContactPage() {
               </a> with &quot;Feature Request&quot; in the subject line. We review every suggestion and prioritize based on what will help the most people.
             </p>
           </section>
+
+          <section className="space-y-3">
+            <h2 className="text-xl font-semibold text-foreground">Response Times</h2>
+            <p>
+              We aim to respond to all messages within one business day. Support requests are handled first, followed by general inquiries. If something is time-sensitive, mention it in the subject line and we&apos;ll do our best to get back to you sooner. We&apos;re a small team, but we take every message seriously.
+            </p>
+          </section>
+
+          <section className="space-y-3">
+            <h2 className="text-xl font-semibold text-foreground">Connect With Us</h2>
+            <p>
+              Follow along as we build Pulse Pro in public. We share product updates, behind-the-scenes decisions, and roadmap previews. Whether you&apos;re a current user or just exploring, we&apos;re always happy to chat about project management, freelancing, or building better tools for independent workers.
+            </p>
+          </section>
         </div>
       </main>
       <MarketingFooter />
