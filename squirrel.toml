@@ -1,6 +1,6 @@
 [project]
 domains = []
-name = "fonzmorris"
+name = "pulsepro"
 
 [crawler]
 max_pages = 100
