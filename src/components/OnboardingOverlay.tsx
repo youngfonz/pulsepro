@@ -18,6 +18,12 @@ const steps = [
     visual: 'tasks',
   },
   {
+    title: 'AI-powered insights',
+    description:
+      'Pulse Pro analyzes your projects and deadlines to surface what needs attention. Color-coded priorities help you focus on what matters most.',
+    visual: 'insights',
+  },
+  {
     title: 'Manage tasks from Telegram',
     description:
       'Check your task list, mark things done, and create new tasks — all from a Telegram bot. Perfect for when you\u2019re on the go.',
@@ -86,6 +92,7 @@ export function OnboardingOverlay({ userId }: { userId: string }) {
           <div className="relative h-full flex items-center justify-center p-6">
             {step.visual === 'dashboard' && <DashboardVisual />}
             {step.visual === 'tasks' && <TasksVisual />}
+            {step.visual === 'insights' && <InsightsVisual />}
             {step.visual === 'telegram' && <TelegramVisual />}
           </div>
         </div>
@@ -232,6 +239,41 @@ function TasksVisual() {
           </div>
           <span className="text-[9px] text-gray-400">1/4 done</span>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function InsightsVisual() {
+  return (
+    <div className="w-full max-w-[320px] bg-white rounded-lg shadow-lg overflow-hidden border border-black/5">
+      {/* Header */}
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100">
+        <svg className="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+        </svg>
+        <span className="text-[10px] font-semibold text-gray-800">Insights</span>
+        <span className="text-[9px] text-gray-400 ml-auto">AI-powered</span>
+      </div>
+      {/* Insight rows */}
+      <div className="p-3 space-y-1.5">
+        {[
+          { dot: 'bg-rose-500', text: 'Acme Rebrand has 3 overdue tasks' },
+          { dot: 'bg-amber-500', text: 'Invoice pending for Morris Design Co' },
+          { dot: 'bg-blue-500', text: '2 tasks due tomorrow — start early' },
+        ].map((insight) => (
+          <div key={insight.text} className="flex items-center gap-2 py-1.5 px-2 bg-gray-50/80 rounded">
+            <div className={`w-1.5 h-1.5 rounded-full ${insight.dot} flex-shrink-0`} />
+            <span className="text-[10px] text-gray-800 flex-1">{insight.text}</span>
+            <svg className="w-3 h-3 text-gray-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        ))}
+      </div>
+      {/* Footer */}
+      <div className="px-3 pb-3">
+        <div className="text-[9px] text-gray-400 text-center">Updated 2 min ago</div>
       </div>
     </div>
   )
