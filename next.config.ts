@@ -25,10 +25,6 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=()',
   },
-  {
-    key: 'Content-Security-Policy',
-    value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.clerk.accounts.dev https://js.stripe.com https://challenges.cloudflare.com https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.clerk.accounts.dev https://img.clerk.com https://randomuser.me https://*.public.blob.vercel-storage.com; connect-src 'self' https://*.clerk.accounts.dev https://api.clerk.com https://clerk.pulsepro.work https://api.polar.sh https://va.vercel-scripts.com; frame-src 'self' https://*.clerk.accounts.dev https://js.stripe.com https://challenges.cloudflare.com; font-src 'self' data:; worker-src 'self' blob:;",
-  },
 ]
 
 const nextConfig: NextConfig = {
