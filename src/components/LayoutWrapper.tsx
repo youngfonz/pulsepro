@@ -14,7 +14,7 @@ interface LayoutWrapperProps {
 export function LayoutWrapper({ children, clientCount, clerkEnabled = false, isAdmin = false }: LayoutWrapperProps) {
   const pathname = usePathname()
   const isAuthPage = pathname === '/login' || pathname === '/signup' || pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')
-  const isMarketingPage = pathname === '/'
+  const isMarketingPage = pathname === '/' || pathname === '/about' || pathname === '/contact' || pathname === '/privacy' || pathname === '/terms'
 
   if (isAuthPage || isMarketingPage) {
     return <>{children}</>

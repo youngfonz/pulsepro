@@ -44,17 +44,26 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const clientCount = await getClientCount();
   const clerkEnabled = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
+  // Check auth first — only call auth-dependent functions when signed in
+  let clientCount = 0;
   let isAdmin = false;
+  let userId: string | null = null;
+
   if (clerkEnabled) {
     try {
-      const { userId } = await auth();
+      const session = await auth();
+      userId = session.userId;
       isAdmin = userId ? isAdminUser(userId) : false;
     } catch {
       // auth() may fail on public routes — safe to ignore
     }
+  }
+
+  // Only fetch data when we have an authenticated user
+  if (userId) {
+    clientCount = await getClientCount();
   }
 
   const innerContent = (
