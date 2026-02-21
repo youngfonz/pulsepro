@@ -1,14 +1,13 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 
 const clerkEnabled = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 
+// Static marketing pages — bypass Clerk entirely
+const bypassPaths = new Set(['/about', '/contact', '/privacy', '/terms'])
+
 const isPublicRoute = createRouteMatcher([
   '/',
-  '/about',
-  '/contact',
-  '/privacy',
-  '/terms',
   '/sign-in(.*)',
   '/sign-up(.*)',
   '/api/webhook/polar',
@@ -17,15 +16,21 @@ const isPublicRoute = createRouteMatcher([
   '/api/og',
 ])
 
-const middleware = clerkEnabled
-  ? clerkMiddleware(async (auth, request) => {
-      if (!isPublicRoute(request)) {
-        await auth.protect()
-      }
-    })
-  : () => NextResponse.next()
+const clerkHandler = clerkMiddleware(async (auth, request) => {
+  if (!isPublicRoute(request)) {
+    await auth.protect()
+  }
+})
 
-export default middleware
+export default function middleware(request: NextRequest) {
+  if (bypassPaths.has(request.nextUrl.pathname)) {
+    return NextResponse.next()
+  }
+  if (!clerkEnabled) {
+    return NextResponse.next()
+  }
+  return clerkHandler(request, {} as any)
+}
 
 export const config = {
   matcher: [
