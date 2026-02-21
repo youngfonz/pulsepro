@@ -44,7 +44,7 @@ export default function PrivacyPage() {
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">6. Contact</h2>
-            <p>For privacy-related questions, contact us at privacy@pulsepro.work.</p>
+            <p>For privacy-related questions, contact us at privacy@pulsepro.app.</p>
           </section>
         </div>
       </main>

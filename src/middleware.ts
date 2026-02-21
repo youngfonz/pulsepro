@@ -8,6 +8,10 @@ const bypassPaths = new Set(['/', '/about', '/contact', '/privacy', '/terms', '/
 
 const isPublicRoute = createRouteMatcher([
   '/',
+  '/about',
+  '/contact',
+  '/privacy',
+  '/terms',
   '/sign-in(.*)',
   '/sign-up(.*)',
   '/api/webhook/polar',
