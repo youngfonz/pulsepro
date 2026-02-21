@@ -3,14 +3,10 @@ import { auth } from '@clerk/nextjs/server'
 import { MarketingNav } from '@/components/marketing/MarketingNav'
 import { MarketingFooter } from '@/components/marketing/MarketingFooter'
 import { Hero } from '@/components/marketing/sections/Hero'
-import { SocialProof } from '@/components/marketing/sections/SocialProof'
 import { Features } from '@/components/marketing/sections/Features'
-import { AppShowcase } from '@/components/marketing/sections/AppShowcase'
 import { Testimonials } from '@/components/marketing/sections/Testimonials'
 import { Pricing } from '@/components/marketing/sections/Pricing'
 import { FAQ } from '@/components/marketing/sections/FAQ'
-import { VoiceFeature } from '@/components/marketing/sections/VoiceFeature'
-import { AIInsightsFeature } from '@/components/marketing/sections/AIInsightsFeature'
 import { TelegramFeature } from '@/components/marketing/sections/TelegramFeature'
 import { WhySwitch } from '@/components/marketing/sections/WhySwitch'
 import { StatsImpact } from '@/components/marketing/sections/StatsImpact'
@@ -29,12 +25,8 @@ export default async function MarketingPage() {
       <MarketingNav />
       <main id="main-content">
         <Hero />
-        <SocialProof />
         <Features />
         <StatsImpact />
-        <AppShowcase />
-        <AIInsightsFeature />
-        <VoiceFeature />
         <TelegramFeature />
         <Testimonials />
         <WhySwitch />
