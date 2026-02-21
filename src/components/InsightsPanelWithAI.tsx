@@ -17,12 +17,18 @@ export function InsightsPanelWithAI({
     if (!needsRefresh) return
 
     fetch('/api/insights/generate', { method: 'POST' })
-      .then(res => res.ok ? res.json() : null)
+      .then(res => {
+        if (!res.ok) {
+          console.error('[AI Insights] API returned', res.status)
+          return null
+        }
+        return res.json()
+      })
       .then(data => {
         if (data?.insights) setInsights(data.insights)
       })
-      .catch(() => {
-        // Keep rule-based insights on failure
+      .catch(err => {
+        console.error('[AI Insights] Fetch failed:', err)
       })
   }, [needsRefresh])
 
