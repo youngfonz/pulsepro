@@ -3,7 +3,7 @@ import { MarketingFooter } from '@/components/marketing/MarketingFooter'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | Pulse Pro',
+  title: 'Terms of Service — Rules and Policies for Using Pulse Pro',
   description: 'Read the terms and conditions for using Pulse Pro. Covers account responsibilities, payment terms, data ownership, and service availability.',
 }
 

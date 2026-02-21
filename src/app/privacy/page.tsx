@@ -3,7 +3,7 @@ import { MarketingFooter } from '@/components/marketing/MarketingFooter'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Pulse Pro',
+  title: 'Privacy Policy — How Pulse Pro Protects Your Data',
   description: 'Learn how Pulse Pro collects, uses, and protects your data. We store only what we need and never sell your information to third parties.',
 }
 
@@ -18,17 +18,17 @@ export default function PrivacyPage() {
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">1. Information We Collect</h2>
-            <p>When you create an account, we collect your name and email address through our authentication provider (Clerk). When you use Pulse Pro, we store the projects, tasks, clients, and bookmarks you create. We also collect basic usage analytics to improve the service, such as which features are used most frequently.</p>
+            <p>When an account is created, we collect a name and email address through our authentication provider (Clerk). As the service is used, we store the projects, tasks, clients, and bookmarks that are created. We also collect basic usage analytics to improve the service, such as which features are used most frequently.</p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">2. How We Use Your Information</h2>
-            <p>We use your information solely to provide the Pulse Pro service — managing your projects, tasks, and clients. We do not sell or share your personal information with third parties for marketing purposes. We may send you transactional emails (e.g., daily task reminders) if you opt in through your account settings.</p>
+            <p>We use collected information solely to provide the Pulse Pro service — managing projects, tasks, and clients. We do not sell or share personal information with third parties for marketing purposes. We may send transactional emails (e.g., daily task reminders) if opted in through account settings.</p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">3. Data Storage and Security</h2>
-            <p>Your information is stored securely on servers provided by Vercel and Neon (PostgreSQL). File uploads are stored via Vercel Blob. All communication between your browser and our servers is encrypted in transit using TLS. We implement industry-standard security measures to protect against unauthorized access, alteration, or destruction of your personal information.</p>
+            <p>All information is stored securely on servers provided by Vercel and Neon (PostgreSQL). File uploads are stored via Vercel Blob. Communication between the browser and our servers is encrypted in transit using TLS. We implement industry-standard security measures to protect against unauthorized access, alteration, or destruction of personal information.</p>
           </section>
 
           <section className="space-y-3">
@@ -51,7 +51,7 @@ export default function PrivacyPage() {
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">6. Your Rights</h2>
-            <p>You have the right to access, correct, or delete the personal information we hold about you. You can export your project and task information at any time. You can delete your account through your account settings, which will permanently remove all associated content and personal information from our systems.</p>
+            <p>Users have the right to access, correct, or delete personal information we hold. Project and task data can be exported at any time. Accounts can be deleted through account settings, which permanently removes all associated content and personal information from our systems.</p>
           </section>
 
           <section className="space-y-3">
