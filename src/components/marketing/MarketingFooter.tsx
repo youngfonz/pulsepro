@@ -11,6 +11,13 @@ export function MarketingFooter() {
       ],
     },
     {
+      title: 'Company',
+      links: [
+        { label: 'About', href: '/about' },
+        { label: 'Contact', href: '/contact' },
+      ],
+    },
+    {
       title: 'Legal',
       links: [
         { label: 'Privacy', href: '/privacy' },
@@ -23,7 +30,7 @@ export function MarketingFooter() {
     <footer className="border-t border-border">
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-12">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {footerSections.map((section) => (
             <div key={section.title}>
               <h3 className="text-sm font-semibold text-foreground mb-4">

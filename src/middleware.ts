@@ -5,6 +5,10 @@ const clerkEnabled = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 
 const isPublicRoute = createRouteMatcher([
   '/',
+  '/about',
+  '/contact',
+  '/privacy',
+  '/terms',
   '/sign-in(.*)',
   '/sign-up(.*)',
   '/api/webhook/polar',
