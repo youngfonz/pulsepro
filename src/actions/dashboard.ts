@@ -573,6 +573,6 @@ export async function getSmartInsights(): Promise<InsightResult> {
   } catch (error) {
     console.error('Failed to get insights:', error)
     const insights = await getRuleBasedInsights()
-    return { insights, needsRefresh: false, isPro: false }
+    return { insights, needsRefresh: true, isPro: true }
   }
 }
