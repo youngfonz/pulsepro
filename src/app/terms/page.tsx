@@ -52,7 +52,7 @@ export default function TermsPage() {
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">9. Contact</h2>
-            <p>For questions about these terms, contact us at support@pulsepro.work.</p>
+            <p>For questions about these terms, contact us at support@pulsepro.app.</p>
           </section>
         </div>
       </main>

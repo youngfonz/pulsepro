@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ScrollReveal } from '../ScrollReveal';
@@ -16,10 +16,11 @@ const announcements = [
 function RotatingBadge() {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const cycle = useCallback(() => {
     setVisible(false);
-    setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       setIndex((prev) => (prev + 1) % announcements.length);
       setVisible(true);
     }, 300);
@@ -27,7 +28,10 @@ function RotatingBadge() {
 
   useEffect(() => {
     const timer = setInterval(cycle, 3500);
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, [cycle]);
 
   return (

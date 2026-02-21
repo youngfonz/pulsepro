@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { ScrollReveal } from '@/components/marketing/ScrollReveal'
 
 const audiences = ['freelancers', 'designers', 'creatives', 'entrepreneurs', 'small teams']
@@ -29,16 +30,20 @@ const testimonials = [
 function RotatingText() {
   const [index, setIndex] = useState(0)
   const [isVisible, setIsVisible] = useState(true)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null)
 
   useEffect(() => {
     const interval = setInterval(() => {
       setIsVisible(false)
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         setIndex((prev) => (prev + 1) % audiences.length)
         setIsVisible(true)
       }, 300)
     }, 3000)
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
   }, [])
 
   return (
@@ -69,7 +74,7 @@ export function Testimonials() {
                 </p>
 
                 <div className="mt-6 pt-4 border-t border-border flex items-center gap-3">
-                  <img
+                  <Image
                     src={testimonial.avatar}
                     alt={testimonial.name}
                     width={36}

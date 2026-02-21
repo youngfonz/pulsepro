@@ -99,6 +99,7 @@ export function AppShowcase() {
                           i === active ? 'opacity-100' : 'opacity-0'
                         )}
                         priority={i === 0}
+                        loading={i === 0 ? undefined : 'lazy'}
                       />
                     ))}
                   </div>
