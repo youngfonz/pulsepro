@@ -10,7 +10,7 @@ const screens = [
   { src: '/screenshots/dashboard.png', label: 'Dashboard', alt: 'Pulse Pro dashboard with project overview and stats', description: 'Activity rings, overdue alerts, and your calendar — everything you need in one glance.' },
   { src: '/screenshots/projects.png', label: 'Projects', alt: 'Pulse Pro projects view with task management', description: 'Every client project with status, priority, and deadlines — no more digging through emails.' },
   { src: '/screenshots/tasks.png', label: 'Tasks', alt: 'Pulse Pro task list with status tracking', description: 'Filter by project, status, or priority. See what\'s overdue and what\'s next.' },
-  { src: '/screenshots/bookmarks.png', label: 'Bookmarks', alt: 'Pulse Pro bookmarks for saving important items', description: 'Save articles, videos, and links to any project. Your research, organized.' },
+  { src: '/screenshots/bookmarks.jpg', label: 'Bookmarks', alt: 'Pulse Pro bookmarks for saving important items', description: 'Save articles, videos, and links to any project. Your research, organized.' },
 ];
 
 export function AppShowcase() {

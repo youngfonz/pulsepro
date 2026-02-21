@@ -76,9 +76,10 @@ export function Testimonials() {
                 <div className="mt-6 pt-4 border-t border-border flex items-center gap-3">
                   <Image
                     src={testimonial.avatar}
-                    alt=""
+                    alt={`Photo of ${testimonial.name}`}
                     width={36}
                     height={36}
+                    sizes="36px"
                     className="w-9 h-9 rounded-full object-cover ring-1 ring-border"
                     loading="lazy"
                   />
