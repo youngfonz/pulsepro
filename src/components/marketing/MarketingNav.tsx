@@ -90,6 +90,7 @@ export function MarketingNav() {
             <Link
               href="/sign-in"
               className="px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-md transition-colors"
+              aria-label="Sign in to your Pulse Pro account"
             >
               Sign In
             </Link>
@@ -178,6 +179,7 @@ export function MarketingNav() {
                   href="/sign-in"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block w-full px-4 py-2 text-sm font-medium text-center text-foreground hover:bg-muted rounded-md transition-colors"
+                  aria-label="Sign in to your Pulse Pro account"
                 >
                   Sign In
                 </Link>
