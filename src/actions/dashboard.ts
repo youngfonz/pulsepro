@@ -555,14 +555,6 @@ async function getRuleBasedInsights(): Promise<Insight[]> {
 
 export async function getSmartInsights(): Promise<InsightResult> {
   try {
-    const { canUseAIInsights } = await import('@/lib/subscription')
-    const isPro = await canUseAIInsights()
-
-    if (!isPro) {
-      const insights = await getRuleBasedInsights()
-      return { insights, needsRefresh: false, isPro: false }
-    }
-
     // Check cache for AI insights
     const userId = await requireUserId()
     const cached = await prisma.cachedInsight.findUnique({ where: { userId } })
