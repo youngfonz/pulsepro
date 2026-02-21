@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.pulsepro.work"),
+  metadataBase: new URL("https://pulsepro.app"),
   title: "Pulse Pro — Project & Task Management",
   description: "Plan, track, and manage your projects and tasks in one place. Organize clients, set deadlines, and stay on top of your work with Pulse Pro.",
   openGraph: {
