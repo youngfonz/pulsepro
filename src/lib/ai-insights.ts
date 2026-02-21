@@ -60,23 +60,18 @@ Workspace data:
 ${JSON.stringify(ctx)}`
 }
 
-export async function generateAIInsights(ctx: InsightContext): Promise<Insight[] | null> {
-  try {
-    const result = await generateObject({
-      model: insightModel,
-      schema: InsightSchema,
-      prompt: buildPrompt(ctx),
-      maxOutputTokens: 300,
-    })
+export async function generateAIInsights(ctx: InsightContext): Promise<Insight[]> {
+  const result = await generateObject({
+    model: insightModel,
+    schema: InsightSchema,
+    prompt: buildPrompt(ctx),
+    maxOutputTokens: 300,
+  })
 
-    return result.object.insights.slice(0, 3).map((insight, i) => ({
-      ...insight,
-      id: `ai-insight-${i}`,
-    }))
-  } catch (error) {
-    console.error('AI insight generation failed:', error)
-    return null
-  }
+  return result.object.insights.slice(0, 3).map((insight, i) => ({
+    ...insight,
+    id: `ai-insight-${i}`,
+  }))
 }
 
 export function hashInsightContext(ctx: InsightContext): string {
