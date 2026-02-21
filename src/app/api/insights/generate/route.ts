@@ -110,9 +110,6 @@ export async function POST() {
     }
 
     const insights = await generateAIInsights(ctx)
-    if (!insights) {
-      return NextResponse.json({ error: 'Generation failed' }, { status: 500 })
-    }
 
     const expiresAt = new Date(Date.now() + CACHE_TTL_HOURS * 60 * 60 * 1000)
 
