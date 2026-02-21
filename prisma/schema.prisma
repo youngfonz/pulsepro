@@ -162,6 +162,17 @@ model ProjectAccess {
   @@index([projectId])
 }
 
+model CachedInsight {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  insights  String   // JSON-serialized Insight[]
+  context   String?  // Hash of input data for smart cache invalidation
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId, expiresAt])
+}
+
 model Subscription {
   id                    String    @id @default(cuid())
   userId                String    @unique

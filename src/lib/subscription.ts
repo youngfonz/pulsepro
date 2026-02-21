@@ -60,6 +60,11 @@ export async function canUseTelegram(): Promise<boolean> {
   return plan === 'pro' || plan === 'team'
 }
 
+export async function canUseAIInsights(): Promise<boolean> {
+  const plan = await getUserPlan()
+  return plan === 'pro' || plan === 'team'
+}
+
 export async function checkCollaboratorLimit(projectId: string): Promise<{
   allowed: boolean
   current: number
