@@ -83,5 +83,5 @@ export function hashInsightContext(ctx: InsightContext): string {
     dueToday: ctx.tasksDueToday.length,
     dueThisWeek: ctx.tasksDueThisWeek,
   })
-  return createHash('md5').update(key).digest('hex').slice(0, 12)
+  return createHash('sha256').update(key).digest('hex').slice(0, 12)
 }

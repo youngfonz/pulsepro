@@ -100,14 +100,6 @@ function ScreenshotCarousel() {
       >
         <div className="p-4 md:p-8">
           <div className="bg-white rounded-xl shadow-2xl overflow-hidden border border-black/5">
-            {/* Browser chrome */}
-            <div className="h-9 bg-gray-100 border-b border-gray-200 flex items-center px-4 gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
-              <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
-              <div className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
-              <div className="ml-3 flex-1 h-4 bg-gray-200/60 rounded max-w-[180px]" />
-            </div>
-
             <div className="relative aspect-[16/10.5]">
               {screens.map((screen, i) => (
                 <Image
@@ -155,8 +147,25 @@ function LogoMarks() {
 
 export function Hero() {
   return (
-    <section className="pt-28 pb-20">
-      <div className="max-w-5xl mx-auto px-4 md:px-8 w-full">
+    <section className="pt-28 pb-20 relative overflow-hidden">
+      {/* Dot grid pattern */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: 'radial-gradient(circle, var(--foreground) 0.75px, transparent 0.75px)',
+          backgroundSize: '24px 24px',
+          opacity: 0.08,
+        }}
+      />
+      {/* Radial glow behind headline */}
+      <div
+        className="absolute top-32 left-1/2 -translate-x-1/2 w-[800px] h-[500px] pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at center, var(--primary) 0%, transparent 70%)',
+          opacity: 0.1,
+        }}
+      />
+      <div className="max-w-5xl mx-auto px-4 md:px-8 w-full relative">
         {/* Centered text */}
         <div className="text-center max-w-3xl mx-auto">
           <ScrollReveal delay={0}>
@@ -165,15 +174,14 @@ export function Hero() {
 
           <ScrollReveal delay={100}>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-[1.1] tracking-tight mt-6">
-              Your clients noticed the{' '}
-              <span className="text-primary">missed deadline</span>.
+              Think less.{' '}
+              <span className="text-primary">Run smoother</span>.
             </h1>
           </ScrollReveal>
 
           <ScrollReveal delay={200}>
             <p className="text-lg md:text-xl text-muted-foreground mt-6 max-w-2xl mx-auto leading-relaxed">
-              5 clients. 12 deadlines. Zero visibility.
-              Pulse Pro shows you what&apos;s overdue, what&apos;s next, and who needs what — in under a minute.
+              Pulse Pro organizes every client, task, and deadline so nothing lives in memory.
             </p>
           </ScrollReveal>
 

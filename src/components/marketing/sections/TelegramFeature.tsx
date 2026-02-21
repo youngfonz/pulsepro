@@ -3,18 +3,29 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ScrollReveal } from '../ScrollReveal';
 
-const chatMessages = [
-  { from: 'user', text: 'tasks', html: '' },
+import type { ReactNode } from 'react';
+
+const chatMessages: { from: string; content: ReactNode }[] = [
+  { from: 'user', content: 'tasks' },
   {
     from: 'bot',
-    text: '',
-    html: '<strong>Pending Tasks</strong><br/><br/>1. Finalize homepage copy<br/><em style="opacity:0.5">Morris Design Co</em><br/><br/>2. Send invoice to client<br/><em style="opacity:0.5">Acme Rebrand</em><br/><br/>Reply <strong>done N</strong> to mark one complete.',
+    content: (
+      <>
+        <strong>Pending Tasks</strong><br /><br />
+        1. Finalize homepage copy<br />
+        <em className="opacity-50">Morris Design Co</em><br /><br />
+        2. Send invoice to client<br />
+        <em className="opacity-50">Acme Rebrand</em><br /><br />
+        Reply <strong>done N</strong> to mark one complete.
+      </>
+    ),
   },
-  { from: 'user', text: 'done 1', html: '' },
+  { from: 'user', content: 'done 1' },
   {
     from: 'bot',
-    text: '',
-    html: 'Done! &ldquo;<strong>Finalize homepage copy</strong>&rdquo; marked complete.',
+    content: (
+      <>Done! &ldquo;<strong>Finalize homepage copy</strong>&rdquo; marked complete.</>
+    ),
   },
 ];
 
@@ -216,11 +227,7 @@ function TelegramMock() {
                   : 'bg-muted text-card-foreground rounded-bl-sm'
               }`}
             >
-              {msg.html ? (
-                <span dangerouslySetInnerHTML={{ __html: msg.html }} />
-              ) : (
-                msg.text
-              )}
+              {msg.content}
             </div>
           </div>
         ))}

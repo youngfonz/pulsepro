@@ -1,0 +1,10 @@
+# Skill documentation contains example passwords/connection strings (not real secrets)
+.agents/skills/
+.claude/skills/
+
+# Package lock integrity hashes (not real tokens)
+package-lock.json
+
+# Local env files (already in .gitignore)
+.env.local
+.env*.local

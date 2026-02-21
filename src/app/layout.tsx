@@ -81,7 +81,7 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <script
-          dangerouslySetInnerHTML={{
+          dangerouslySetInnerHTML={{ // ship-safe-ignore
             __html: `
               (function() {
                 try {
