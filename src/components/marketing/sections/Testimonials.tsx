@@ -76,7 +76,7 @@ export function Testimonials() {
                 <div className="mt-6 pt-4 border-t border-border flex items-center gap-3">
                   <Image
                     src={testimonial.avatar}
-                    alt={`Photo of ${testimonial.name}`}
+                    alt="Testimonial author"
                     width={36}
                     height={36}
                     sizes="36px"
