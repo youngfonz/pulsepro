@@ -362,7 +362,7 @@ export default async function DashboardPage() {
             <CardContent className="p-6">
               <div className="flex flex-col items-center gap-5">
                 {/* Activity Rings */}
-                <div className="relative w-36 h-36 flex-shrink-0">
+                <Link href="/projects" className="relative w-36 h-36 flex-shrink-0 cursor-pointer group">
                   {/* Glow effect */}
                   <div className="absolute inset-0 blur-xl opacity-20">
                     <svg viewBox="0 0 100 100" className="w-full h-full">
@@ -423,9 +423,9 @@ export default async function DashboardPage() {
 
                   {/* Center number */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xl font-bold text-foreground">{tasksDueThisWeekCount}</span>
+                    <span className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">{tasksDueThisWeekCount}</span>
                   </div>
-                </div>
+                </Link>
 
                 {/* Stats Legend */}
                 <div className="flex items-start justify-center gap-6">
@@ -445,13 +445,13 @@ export default async function DashboardPage() {
                     </div>
                   </Link>
 
-                  <div className="flex items-center gap-2.5 p-1.5">
+                  <Link href="/tasks" className="group flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-muted/50 transition-colors">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0" />
                     <div>
                       <div className="text-lg font-semibold text-foreground">{tasksDueThisWeekCount}</div>
                       <div className="text-xs text-muted-foreground">Due This Week</div>
                     </div>
-                  </div>
+                  </Link>
                 </div>
               </div>
             </CardContent>
