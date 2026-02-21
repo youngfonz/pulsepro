@@ -355,10 +355,11 @@ export default async function DashboardPage() {
         </div>
 
         {/* Activity Rings + Insights */}
-        <div className="space-y-3">
-          <Card className="border-border/50 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
+          {/* Activity Card */}
+          <Card className="lg:col-span-2 border-border/50 overflow-hidden">
             <CardContent className="p-6">
-              <div className="flex flex-col sm:flex-row items-center gap-8">
+              <div className="flex flex-col items-center gap-5">
                 {/* Activity Rings */}
                 <div className="relative w-36 h-36 flex-shrink-0">
                   {/* Glow effect */}
@@ -426,8 +427,8 @@ export default async function DashboardPage() {
                 </div>
 
                 {/* Stats Legend */}
-                <div className="flex-1 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
-                  <Link href="/projects" className="group flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                <div className="flex items-start justify-center gap-6">
+                  <Link href="/projects" className="group flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-muted/50 transition-colors">
                     <div className="w-2.5 h-2.5 rounded-full bg-rose-500 flex-shrink-0" />
                     <div>
                       <div className="text-lg font-semibold text-foreground">{stats.activeProjects}<span className="text-sm font-normal text-muted-foreground">/{stats.totalProjects}</span></div>
@@ -435,7 +436,7 @@ export default async function DashboardPage() {
                     </div>
                   </Link>
 
-                  <Link href="/tasks" className="group flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                  <Link href="/tasks" className="group flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-muted/50 transition-colors">
                     <div className="w-2.5 h-2.5 rounded-full bg-blue-500 flex-shrink-0" />
                     <div>
                       <div className="text-lg font-semibold text-foreground">{completedTasks}<span className="text-sm font-normal text-muted-foreground">/{stats.totalTasks}</span></div>
@@ -443,7 +444,7 @@ export default async function DashboardPage() {
                     </div>
                   </Link>
 
-                  <div className="flex items-center gap-3 p-2">
+                  <div className="flex items-center gap-2.5 p-1.5">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0" />
                     <div>
                       <div className="text-lg font-semibold text-foreground">{tasksDueThisWeekCount}</div>
@@ -454,7 +455,16 @@ export default async function DashboardPage() {
               </div>
             </CardContent>
           </Card>
-          <InsightsPanel insights={insights} />
+
+          {/* Insights Card */}
+          <Card className="lg:col-span-3 border-border/50">
+            <CardHeader>
+              <CardTitle>Insights</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <InsightsPanel insights={insights} />
+            </CardContent>
+          </Card>
         </div>
 
         <DashboardGrid sections={sections} />
