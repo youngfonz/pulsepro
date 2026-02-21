@@ -11,7 +11,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-background">
       <MarketingNav />
-      <main className="max-w-3xl mx-auto px-4 md:px-8 py-20">
+      <main id="main-content" className="max-w-3xl mx-auto px-4 md:px-8 py-20">
         <h1 className="text-3xl font-bold text-foreground mb-8">Contact Us</h1>
         <div className="prose prose-sm dark:prose-invert max-w-none space-y-6 text-muted-foreground">
           <p>
@@ -22,8 +22,8 @@ export default function ContactPage() {
             <h2 className="text-xl font-semibold text-foreground">General Inquiries</h2>
             <p>
               For general questions or feedback, reach us at{' '}
-              <a href="mailto:hello@pulsepro.app" className="text-primary hover:underline">
-                hello@pulsepro.app
+              <a href="mailto:hello@pulsepro.work" className="text-primary hover:underline">
+                hello@pulsepro.work
               </a>
             </p>
           </section>
@@ -32,8 +32,8 @@ export default function ContactPage() {
             <h2 className="text-xl font-semibold text-foreground">Support</h2>
             <p>
               Need help with your account or have a technical issue? Email us at{' '}
-              <a href="mailto:support@pulsepro.app" className="text-primary hover:underline">
-                support@pulsepro.app
+              <a href="mailto:support@pulsepro.work" className="text-primary hover:underline">
+                support@pulsepro.work
               </a>
             </p>
           </section>
@@ -42,8 +42,8 @@ export default function ContactPage() {
             <h2 className="text-xl font-semibold text-foreground">Privacy</h2>
             <p>
               For privacy-related questions, contact{' '}
-              <a href="mailto:privacy@pulsepro.app" className="text-primary hover:underline">
-                privacy@pulsepro.app
+              <a href="mailto:privacy@pulsepro.work" className="text-primary hover:underline">
+                privacy@pulsepro.work
               </a>
             </p>
           </section>

@@ -3,8 +3,8 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 const clerkEnabled = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 
-// Static marketing pages — bypass Clerk entirely
-const bypassPaths = new Set(['/about', '/contact', '/privacy', '/terms'])
+// Public pages and metadata routes — bypass Clerk entirely
+const bypassPaths = new Set(['/', '/about', '/contact', '/privacy', '/terms', '/sitemap.xml', '/robots.txt'])
 
 const isPublicRoute = createRouteMatcher([
   '/',

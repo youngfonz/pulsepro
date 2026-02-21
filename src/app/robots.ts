@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/dashboard', '/projects', '/tasks', '/clients', '/calendar', '/bookmarks', '/settings', '/onboarding'],
     },
-    sitemap: 'https://pulsepro.app/sitemap.xml',
+    sitemap: 'https://pulsepro.work/sitemap.xml',
   }
 }
