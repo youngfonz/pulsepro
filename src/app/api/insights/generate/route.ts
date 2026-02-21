@@ -124,7 +124,8 @@ export async function POST() {
 
     return NextResponse.json({ insights })
   } catch (error) {
-    console.error('Insight generation API error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Insight generation API error:', message, error)
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
