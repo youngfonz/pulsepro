@@ -483,7 +483,13 @@ export type Insight = {
   href: string
 }
 
-export async function getSmartInsights(): Promise<Insight[]> {
+export type InsightResult = {
+  insights: Insight[]
+  needsRefresh: boolean
+  isPro: boolean
+}
+
+async function getRuleBasedInsights(): Promise<Insight[]> {
   try {
     const userId = await requireUserId()
     const now = new Date()
@@ -495,7 +501,6 @@ export async function getSmartInsights(): Promise<Insight[]> {
       highPriorityDueSoon,
       staleProjects,
     ] = await Promise.all([
-      // High priority tasks due today or tomorrow
       prisma.task.findMany({
         where: {
           userId,
@@ -506,7 +511,6 @@ export async function getSmartInsights(): Promise<Insight[]> {
         },
         select: { id: true, title: true },
       }),
-      // Projects not updated in 10+ days
       prisma.project.findMany({
         where: {
           userId,
@@ -520,7 +524,6 @@ export async function getSmartInsights(): Promise<Insight[]> {
 
     const insights: Insight[] = []
 
-    // 1. High priority tasks due soon
     if (highPriorityDueSoon.length > 0) {
       insights.push({
         id: 'high-priority-soon',
@@ -530,7 +533,6 @@ export async function getSmartInsights(): Promise<Insight[]> {
       })
     }
 
-    // 3. Stale projects
     if (staleProjects.length > 0) {
       const stalest = staleProjects[0]
       const daysStale = Math.floor(
@@ -548,5 +550,37 @@ export async function getSmartInsights(): Promise<Insight[]> {
   } catch (error) {
     console.error('Failed to generate insights:', error)
     return []
+  }
+}
+
+export async function getSmartInsights(): Promise<InsightResult> {
+  try {
+    const { canUseAIInsights } = await import('@/lib/subscription')
+    const isPro = await canUseAIInsights()
+
+    if (!isPro) {
+      const insights = await getRuleBasedInsights()
+      return { insights, needsRefresh: false, isPro: false }
+    }
+
+    // Check cache for AI insights
+    const userId = await requireUserId()
+    const cached = await prisma.cachedInsight.findUnique({ where: { userId } })
+
+    if (cached && cached.expiresAt > new Date()) {
+      return {
+        insights: JSON.parse(cached.insights) as Insight[],
+        needsRefresh: false,
+        isPro: true,
+      }
+    }
+
+    // Cache is stale or missing — serve rule-based, flag for background refresh
+    const insights = await getRuleBasedInsights()
+    return { insights, needsRefresh: true, isPro: true }
+  } catch (error) {
+    console.error('Failed to get insights:', error)
+    const insights = await getRuleBasedInsights()
+    return { insights, needsRefresh: false, isPro: false }
   }
 }

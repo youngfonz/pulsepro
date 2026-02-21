@@ -11,6 +11,7 @@
     "migrate-images": "npx tsx scripts/migrate-images.ts"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.46",
     "@clerk/nextjs": "^6.37.3",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
@@ -20,6 +21,7 @@
     "@vercel/analytics": "^1.6.1",
     "@vercel/blob": "^2.0.1",
     "@vercel/speed-insights": "^1.3.1",
+    "ai": "^6.0.97",
     "clsx": "^2.1.1",
     "dotenv": "^17.2.3",
     "lucide-react": "^0.563.0",

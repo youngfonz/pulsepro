@@ -18,12 +18,13 @@ import {
   getTasksDueThisWeek,
 } from '@/actions/dashboard'
 import { InsightsPanel } from '@/components/InsightsPanel'
+import { InsightsPanelWithAI } from '@/components/InsightsPanelWithAI'
 import { statusColors, statusLabels, priorityColors, priorityLabels, formatDate } from '@/lib/utils'
 
 export default async function DashboardPage() {
   const userId = await requireUserId()
 
-  const [projectsDueThisWeek, tasksDueToday, overdueTasks, recentlyViewed, projectHealth, insights, stats, tasksDueThisWeekCount] = await Promise.all([
+  const [projectsDueThisWeek, tasksDueToday, overdueTasks, recentlyViewed, projectHealth, insightResult, stats, tasksDueThisWeekCount] = await Promise.all([
     getProjectsDueThisWeek(),
     getTasksDueToday(),
     getOverdueTasks(),
@@ -462,7 +463,14 @@ export default async function DashboardPage() {
               <CardTitle>Insights</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <InsightsPanel insights={insights} />
+              {insightResult.isPro ? (
+                <InsightsPanelWithAI
+                  initialInsights={insightResult.insights}
+                  needsRefresh={insightResult.needsRefresh}
+                />
+              ) : (
+                <InsightsPanel insights={insightResult.insights} />
+              )}
             </CardContent>
           </Card>
         </div>
