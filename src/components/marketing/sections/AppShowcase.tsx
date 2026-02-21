@@ -98,7 +98,7 @@ export function AppShowcase() {
                           'absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-500',
                           i === active ? 'opacity-100' : 'opacity-0'
                         )}
-                        priority={i === 0}
+                        priority={i <= 1}
                       />
                     ))}
                   </div>
