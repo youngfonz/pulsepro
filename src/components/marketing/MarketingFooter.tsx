@@ -33,9 +33,9 @@ export function MarketingFooter() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {footerSections.map((section) => (
             <div key={section.title}>
-              <h3 className="text-sm font-semibold text-foreground mb-4">
+              <p className="text-sm font-semibold text-foreground mb-4">
                 {section.title}
-              </h3>
+              </p>
               <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.label}>
