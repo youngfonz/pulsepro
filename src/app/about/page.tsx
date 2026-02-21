@@ -11,7 +11,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
       <MarketingNav />
-      <main className="max-w-3xl mx-auto px-4 md:px-8 py-20">
+      <main id="main-content" className="max-w-3xl mx-auto px-4 md:px-8 py-20">
         <h1 className="text-3xl font-bold text-foreground mb-8">About Pulse Pro</h1>
         <div className="prose prose-sm dark:prose-invert max-w-none space-y-6 text-muted-foreground">
           <p className="text-lg text-foreground font-medium">

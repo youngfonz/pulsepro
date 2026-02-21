@@ -5,7 +5,7 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen bg-background">
       <MarketingNav />
-      <main className="max-w-3xl mx-auto px-4 md:px-8 py-20">
+      <main id="main-content" className="max-w-3xl mx-auto px-4 md:px-8 py-20">
         <h1 className="text-3xl font-bold text-foreground mb-8">Terms of Service</h1>
         <div className="prose prose-sm dark:prose-invert max-w-none space-y-6 text-muted-foreground">
           <p className="text-foreground font-medium">Last updated: February 17, 2026</p>
@@ -52,7 +52,7 @@ export default function TermsPage() {
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">9. Contact</h2>
-            <p>For questions about these terms, contact us at support@pulsepro.app.</p>
+            <p>For questions about these terms, contact us at support@pulsepro.work.</p>
           </section>
         </div>
       </main>

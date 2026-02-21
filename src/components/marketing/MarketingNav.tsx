@@ -27,6 +27,10 @@ export function MarketingNav() {
   ]
 
   return (
+    <>
+    <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:p-4 focus:bg-background focus:text-foreground focus:border focus:border-border focus:rounded-md focus:top-2 focus:left-2">
+      Skip to main content
+    </a>
     <header
       className={cn(
         'fixed top-0 w-full z-50 h-14 transition-all duration-200',
@@ -190,5 +194,6 @@ export function MarketingNav() {
         )}
       </div>
     </header>
+    </>
   )
 }

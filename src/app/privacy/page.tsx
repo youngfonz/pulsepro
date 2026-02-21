@@ -5,7 +5,7 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-background">
       <MarketingNav />
-      <main className="max-w-3xl mx-auto px-4 md:px-8 py-20">
+      <main id="main-content" className="max-w-3xl mx-auto px-4 md:px-8 py-20">
         <h1 className="text-3xl font-bold text-foreground mb-8">Privacy Policy</h1>
         <div className="prose prose-sm dark:prose-invert max-w-none space-y-6 text-muted-foreground">
           <p className="text-foreground font-medium">Last updated: February 17, 2026</p>
@@ -44,7 +44,7 @@ export default function PrivacyPage() {
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">6. Contact</h2>
-            <p>For privacy-related questions, contact us at privacy@pulsepro.app.</p>
+            <p>For privacy-related questions, contact us at privacy@pulsepro.work.</p>
           </section>
         </div>
       </main>

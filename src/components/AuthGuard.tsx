@@ -22,19 +22,13 @@ export function AuthGuard({ children }: AuthGuardProps) {
     }
   }, [isLoaded, isSignedIn, isPublicPath, router])
 
-  // Show nothing while loading
-  if (!isLoaded) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-pulse">
-          <div className="w-10 h-10 bg-primary/20 rounded-lg"></div>
-        </div>
-      </div>
-    )
+  // Public pages render immediately — no auth gate, no SSR blocking
+  if (isPublicPath) {
+    return <>{children}</>
   }
 
-  // If not signed in and not on public path, show loading (will redirect)
-  if (!isSignedIn && !isPublicPath) {
+  // Show loading while Clerk initializes (non-public pages only)
+  if (!isLoaded || !isSignedIn) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-pulse">
