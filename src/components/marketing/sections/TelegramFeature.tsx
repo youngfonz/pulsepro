@@ -31,32 +31,6 @@ const chatMessages: { from: string; content: ReactNode }[] = [
 
 const features = [
   {
-    id: 'telegram',
-    badge: 'Telegram Bot',
-    badgeColor: 'bg-[#2AABEE]/10 text-[#2AABEE]',
-    title: 'Manage tasks from Telegram.',
-    description:
-      'Check your task list, mark things done, and create new tasks \u2014 all without leaving Telegram. Perfect for when you\u2019re on the go.',
-    bullets: [
-      'View pending tasks and deadlines',
-      'Mark tasks complete with a message',
-      'Create new tasks from any chat',
-    ],
-  },
-  {
-    id: 'voice',
-    badge: 'Voice Input',
-    badgeColor: 'bg-primary/10 text-primary',
-    title: 'Speak your tasks into existence.',
-    description:
-      'Click the mic, say what you need to do, and it\u2019s captured instantly. Works in task creation, project notes, and descriptions.',
-    bullets: [
-      'Add tasks hands-free while multitasking',
-      'Capture ideas the moment they hit',
-      'Works in any modern browser \u2014 no install',
-    ],
-  },
-  {
     id: 'insights',
     badge: 'AI Insights',
     badgeColor: 'bg-violet-500/10 text-violet-500',
@@ -67,6 +41,58 @@ const features = [
       'Flags overdue tasks and at-risk projects',
       'Spots deadline clusters before they pile up',
       'Highlights progress so you know what\u2019s working',
+    ],
+  },
+  {
+    id: 'email',
+    badge: 'Email to Task',
+    badgeColor: 'bg-amber-500/10 text-amber-500',
+    title: 'Forward an email. Get a task.',
+    description:
+      'Every account gets a unique task inbox. Forward any email and it becomes a task automatically \u2014 subject becomes the title, body becomes the description.',
+    bullets: [
+      'Unique inbox address per account',
+      'Subject line becomes the task title',
+      'Works with any email client or app',
+    ],
+  },
+  {
+    id: 'siri',
+    badge: 'Siri & Voice',
+    badgeColor: 'bg-primary/10 text-primary',
+    title: 'Say it. It\u2019s captured.',
+    description:
+      'Use Siri or Apple Shortcuts to create tasks from your phone, watch, or Mac. Or click the mic in-app to speak tasks directly \u2014 no typing required.',
+    bullets: [
+      'Siri and Apple Shortcuts on any Apple device',
+      'In-browser mic for hands-free task capture',
+      'Natural language parsing for priority and dates',
+    ],
+  },
+  {
+    id: 'shortcuts',
+    badge: 'Keyboard',
+    badgeColor: 'bg-foreground/10 text-foreground',
+    title: 'Two keys. Zero friction.',
+    description:
+      'Press N to capture a task instantly from anywhere in the app. Hit \u2318K to search, navigate, or create \u2014 all without touching the mouse.',
+    bullets: [
+      'N key opens quick-add from any screen',
+      '\u2318K searches everything and creates inline',
+      'Natural language parsing for dates and priority',
+    ],
+  },
+  {
+    id: 'telegram',
+    badge: 'Telegram',
+    badgeColor: 'bg-[#2AABEE]/10 text-[#2AABEE]',
+    title: 'Manage tasks from Telegram.',
+    description:
+      'Check your task list, mark things done, and create new tasks \u2014 all without leaving Telegram. Perfect for when you\u2019re on the go.',
+    bullets: [
+      'View pending tasks and deadlines',
+      'Mark tasks complete with a message',
+      'Create new tasks from any chat',
     ],
   },
 ];
@@ -118,10 +144,10 @@ export function TelegramFeature() {
         <ScrollReveal delay={0}>
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
-              More ways to stay on top
+              Capture tasks from anywhere
             </h2>
             <p className="text-base md:text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">
-              Manage your work from anywhere — through Telegram, voice, or AI-powered analysis.
+              AI insights, email, Siri, keyboard shortcuts, and Telegram — five ways to stay on top without breaking your flow.
             </p>
           </div>
         </ScrollReveal>
@@ -129,12 +155,12 @@ export function TelegramFeature() {
         {/* Tabs */}
         <ScrollReveal delay={100}>
           <div className="flex justify-center mb-14">
-            <div className="inline-flex gap-1 bg-muted/50 rounded-full p-1">
+            <div className="inline-flex flex-wrap justify-center gap-1 bg-muted/50 rounded-2xl sm:rounded-full p-1">
               {features.map((f, i) => (
                 <button
                   key={f.id}
                   onClick={() => handleTab(i)}
-                  className={`text-sm font-medium px-4 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap ${
+                  className={`text-sm font-medium px-3.5 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap ${
                     i === active
                       ? 'bg-background text-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
@@ -157,12 +183,22 @@ export function TelegramFeature() {
               <div
                 className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium mb-6 ${feature.badgeColor}`}
               >
-                {feature.id === 'telegram' && <TelegramIcon className="w-4 h-4" />}
-                {feature.id === 'voice' && (
+                {feature.id === 'shortcuts' && (
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                   </svg>
                 )}
+                {feature.id === 'email' && (
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                )}
+                {feature.id === 'siri' && (
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 3a2 2 0 110 4 2 2 0 010-4zm3.5 5.5c0 .828-.56 1.5-1.25 1.5h-4.5c-.69 0-1.25-.672-1.25-1.5S9.06 9 9.75 9h4.5c.69 0 1.25.672 1.25 1.5zM9 14h6v1.5c0 1.657-1.343 3-3 3s-3-1.343-3-3V14z" />
+                  </svg>
+                )}
+                {feature.id === 'telegram' && <TelegramIcon className="w-4 h-4" />}
                 {feature.id === 'insights' && (
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
@@ -190,14 +226,204 @@ export function TelegramFeature() {
 
             {/* Right: visual */}
             <div>
+              {feature.id === 'shortcuts' && <ShortcutsMock />}
+              {feature.id === 'email' && <EmailMock />}
+              {feature.id === 'siri' && <SiriMock />}
               {feature.id === 'telegram' && <TelegramMock />}
-              {feature.id === 'voice' && <VoiceMock />}
               {feature.id === 'insights' && <InsightsMock />}
             </div>
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function ShortcutsMock() {
+  return (
+    <div className="space-y-4">
+      {/* Quick-add mock */}
+      <div className="bg-card rounded-xl overflow-hidden shadow-2xl border border-border">
+        <div className="flex items-center gap-3 px-4 border-b border-border">
+          <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          <div className="flex-1 py-3">
+            <span className="text-sm text-card-foreground">Buy groceries due tomorrow</span>
+            <span className="animate-pulse text-primary ml-0.5">|</span>
+          </div>
+          <kbd className="px-2 py-1 bg-muted border border-border rounded text-[10px] font-medium text-muted-foreground">N</kbd>
+        </div>
+        <div className="flex items-center justify-between px-4 py-2.5">
+          <span className="text-[11px] text-muted-foreground">No project (quick task)</span>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-emerald-500 font-medium">due: tomorrow</span>
+            <div className="px-3 py-1 bg-primary text-primary-foreground rounded text-[11px] font-medium">Add</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Command bar mock */}
+      <div className="bg-card rounded-xl overflow-hidden shadow-2xl border border-border">
+        <div className="flex items-center gap-3 px-4 border-b border-border">
+          <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <div className="flex-1 py-3">
+            <span className="text-sm text-card-foreground">add task Review wireframes high priority</span>
+          </div>
+          <kbd className="px-2 py-1 bg-muted border border-border rounded text-[10px] font-medium text-muted-foreground">&crarr;</kbd>
+        </div>
+        <div className="px-4 py-3">
+          <div className="flex items-center gap-3 px-3 py-2.5 bg-muted rounded-lg">
+            <div className="w-7 h-7 rounded-md flex items-center justify-center bg-primary/10 text-primary flex-shrink-0">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-card-foreground">Review wireframes</p>
+              <p className="text-[10px] text-muted-foreground">high priority</p>
+            </div>
+            <kbd className="px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground bg-background border border-border rounded">Enter</kbd>
+          </div>
+        </div>
+        <div className="px-4 py-2 border-t border-border flex items-center gap-3 text-[11px] text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <kbd className="px-1 py-0.5 bg-muted border border-border rounded text-[10px]">&crarr;</kbd>
+            create
+          </span>
+          <span className="flex items-center gap-1">
+            <kbd className="px-1.5 py-0.5 bg-muted border border-border rounded text-[10px]">esc</kbd>
+            close
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EmailMock() {
+  return (
+    <div className="bg-card rounded-xl overflow-hidden shadow-2xl border border-border">
+      {/* Email header */}
+      <div className="px-5 py-4 border-b border-border">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 text-xs font-semibold flex-shrink-0">
+            FW
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-card-foreground">Forwarded message</p>
+            <p className="text-xs text-muted-foreground truncate">From: sarah@acme.co</p>
+          </div>
+        </div>
+        <div className="bg-muted/50 rounded-lg p-3">
+          <p className="text-xs text-muted-foreground mb-1">To:</p>
+          <p className="text-sm text-card-foreground font-mono">tasks@in.pulsepro.co</p>
+        </div>
+      </div>
+
+      {/* Email body */}
+      <div className="px-5 py-4">
+        <p className="text-sm font-medium text-card-foreground">Re: Brand guidelines feedback</p>
+        <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+          Hey, can you revise the color palette? The client wants warmer tones. Updated brief attached.
+        </p>
+      </div>
+
+      {/* Arrow divider */}
+      <div className="flex items-center justify-center py-2">
+        <div className="flex items-center gap-2 px-4 py-1.5 bg-primary/10 rounded-full">
+          <svg className="w-3.5 h-3.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+          <span className="text-xs font-medium text-primary">Becomes a task</span>
+        </div>
+      </div>
+
+      {/* Task result */}
+      <div className="px-5 py-4 border-t border-border">
+        <div className="flex items-center gap-3">
+          <div className="w-4 h-4 rounded border-2 border-primary flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-card-foreground">Re: Brand guidelines feedback</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Quick task</p>
+          </div>
+          <span className="text-[10px] text-emerald-500 font-medium bg-emerald-500/10 px-2 py-0.5 rounded-full">New</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SiriMock() {
+  return (
+    <div className="bg-card rounded-xl overflow-hidden shadow-2xl border border-border p-6">
+      {/* Siri waveform */}
+      <div className="flex items-center justify-center mb-6">
+        <div className="relative w-20 h-20">
+          <div className="absolute inset-0 rounded-full bg-gradient-to-b from-[#6366f1] to-[#ec4899] opacity-20 animate-pulse" />
+          <div className="absolute inset-2 rounded-full bg-gradient-to-b from-[#6366f1] to-[#ec4899] opacity-30" />
+          <div className="absolute inset-4 rounded-full bg-gradient-to-b from-[#818cf8] to-[#f472b6] opacity-50" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <svg className="w-8 h-8 text-white drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      {/* Conversation */}
+      <div className="space-y-4">
+        <div className="text-center">
+          <p className="text-lg font-medium text-card-foreground">
+            &ldquo;Add a task to Pulse Pro: review brand guidelines by Friday&rdquo;
+          </p>
+        </div>
+
+        <div className="border-t border-border pt-4">
+          <div className="flex items-center gap-3 bg-muted/50 rounded-lg p-3">
+            <svg className="w-5 h-5 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-card-foreground">Task created</p>
+              <p className="text-xs text-muted-foreground mt-0.5">&ldquo;Review brand guidelines&rdquo; &mdash; due Friday</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Two options */}
+      <div className="mt-5 pt-4 border-t border-border space-y-2.5">
+        <div className="flex items-center gap-3 bg-muted/50 rounded-lg p-3">
+          <div className="w-10 h-10 rounded-xl bg-foreground flex items-center justify-center flex-shrink-0">
+            <svg className="w-5 h-5 text-background" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-card-foreground">Add to Pulse Pro</p>
+            <p className="text-[10px] text-muted-foreground">Apple Shortcuts &middot; iPhone, Mac, Watch</p>
+          </div>
+          <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+        <div className="flex items-center gap-3 bg-muted/50 rounded-lg p-3">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-card-foreground">Click mic to speak</p>
+            <p className="text-[10px] text-muted-foreground">In-browser &middot; Any modern browser</p>
+          </div>
+          <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -243,71 +469,6 @@ function TelegramMock() {
           </svg>
         </div>
       </div>
-    </div>
-  );
-}
-
-function VoiceMock() {
-  return (
-    <div className="bg-card rounded-xl overflow-hidden shadow-2xl border border-border p-6">
-      <div className="flex items-center gap-2 mb-5">
-        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-        <span className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
-          Listening
-        </span>
-      </div>
-
-      <div className="flex items-center justify-center gap-[3px] h-16">
-        {Array.from({ length: 40 }).map((_, i) => {
-          const center = 20;
-          const distance = Math.abs(i - center) / center;
-          const base = 30 + (1 - distance) * 60;
-          const variation = Math.sin(i * 0.7) * 15 + Math.cos(i * 1.3) * 10;
-          const height = Math.max(15, Math.min(95, base + variation));
-          return (
-            <div
-              key={i}
-              className="w-[3px] rounded-full bg-primary/30"
-              style={{
-                height: `${height}%`,
-                animationName: 'waveform-pulse',
-                animationDuration: `${0.8 + (i % 5) * 0.2}s`,
-                animationTimingFunction: 'ease-in-out',
-                animationIterationCount: 'infinite',
-                animationDirection: 'alternate',
-                animationDelay: `${i * 0.05}s`,
-              }}
-            />
-          );
-        })}
-      </div>
-
-      <div className="mt-5 pt-4 border-t border-border">
-        <p className="text-sm text-foreground">
-          &ldquo;Follow up with Sarah about the brand guidelines by Friday&rdquo;
-        </p>
-        <p className="text-xs text-muted-foreground mt-2">
-          Transcribed to task title
-        </p>
-      </div>
-
-      <div className="flex items-center justify-center gap-4 mt-5 text-muted-foreground text-xs">
-        <span className="flex items-center gap-1.5">
-          <kbd className="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-[10px]">Click</kbd>
-          to start
-        </span>
-        <span className="flex items-center gap-1.5">
-          <kbd className="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-[10px]">Click</kbd>
-          to stop
-        </span>
-      </div>
-
-      <style jsx>{`
-        @keyframes waveform-pulse {
-          0% { transform: scaleY(1); }
-          100% { transform: scaleY(0.4); }
-        }
-      `}</style>
     </div>
   );
 }

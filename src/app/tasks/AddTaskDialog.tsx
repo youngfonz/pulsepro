@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -28,8 +28,18 @@ export function AddTaskDialog({ projects, defaultOpen = false }: AddTaskDialogPr
   const [isOpen, setIsOpen] = useState(defaultOpen)
   const [isPending, startTransition] = useTransition()
 
-  // Controlled form state for voice input
+  // Smart project defaults: pre-select last-used project
   const [projectId, setProjectId] = useState('')
+  useEffect(() => {
+    if (isOpen && !projectId) {
+      try {
+        const lastUsed = localStorage.getItem('lastUsedProjectId')
+        if (lastUsed && projects.some((p) => p.id === lastUsed)) {
+          setProjectId(lastUsed)
+        }
+      } catch {}
+    }
+  }, [isOpen]) // eslint-disable-line react-hooks/exhaustive-deps
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState('medium')
@@ -48,13 +58,15 @@ export function AddTaskDialog({ projects, defaultOpen = false }: AddTaskDialogPr
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!projectId) return
-
     const formData = new FormData(e.currentTarget)
 
     startTransition(async () => {
-      await createTask(projectId, formData)
+      await createTask(projectId || null, formData)
       setIsOpen(false)
+      // Remember last-used project for smart defaults
+      if (projectId) {
+        try { localStorage.setItem('lastUsedProjectId', projectId) } catch {}
+      }
       // Reset form
       setProjectId('')
       setTitle('')
@@ -101,12 +113,11 @@ export function AddTaskDialog({ projects, defaultOpen = false }: AddTaskDialogPr
                 <Select
                   id="project"
                   name="project"
-                  label="Project *"
+                  label="Project"
                   value={projectId}
                   onChange={(e) => setProjectId(e.target.value)}
-                  required
                   options={[
-                    { value: '', label: 'Select a project' },
+                    { value: '', label: 'No project (quick task)' },
                     ...projects.map((project) => ({
                       value: project.id,
                       label: `${project.name}${project.client ? ` - ${project.client.name}` : ''}`,
@@ -184,7 +195,7 @@ export function AddTaskDialog({ projects, defaultOpen = false }: AddTaskDialogPr
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isPending || !projectId} className="w-full sm:w-auto">
+                  <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
                     {isPending ? 'Creating...' : 'Create Task'}
                   </Button>
                 </div>

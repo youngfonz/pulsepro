@@ -6,6 +6,15 @@ const features = [
   {
     icon: (
       <svg className="w-6 h-6" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+        <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    ),
+    title: 'Capture anything instantly',
+    description: 'Press N, type your task, done. Organize later — or never.',
+  },
+  {
+    icon: (
+      <svg className="w-6 h-6" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
         <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
       </svg>
     ),
@@ -178,7 +187,7 @@ export function Features() {
             Built for how you actually work.
           </h2>
           <p className="text-base text-muted-foreground mt-3 max-w-xl mx-auto">
-            No Gantt charts. No sprint planning. Just the tools you need.
+            No Gantt charts. No sprint planning. No learning curve. Just the tools you need.
           </p>
         </div>
 
@@ -189,7 +198,7 @@ export function Features() {
         </ScrollReveal>
 
         <ScrollReveal delay={100}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
             {features.map((feature) => (
               <div
                 key={feature.title}

@@ -56,7 +56,7 @@ async function gatherInsightContext(userId: string): Promise<InsightContext> {
       take: 10,
     }).then(tasks => tasks.map(t => ({
       title: t.title,
-      projectName: t.project.name,
+      projectName: t.project?.name ?? 'Quick task',
       dueDate: t.dueDate!.toISOString().split('T')[0],
       priority: t.priority,
     }))),
@@ -73,7 +73,7 @@ async function gatherInsightContext(userId: string): Promise<InsightContext> {
       take: 10,
     }).then(tasks => tasks.map(t => ({
       title: t.title,
-      projectName: t.project.name,
+      projectName: t.project?.name ?? 'Quick task',
       priority: t.priority,
     }))),
 

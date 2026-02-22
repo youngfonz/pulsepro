@@ -5,7 +5,7 @@ import { useState } from 'react'
 const faqs = [
   {
     question: "Who is Pulse Pro for?",
-    answer: "Pulse Pro is built for freelancers, consultants, and small teams who manage multiple clients and projects. If you've tried Asana, Trello, or Notion and found them too complex for your workflow, Pulse Pro is for you."
+    answer: "Anyone who needs to get things done. Freelancers managing client projects, solo founders tracking their startup, or anyone who just wants a fast, simple place to organize tasks and deadlines. If Apple Notes is your current task manager, you'll love Pulse Pro."
   },
   {
     question: "How is this different from Trello or Asana?",
@@ -26,6 +26,14 @@ const faqs = [
   {
     question: "Do you offer refunds?",
     answer: "Yes — 30-day money-back guarantee on all paid plans. No questions asked."
+  },
+  {
+    question: "Will prices go up?",
+    answer: "No. The price you sign up at is the price you keep. We don't do surprise hikes — unlike some tools that raised prices 18–87% in the last year."
+  },
+  {
+    question: "Do I need to set up projects first?",
+    answer: "No. Just add tasks. Press N, type what you need to do, hit Enter. You can organize tasks into projects later, or keep them as quick standalone tasks — it's up to you."
   },
   {
     question: "Can my team use Pulse Pro?",

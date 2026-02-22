@@ -5,8 +5,8 @@ import { PulseLogo } from '@/components/PulseLogo'
 
 export default function SignUpPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-background overflow-hidden">
+      <div className="w-full max-w-md px-4">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
             <PulseLogo size={40} />

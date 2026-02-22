@@ -28,7 +28,7 @@ export async function getTask(id: string) {
     const sharedIds = await getAccessibleProjectIds()
     if (sharedIds.length > 0) {
       task = await prisma.task.findFirst({
-        where: { id, projectId: { in: sharedIds } },
+        where: { id, OR: [{ projectId: { in: sharedIds } }, { projectId: null }] },
         include,
       })
     }
@@ -37,18 +37,20 @@ export async function getTask(id: string) {
   return task
 }
 
-export async function createTask(projectId: string, formData: FormData) {
+export async function createTask(projectId: string | null, formData: FormData) {
   try {
     const userId = await requireUserId()
 
     // Verify project access — owner or editor+
     let taskUserId = userId
-    const project = await prisma.project.findFirst({ where: { id: projectId, userId } })
-    if (!project) {
-      await requireProjectAccess(projectId, 'editor')
-      const shared = await prisma.project.findUnique({ where: { id: projectId }, select: { userId: true } })
-      if (!shared || !shared.userId) throw new Error('Project not found')
-      taskUserId = shared.userId
+    if (projectId) {
+      const project = await prisma.project.findFirst({ where: { id: projectId, userId } })
+      if (!project) {
+        await requireProjectAccess(projectId, 'editor')
+        const shared = await prisma.project.findUnique({ where: { id: projectId }, select: { userId: true } })
+        if (!shared || !shared.userId) throw new Error('Project not found')
+        taskUserId = shared.userId
+      }
     }
 
     const limit = await checkLimit('tasks')
@@ -68,11 +70,12 @@ export async function createTask(projectId: string, formData: FormData) {
       dueDate: formData.get('dueDate')
         ? new Date(formData.get('dueDate') as string)
         : null,
-      projectId,
+      projectId: projectId || undefined,
     }
 
     await prisma.task.create({ data })
-    revalidatePath(`/projects/${projectId}`)
+    if (projectId) revalidatePath(`/projects/${projectId}`)
+    revalidatePath('/tasks')
   } catch (error) {
     console.error('createTask:', error)
     throw new Error('Failed to create task')
@@ -89,7 +92,7 @@ export async function updateTask(id: string, formData: FormData) {
 
     if (!task) {
       task = await prisma.task.findFirst({ where: { id }, select: { projectId: true, url: true } })
-      if (task) await requireProjectAccess(task.projectId, 'editor')
+      if (task && task.projectId) await requireProjectAccess(task.projectId, 'editor')
     }
     if (!task) return
 
@@ -122,7 +125,7 @@ export async function updateTask(id: string, formData: FormData) {
       where: { id },
       data,
     })
-    revalidatePath(`/projects/${task.projectId}`)
+    if (task.projectId) revalidatePath(`/projects/${task.projectId}`)
     revalidatePath(`/tasks/${id}`)
     revalidatePath('/tasks')
     revalidatePath('/bookmarks')
@@ -142,7 +145,7 @@ export async function toggleTask(id: string) {
 
     if (!task) {
       task = await prisma.task.findFirst({ where: { id }, select: { completed: true, projectId: true } })
-      if (task) await requireProjectAccess(task.projectId, 'editor')
+      if (task && task.projectId) await requireProjectAccess(task.projectId, 'editor')
     }
     if (!task) return
 
@@ -154,7 +157,7 @@ export async function toggleTask(id: string) {
         status: newCompleted ? 'done' : 'todo',
       },
     })
-    revalidatePath(`/projects/${task.projectId}`)
+    if (task.projectId) revalidatePath(`/projects/${task.projectId}`)
     revalidatePath(`/tasks/${id}`)
     revalidatePath('/tasks')
   } catch (error) {
@@ -173,14 +176,14 @@ export async function deleteTask(id: string) {
 
     if (!task) {
       task = await prisma.task.findFirst({ where: { id }, select: { projectId: true } })
-      if (task) await requireProjectAccess(task.projectId, 'editor')
+      if (task && task.projectId) await requireProjectAccess(task.projectId, 'editor')
     }
     if (!task) return
 
     await prisma.task.delete({
       where: { id },
     })
-    revalidatePath(`/projects/${task.projectId}`)
+    if (task.projectId) revalidatePath(`/projects/${task.projectId}`)
     revalidatePath('/tasks')
   } catch (error) {
     console.error('deleteTask:', error)
@@ -198,7 +201,7 @@ export async function addTaskImage(taskId: string, path: string, name: string) {
 
     if (!task) {
       task = await prisma.task.findFirst({ where: { id: taskId }, select: { projectId: true } })
-      if (task) await requireProjectAccess(task.projectId, 'editor')
+      if (task && task.projectId) await requireProjectAccess(task.projectId, 'editor')
     }
     if (!task) return
 
@@ -209,7 +212,7 @@ export async function addTaskImage(taskId: string, path: string, name: string) {
         taskId,
       },
     })
-    revalidatePath(`/projects/${task.projectId}`)
+    if (task.projectId) revalidatePath(`/projects/${task.projectId}`)
   } catch (error) {
     console.error('addTaskImage:', error)
     throw new Error('Failed to add task image')
@@ -229,14 +232,14 @@ export async function removeTaskImage(imageId: string) {
     })
 
     if (!image) return
-    if (image.task.userId !== userId) {
+    if (image.task.userId !== userId && image.task.projectId) {
       await requireProjectAccess(image.task.projectId, 'editor')
     }
 
     await prisma.taskImage.delete({
       where: { id: imageId },
     })
-    revalidatePath(`/projects/${image.task.projectId}`)
+    if (image.task.projectId) revalidatePath(`/projects/${image.task.projectId}`)
   } catch (error) {
     console.error('removeTaskImage:', error)
     throw new Error('Failed to remove task image')
@@ -259,7 +262,7 @@ export async function addTaskFile(
 
     if (!task) {
       task = await prisma.task.findFirst({ where: { id: taskId }, select: { projectId: true } })
-      if (task) await requireProjectAccess(task.projectId, 'editor')
+      if (task && task.projectId) await requireProjectAccess(task.projectId, 'editor')
     }
     if (!task) return
 
@@ -272,7 +275,7 @@ export async function addTaskFile(
         taskId,
       },
     })
-    revalidatePath(`/projects/${task.projectId}`)
+    if (task.projectId) revalidatePath(`/projects/${task.projectId}`)
   } catch (error) {
     console.error('addTaskFile:', error)
     throw new Error('Failed to add task file')
@@ -292,14 +295,14 @@ export async function removeTaskFile(fileId: string) {
     })
 
     if (!file) return
-    if (file.task.userId !== userId) {
+    if (file.task.userId !== userId && file.task.projectId) {
       await requireProjectAccess(file.task.projectId, 'editor')
     }
 
     await prisma.taskFile.delete({
       where: { id: fileId },
     })
-    revalidatePath(`/projects/${file.task.projectId}`)
+    if (file.task.projectId) revalidatePath(`/projects/${file.task.projectId}`)
   } catch (error) {
     console.error('removeTaskFile:', error)
     throw new Error('Failed to remove task file')
@@ -538,7 +541,7 @@ export async function getAllTasks(options?: {
   if (options?.sort === 'client') {
     tasks.sort((a, b) => {
       if (a.completed !== b.completed) return a.completed ? 1 : -1
-      return a.project.client.name.localeCompare(b.project.client.name)
+      return (a.project?.client?.name ?? '').localeCompare(b.project?.client?.name ?? '')
     })
   }
 
@@ -572,7 +575,7 @@ export async function addTaskComment(taskId: string, content: string) {
 
     if (!task) {
       task = await prisma.task.findFirst({ where: { id: taskId }, select: { projectId: true } })
-      if (task) await requireProjectAccess(task.projectId, 'editor')
+      if (task && task.projectId) await requireProjectAccess(task.projectId, 'editor')
     }
     if (!task) return
 
@@ -582,7 +585,7 @@ export async function addTaskComment(taskId: string, content: string) {
         taskId,
       },
     })
-    revalidatePath(`/projects/${task.projectId}`)
+    if (task.projectId) revalidatePath(`/projects/${task.projectId}`)
   } catch (error) {
     console.error('addTaskComment:', error)
     throw new Error('Failed to add comment')
@@ -602,14 +605,14 @@ export async function deleteTaskComment(commentId: string) {
     })
 
     if (!comment) return
-    if (comment.task.userId !== userId) {
+    if (comment.task.userId !== userId && comment.task.projectId) {
       await requireProjectAccess(comment.task.projectId, 'editor')
     }
 
     await prisma.taskComment.delete({
       where: { id: commentId },
     })
-    revalidatePath(`/projects/${comment.task.projectId}`)
+    if (comment.task.projectId) revalidatePath(`/projects/${comment.task.projectId}`)
   } catch (error) {
     console.error('deleteTaskComment:', error)
     throw new Error('Failed to delete comment')
@@ -734,7 +737,7 @@ export async function getAllBookmarks(filters?: {
   })
 
   if (filters?.sort === 'project') {
-    bookmarks.sort((a, b) => a.project.name.localeCompare(b.project.name))
+    bookmarks.sort((a, b) => (a.project?.name ?? '').localeCompare(b.project?.name ?? ''))
   }
 
   return bookmarks

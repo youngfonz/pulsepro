@@ -156,7 +156,7 @@ export default async function TasksPage({ searchParams }: Props) {
                               {task.title}
                             </Link>
                             <p className="text-sm text-muted-foreground truncate mt-0.5">
-                              {task.project.name} &bull; {task.project.client.name}
+                              {task.project?.name ?? 'Quick task'}{task.project?.client?.name ? ` \u2022 ${task.project.client.name}` : ''}
                             </p>
                           </div>
                           <Badge className={`${priorityColors[task.priority]} flex-shrink-0`}>

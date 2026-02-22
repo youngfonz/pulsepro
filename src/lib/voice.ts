@@ -13,6 +13,13 @@ interface ParsedProject {
   budget?: number
 }
 
+interface ParsedClient {
+  name: string
+  email?: string
+  company?: string
+  phone?: string
+}
+
 /**
  * Parse priority keywords from text
  */
@@ -231,5 +238,52 @@ export function parseProjectFromVoice(transcript: string): ParsedProject {
     priority,
     dueDate: dueDate?.toISOString().split('T')[0],
     budget,
+  }
+}
+
+/**
+ * Parse client details from voice transcript
+ */
+export function parseClientFromVoice(transcript: string): ParsedClient {
+  let text = transcript.trim()
+
+  // Remove common prefixes
+  text = text.replace(/^(create|add|new)\s+(client)?\s*/i, '').trim()
+
+  // Extract email (e.g., "email john@example.com")
+  let email: string | undefined
+  const emailPattern = /\b(?:email|e-mail)\s+(\S+@\S+\.\S+)/i
+  const emailMatch = text.match(emailPattern)
+  if (emailMatch) {
+    email = emailMatch[1]
+    text = text.replace(emailPattern, '').trim()
+  }
+
+  // Extract phone (e.g., "phone 555-123-4567" or "phone +1 555 123 4567")
+  let phone: string | undefined
+  const phonePattern = /\b(?:phone|call|number)\s+([\d\s\-+().]{7,})/i
+  const phoneMatch = text.match(phonePattern)
+  if (phoneMatch) {
+    phone = phoneMatch[1].trim()
+    text = text.replace(phonePattern, '').trim()
+  }
+
+  // Extract company (e.g., "company Acme Inc")
+  let company: string | undefined
+  const companyPattern = /\b(?:company|org|organization)\s+(.+?)(?=\s+(?:email|phone|call|number)|$)/i
+  const companyMatch = text.match(companyPattern)
+  if (companyMatch) {
+    company = companyMatch[1].trim()
+    text = text.replace(companyPattern, '').trim()
+  }
+
+  // The remaining text is the client name
+  const name = text || 'Untitled Client'
+
+  return {
+    name,
+    email,
+    company,
+    phone,
   }
 }

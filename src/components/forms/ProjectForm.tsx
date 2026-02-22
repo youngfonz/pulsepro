@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/Textarea'
 import { VoiceInput } from '@/components/ui/VoiceInput'
 import { UpgradePrompt, isLimitError } from '@/components/ui/UpgradePrompt'
 import { createProject, updateProject } from '@/actions/projects'
+import { createClient } from '@/actions/clients'
 import { parseProjectFromVoice } from '@/lib/voice'
 import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
@@ -51,6 +52,10 @@ export function ProjectForm({ project, clients, defaultClientId, onSuccess }: Pr
   const [priority, setPriority] = useState(project?.priority || 'medium')
   const [dueDate, setDueDate] = useState(formatDateForInput(project?.dueDate || null))
   const [budget, setBudget] = useState(project?.budget?.toString() || '')
+  const [clientId, setClientId] = useState(project?.clientId || defaultClientId || '')
+  const [isNewClient, setIsNewClient] = useState(false)
+  const [newClientName, setNewClientName] = useState('')
+  const [clientList, setClientList] = useState(clients)
 
   const handleVoiceInput = (transcript: string) => {
     const parsed = parseProjectFromVoice(transcript)
@@ -66,6 +71,14 @@ export function ProjectForm({ project, clients, defaultClientId, onSuccess }: Pr
   const handleSubmit = async (formData: FormData) => {
     startTransition(async () => {
       try {
+        // Create inline client first if needed
+        if (isNewClient && newClientName.trim()) {
+          const clientFormData = new FormData()
+          clientFormData.append('name', newClientName.trim())
+          const newClient = await createClient(clientFormData)
+          formData.set('clientId', newClient.id)
+        }
+
         if (project) {
           await updateProject(project.id, formData)
         } else {
@@ -129,17 +142,55 @@ export function ProjectForm({ project, clients, defaultClientId, onSuccess }: Pr
         defaultValue={project?.notes || ''}
         placeholder="Add any additional notes..."
       />
-      <Select
-        id="clientId"
-        name="clientId"
-        label="Client *"
-        required
-        defaultValue={project?.clientId || defaultClientId || ''}
-        options={[
-          { value: '', label: 'Select a client...' },
-          ...clients.map((c) => ({ value: c.id, label: c.name })),
-        ]}
-      />
+      {isNewClient ? (
+        <div>
+          <label htmlFor="newClientName" className="block text-sm font-medium text-foreground mb-1">
+            New Client Name *
+          </label>
+          <div className="flex items-start gap-2">
+            <Input
+              id="newClientName"
+              required
+              value={newClientName}
+              onChange={(e) => setNewClientName(e.target.value)}
+              placeholder="Client name"
+              className="flex-1"
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                setIsNewClient(false)
+                setNewClientName('')
+              }}
+              className="shrink-0"
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <Select
+          id="clientId"
+          name="clientId"
+          label="Client *"
+          required
+          value={clientId}
+          onChange={(e) => {
+            if (e.target.value === '__new__') {
+              setIsNewClient(true)
+              setClientId('')
+            } else {
+              setClientId(e.target.value)
+            }
+          }}
+          options={[
+            { value: '', label: 'Select a client...' },
+            ...clientList.map((c) => ({ value: c.id, label: c.name })),
+            { value: '__new__', label: '+ New client' },
+          ]}
+        />
+      )}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Select
           id="status"

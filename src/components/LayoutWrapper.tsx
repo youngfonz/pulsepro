@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import { Sidebar } from './Sidebar'
 import { CommandBar } from './CommandBar'
+import { QuickAdd } from './QuickAdd'
 
 interface LayoutWrapperProps {
   children: React.ReactNode
@@ -30,6 +31,7 @@ export function LayoutWrapper({ children, clientCount, clerkEnabled = false, isA
         <div className="p-4 md:p-6">{children}</div>
       </main>
       <CommandBar />
+      <QuickAdd />
     </div>
   )
 }

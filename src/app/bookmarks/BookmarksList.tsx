@@ -23,7 +23,7 @@ interface Bookmark {
   project: {
     id: string
     name: string
-  }
+  } | null
 }
 
 function TypeIcon({ type, size = 'sm' }: { type: string | null; size?: 'sm' | 'lg' }) {
@@ -323,13 +323,17 @@ function BookmarkMeta({ bookmark }: { bookmark: Bookmark }) {
   return (
     <>
       <div className="flex items-center justify-between">
-        <Link
-          href={`/projects/${bookmark.project.id}`}
-          onClick={(e) => e.stopPropagation()}
-          className="text-xs text-muted-foreground hover:text-primary transition-colors"
-        >
-          {bookmark.project.name}
-        </Link>
+        {bookmark.project ? (
+          <Link
+            href={`/projects/${bookmark.project.id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="text-xs text-muted-foreground hover:text-primary transition-colors"
+          >
+            {bookmark.project.name}
+          </Link>
+        ) : (
+          <span className="text-xs text-muted-foreground">Quick task</span>
+        )}
         <span className="text-xs text-muted-foreground">
           {new Date(bookmark.createdAt).toLocaleDateString()}
         </span>

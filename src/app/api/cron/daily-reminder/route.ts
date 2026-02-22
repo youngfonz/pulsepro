@@ -113,7 +113,7 @@ interface TaskWithProject {
   title: string
   priority: string
   dueDate: Date | null
-  project: { id: string; name: string }
+  project: { id: string; name: string } | null
 }
 
 function daysOverdue(dueDate: Date | null): number {
@@ -162,7 +162,7 @@ function buildEmailHtml({
             ${task.title}
           </a>
           <div style="margin-top: 4px; font-size: 12px; color: #737373;">
-            ${task.project.name}${showOverdue && days > 0 ? ` &middot; <span style="color: #dc2626;">${days} day${days === 1 ? '' : 's'} overdue</span>` : ''}
+            ${task.project?.name ?? 'Quick task'}${showOverdue && days > 0 ? ` &middot; <span style="color: #dc2626;">${days} day${days === 1 ? '' : 's'} overdue</span>` : ''}
           </div>
         </td>
         <td style="padding: 12px 16px; border-bottom: 1px solid #e5e5e5; text-align: right; vertical-align: top;">

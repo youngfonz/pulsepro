@@ -90,8 +90,8 @@ model Task {
   priority     String   @default("medium") // low, medium, high
   startDate    DateTime?
   dueDate      DateTime?
-  projectId    String
-  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId    String?
+  project      Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   // Bookmark fields
@@ -188,6 +188,9 @@ model Subscription {
   telegramVerifyCode        String?
   telegramVerifyExpires     DateTime?
   telegramRemindersEnabled  Boolean   @default(false)
+  // API access
+  apiToken              String?   @unique
+  inboundEmailToken     String?   @unique
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 

@@ -6,8 +6,10 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { ImageUpload } from '@/components/ui/ImageUpload'
+import { VoiceInput } from '@/components/ui/VoiceInput'
 import { UpgradePrompt, isLimitError } from '@/components/ui/UpgradePrompt'
 import { createClient, updateClient } from '@/actions/clients'
+import { parseClientFromVoice } from '@/lib/voice'
 import { useRouter } from 'next/navigation'
 
 interface Client {
@@ -31,6 +33,18 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
   const [isPending, startTransition] = useTransition()
   const [logo, setLogo] = useState<string | null>(client?.logo || null)
   const [limitMessage, setLimitMessage] = useState<string | null>(null)
+  const [name, setName] = useState(client?.name || '')
+  const [email, setEmail] = useState(client?.email || '')
+  const [phone, setPhone] = useState(client?.phone || '')
+  const [company, setCompany] = useState(client?.company || '')
+
+  const handleVoiceInput = (transcript: string) => {
+    const parsed = parseClientFromVoice(transcript)
+    if (parsed.name) setName(parsed.name)
+    if (parsed.email) setEmail(parsed.email)
+    if (parsed.phone) setPhone(parsed.phone)
+    if (parsed.company) setCompany(parsed.company)
+  }
 
   const handleSubmit = async (formData: FormData) => {
     if (logo) {
@@ -74,34 +88,49 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
         label="Logo"
         aspect="square"
       />
-      <Input
-        id="name"
-        name="name"
-        label="Name *"
-        required
-        defaultValue={client?.name}
-        placeholder="Client name"
-      />
+      <div>
+        <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
+          Name *
+        </label>
+        <div className="flex items-start gap-2">
+          <Input
+            id="name"
+            name="name"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Client name"
+            className="flex-1"
+          />
+          <VoiceInput
+            onTranscript={handleVoiceInput}
+            placeholder="Speak to add client"
+          />
+        </div>
+      </div>
       <Input
         id="email"
         name="email"
         type="email"
         label="Email"
-        defaultValue={client?.email || ''}
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         placeholder="client@example.com"
       />
       <Input
         id="phone"
         name="phone"
         label="Phone"
-        defaultValue={client?.phone || ''}
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
         placeholder="+1 (555) 000-0000"
       />
       <Input
         id="company"
         name="company"
         label="Company"
-        defaultValue={client?.company || ''}
+        value={company}
+        onChange={(e) => setCompany(e.target.value)}
         placeholder="Company name"
       />
       <Select

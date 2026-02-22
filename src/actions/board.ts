@@ -22,7 +22,7 @@ export async function updateTaskStatus(
       select: { projectId: true },
     })
     if (found) {
-      await requireProjectAccess(found.projectId, 'editor')
+      if (found.projectId) await requireProjectAccess(found.projectId, 'editor')
       task = found
     }
   }
@@ -38,6 +38,6 @@ export async function updateTaskStatus(
     },
   })
 
-  revalidatePath(`/projects/${task.projectId}`)
+  if (task.projectId) revalidatePath(`/projects/${task.projectId}`)
   revalidatePath('/tasks')
 }
