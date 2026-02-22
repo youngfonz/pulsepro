@@ -40,15 +40,15 @@ export function MarketingNav() {
       )}
     >
       <div className="max-w-6xl mx-auto px-4 md:px-8 h-full">
-        <div className="flex items-center justify-between h-full">
+        <div className="relative flex items-center justify-between h-full">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
             <PulseLogo size={32} />
             <span className="text-xl font-bold text-foreground">Pulse Pro</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          {/* Desktop Navigation — true center */}
+          <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
             {navLinks.map((link) => (
               <a
                 key={link.href}
