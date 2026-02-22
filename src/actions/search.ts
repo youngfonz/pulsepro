@@ -138,8 +138,8 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
     results.push({
       id: t.id,
       title: t.title,
-      subtitle: t.project.name,
-      href: `/projects/${t.project.id}`,
+      subtitle: t.project?.name ?? 'Quick task',
+      href: t.project ? `/projects/${t.project.id}` : `/tasks/${t.id}`,
       type: 'task',
       priority: t.priority,
       status: t.completed ? 'completed' : undefined,
@@ -161,8 +161,8 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
     results.push({
       id: b.id,
       title: b.title,
-      subtitle: b.project.name,
-      href: b.url || `/projects/${b.project.id}`,
+      subtitle: b.project?.name ?? 'Quick task',
+      href: b.url || (b.project ? `/projects/${b.project.id}` : `/tasks/${b.id}`),
       type: 'bookmark',
     })
   }

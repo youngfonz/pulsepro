@@ -73,7 +73,7 @@ interface Task {
   project: {
     id: string
     name: string
-  }
+  } | null
 }
 
 export function TaskDetail({ task }: { task: Task }) {
@@ -140,12 +140,16 @@ export function TaskDetail({ task }: { task: Task }) {
               {task.title}
             </h1>
             <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-              <Link
-                href={`/projects/${task.project.id}`}
-                className="hover:text-foreground transition-colors"
-              >
-                {task.project.name}
-              </Link>
+              {task.project ? (
+                <Link
+                  href={`/projects/${task.project.id}`}
+                  className="hover:text-foreground transition-colors"
+                >
+                  {task.project.name}
+                </Link>
+              ) : (
+                <span>Quick task</span>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">

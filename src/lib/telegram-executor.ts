@@ -59,7 +59,7 @@ async function handleTasks(userId: string, chatId: string): Promise<string> {
   cacheTaskList(chatId, tasks.map((t) => t.id))
 
   const lines = tasks.map(
-    (t, i) => `${i + 1}. ${t.title}\n   <i>${t.project.name}</i>`
+    (t, i) => `${i + 1}. ${t.title}\n   <i>${t.project?.name ?? 'Quick task'}</i>`
   )
   return `<b>Pending Tasks</b>\n\n${lines.join('\n\n')}\n\nReply <b>done N</b> to mark one complete.`
 }
@@ -89,7 +89,7 @@ async function handleToday(userId: string, chatId: string): Promise<string> {
   cacheTaskList(chatId, tasks.map((t) => t.id))
 
   const lines = tasks.map(
-    (t, i) => `${i + 1}. ${t.title}\n   <i>${t.project.name}</i>`
+    (t, i) => `${i + 1}. ${t.title}\n   <i>${t.project?.name ?? 'Quick task'}</i>`
   )
   return `<b>Due Today</b>\n\n${lines.join('\n\n')}\n\nReply <b>done N</b> to mark one complete.`
 }
@@ -121,7 +121,7 @@ async function handleOverdue(userId: string, chatId: string): Promise<string> {
       (todayStart.getTime() - new Date(t.dueDate!).getTime()) /
         (1000 * 60 * 60 * 24)
     )
-    return `${i + 1}. ${t.title} (${days}d overdue)\n   <i>${t.project.name}</i>`
+    return `${i + 1}. ${t.title} (${days}d overdue)\n   <i>${t.project?.name ?? 'Quick task'}</i>`
   })
   return `<b>Overdue Tasks</b>\n\n${lines.join('\n\n')}\n\nReply <b>done N</b> to mark one complete.`
 }
@@ -139,7 +139,7 @@ async function handleBookmarks(userId: string): Promise<string> {
   }
 
   const lines = bookmarks.map(
-    (b, i) => `${i + 1}. <a href="${b.url}">${b.title}</a>\n   <i>${b.project.name}</i>`
+    (b, i) => `${i + 1}. <a href="${b.url}">${b.title}</a>\n   <i>${b.project?.name ?? 'Quick task'}</i>`
   )
   return `<b>Recent Bookmarks</b>\n\n${lines.join('\n\n')}`
 }
@@ -186,18 +186,6 @@ async function handleAdd(
   projectName: string,
   taskTitle: string
 ): Promise<string> {
-  // Find project by name (case-insensitive)
-  const project = await prisma.project.findFirst({
-    where: {
-      userId,
-      name: { equals: projectName, mode: 'insensitive' },
-    },
-  })
-
-  if (!project) {
-    return `Project "${projectName}" not found. Check the name and try again.`
-  }
-
   // Check plan limits
   const subscription = await prisma.subscription.findUnique({
     where: { userId },
@@ -208,6 +196,29 @@ async function handleAdd(
     if (taskCount >= 50) {
       return `You've hit the free plan limit (50 tasks). Upgrade to Pro for unlimited tasks.`
     }
+  }
+
+  // If no project name provided, create a standalone task
+  if (!projectName) {
+    const task = await prisma.task.create({
+      data: {
+        title: taskTitle,
+        userId,
+      },
+    })
+    return `Task "<b>${task.title}</b>" added.`
+  }
+
+  // Find project by name (case-insensitive)
+  const project = await prisma.project.findFirst({
+    where: {
+      userId,
+      name: { equals: projectName, mode: 'insensitive' },
+    },
+  })
+
+  if (!project) {
+    return `Project "${projectName}" not found. Check the name and try again.`
   }
 
   const task = await prisma.task.create({
@@ -230,7 +241,8 @@ function handleHelp(): string {
     `<b>overdue</b> — Overdue tasks`,
     `<b>bookmarks</b> — Recent bookmarks`,
     `<b>done N</b> — Mark task #N complete`,
-    `<b>add Project: Title</b> — Create a task`,
+    `<b>add Title</b> — Create a standalone task`,
+    `<b>add Project: Title</b> — Create a task in a project`,
     `<b>help</b> — Show this message`,
   ].join('\n')
 }

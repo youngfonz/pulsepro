@@ -18,6 +18,16 @@ const tools = [
     pain: 'Built for 50-person teams with PMs. Half the features you\'ll never touch, none of the simplicity you need.',
     switch: 'Set up in 5 minutes. No onboarding call needed. Just your work, organized.',
   },
+  {
+    name: 'ClickUp',
+    pain: 'Powerful, sure — if you have time to configure 47 features you\'ll never use. You wanted a task manager, not a second job.',
+    switch: 'Everything you need, nothing you don\'t. Projects, clients, deadlines — ready in minutes, not hours.',
+  },
+  {
+    name: 'Apple Notes',
+    pain: 'Fast to jot things down, impossible to organize. No deadlines, no priorities, no structure when you actually need it.',
+    switch: 'Just as fast to capture — press N and type. But with deadlines, priorities, and projects when you\'re ready for them.',
+  },
 ];
 
 export function WhySwitch() {
@@ -36,7 +46,7 @@ export function WhySwitch() {
         </div>
 
         <ScrollReveal delay={100}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-14">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mt-14">
             {tools.map((tool) => (
               <div
                 key={tool.name}

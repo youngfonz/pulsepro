@@ -1,8 +1,11 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback, useTransition } from 'react'
+import { useState, useEffect, useRef, useCallback, useTransition, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { globalSearch, type SearchResult } from '@/actions/search'
+import { createTask } from '@/actions/tasks'
+import { createClient } from '@/actions/clients'
+import { parseTaskFromVoice, parseClientFromVoice } from '@/lib/voice'
 
 const NAV_ITEMS = [
   { title: 'Dashboard', href: '/dashboard', icon: 'home' },
@@ -17,7 +20,7 @@ const NAV_ITEMS = [
 const QUICK_ACTIONS = [
   { title: 'New Project', href: '/projects/new', icon: 'plus' },
   { title: 'New Client', href: '/clients/new', icon: 'plus' },
-  { title: 'Add Task', href: '/tasks', icon: 'plus' },
+  { title: 'Add Task', href: '/tasks?add=true', icon: 'plus' },
   { title: 'Add Bookmark', href: '/bookmarks', icon: 'plus' },
 ]
 
@@ -96,15 +99,62 @@ export function CommandBar() {
   const [results, setResults] = useState<SearchResult[]>([])
   const [activeIndex, setActiveIndex] = useState(0)
   const [isPending, startTransition] = useTransition()
+  const [createSuccess, setCreateSuccess] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null)
 
+  // Detect creation mode from query prefix
+  const createMode = useMemo(() => {
+    const trimmed = query.trim()
+    const taskMatch = trimmed.match(/^(?:add|new)\s+task\s+(.*)/i)
+    if (taskMatch && taskMatch[1].trim()) {
+      return { type: 'task' as const, input: taskMatch[1].trim(), parsed: parseTaskFromVoice(taskMatch[1].trim()) }
+    }
+    const clientMatch = trimmed.match(/^(?:add|new)\s+client\s+(.*)/i)
+    if (clientMatch && clientMatch[1].trim()) {
+      return { type: 'client' as const, input: clientMatch[1].trim(), parsed: parseClientFromVoice(clientMatch[1].trim()) }
+    }
+    return null
+  }, [query])
+
+  const handleCreate = useCallback(() => {
+    if (!createMode) return
+    startTransition(async () => {
+      if (createMode.type === 'task') {
+        const parsed = createMode.parsed as ReturnType<typeof parseTaskFromVoice>
+        const formData = new FormData()
+        formData.append('title', parsed.title)
+        if (parsed.priority) formData.append('priority', parsed.priority)
+        if (parsed.dueDate) formData.append('dueDate', parsed.dueDate)
+        if (parsed.description) formData.append('description', parsed.description)
+        await createTask(null, formData)
+        setCreateSuccess(`Task "${parsed.title}" created`)
+      } else {
+        const parsed = createMode.parsed as ReturnType<typeof parseClientFromVoice>
+        const formData = new FormData()
+        formData.append('name', parsed.name)
+        if (parsed.email) formData.append('email', parsed.email)
+        if (parsed.phone) formData.append('phone', parsed.phone)
+        if (parsed.company) formData.append('company', parsed.company)
+        await createClient(formData)
+        setCreateSuccess(`Client "${parsed.name}" created`)
+      }
+      router.refresh()
+      setTimeout(() => {
+        setIsOpen(false)
+        setCreateSuccess(null)
+      }, 800)
+    })
+  }, [createMode, router])
+
   // Build flat list of all items for keyboard navigation
   const flatItems: FlatItem[] = []
 
-  if (query.trim().length >= 2) {
+  if (createMode) {
+    // Don't show search results or navigation in create mode
+  } else if (query.trim().length >= 2) {
     // Search results grouped by type
     const grouped: Record<string, SearchResult[]> = {}
     for (const r of results) {
@@ -174,14 +224,15 @@ export function CommandBar() {
       setQuery('')
       setResults([])
       setActiveIndex(0)
+      setCreateSuccess(null)
     }
   }, [isOpen])
 
-  // Search with debounce
+  // Search with debounce (skip in create mode)
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
 
-    if (query.trim().length < 2) {
+    if (createMode || query.trim().length < 2) {
       setResults([])
       setActiveIndex(0)
       return
@@ -198,7 +249,7 @@ export function CommandBar() {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
     }
-  }, [query])
+  }, [query, createMode])
 
   // Reset active index when results change
   useEffect(() => {
@@ -230,7 +281,9 @@ export function CommandBar() {
         break
       case 'Enter':
         e.preventDefault()
-        if (flatItems[activeIndex]) {
+        if (createMode) {
+          handleCreate()
+        } else if (flatItems[activeIndex]) {
           navigate(flatItems[activeIndex].href)
         }
         break
@@ -298,7 +351,7 @@ export function CommandBar() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Search projects, tasks, clients..."
+              placeholder="Search or type &quot;add task...&quot; to create"
               className="flex-1 py-3.5 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm"
             />
             {isPending && (
@@ -311,7 +364,84 @@ export function CommandBar() {
 
           {/* Results */}
           <div ref={listRef} className="max-h-[50vh] overflow-y-auto py-2">
-            {query.trim().length >= 2 && !isPending && flatItems.length === 0 && (
+            {/* Inline creation mode */}
+            {createSuccess ? (
+              <div className="px-4 py-6 text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-sm font-medium text-foreground">{createSuccess}</span>
+                </div>
+              </div>
+            ) : createMode ? (
+              <div className="px-4 py-3">
+                <div className="px-4 py-1.5 mb-2">
+                  <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+                    {createMode.type === 'task' ? 'Create Task' : 'Create Client'}
+                  </span>
+                </div>
+                <button
+                  onClick={handleCreate}
+                  disabled={isPending}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left bg-muted rounded-lg transition-colors hover:bg-muted/80"
+                >
+                  <div className="w-8 h-8 rounded-md flex items-center justify-center bg-primary/10 text-primary flex-shrink-0">
+                    <TypeIcon type={createMode.type === 'task' ? 'task' : 'client'} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {createMode.type === 'task'
+                        ? (createMode.parsed as ReturnType<typeof parseTaskFromVoice>).title
+                        : (createMode.parsed as ReturnType<typeof parseClientFromVoice>).name}
+                    </p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      {createMode.type === 'task' && (
+                        <>
+                          {(createMode.parsed as ReturnType<typeof parseTaskFromVoice>).priority && (
+                            <span className="text-[10px] text-muted-foreground">
+                              {(createMode.parsed as ReturnType<typeof parseTaskFromVoice>).priority} priority
+                            </span>
+                          )}
+                          {(createMode.parsed as ReturnType<typeof parseTaskFromVoice>).dueDate && (
+                            <span className="text-[10px] text-muted-foreground">
+                              due {(createMode.parsed as ReturnType<typeof parseTaskFromVoice>).dueDate}
+                            </span>
+                          )}
+                          {!(createMode.parsed as ReturnType<typeof parseTaskFromVoice>).priority &&
+                            !(createMode.parsed as ReturnType<typeof parseTaskFromVoice>).dueDate && (
+                            <span className="text-[10px] text-muted-foreground">Quick task</span>
+                          )}
+                        </>
+                      )}
+                      {createMode.type === 'client' && (
+                        <>
+                          {(createMode.parsed as ReturnType<typeof parseClientFromVoice>).email && (
+                            <span className="text-[10px] text-muted-foreground">
+                              {(createMode.parsed as ReturnType<typeof parseClientFromVoice>).email}
+                            </span>
+                          )}
+                          {(createMode.parsed as ReturnType<typeof parseClientFromVoice>).company && (
+                            <span className="text-[10px] text-muted-foreground">
+                              {(createMode.parsed as ReturnType<typeof parseClientFromVoice>).company}
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  {isPending ? (
+                    <div className="w-4 h-4 border-2 border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />
+                  ) : (
+                    <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground bg-background border border-border rounded">
+                      Enter
+                    </kbd>
+                  )}
+                </button>
+              </div>
+            ) : null}
+
+            {!createMode && query.trim().length >= 2 && !isPending && flatItems.length === 0 && (
               <div className="px-4 py-8 text-center">
                 <p className="text-sm text-muted-foreground">
                   No results for &ldquo;{query}&rdquo;
@@ -319,7 +449,7 @@ export function CommandBar() {
               </div>
             )}
 
-            {sections.map((section) => (
+            {!createMode && sections.map((section) => (
               <div key={section.label}>
                 <div className="px-4 py-1.5">
                   <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
@@ -367,19 +497,34 @@ export function CommandBar() {
           {/* Footer */}
           <div className="px-4 py-2 border-t border-border flex items-center justify-between">
             <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <kbd className="px-1 py-0.5 bg-muted border border-border rounded text-[10px]">&uarr;</kbd>
-                <kbd className="px-1 py-0.5 bg-muted border border-border rounded text-[10px]">&darr;</kbd>
-                navigate
-              </span>
-              <span className="flex items-center gap-1">
-                <kbd className="px-1 py-0.5 bg-muted border border-border rounded text-[10px]">&crarr;</kbd>
-                open
-              </span>
-              <span className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-muted border border-border rounded text-[10px]">esc</kbd>
-                close
-              </span>
+              {createMode ? (
+                <>
+                  <span className="flex items-center gap-1">
+                    <kbd className="px-1 py-0.5 bg-muted border border-border rounded text-[10px]">&crarr;</kbd>
+                    create
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <kbd className="px-1.5 py-0.5 bg-muted border border-border rounded text-[10px]">esc</kbd>
+                    close
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="flex items-center gap-1">
+                    <kbd className="px-1 py-0.5 bg-muted border border-border rounded text-[10px]">&uarr;</kbd>
+                    <kbd className="px-1 py-0.5 bg-muted border border-border rounded text-[10px]">&darr;</kbd>
+                    navigate
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <kbd className="px-1 py-0.5 bg-muted border border-border rounded text-[10px]">&crarr;</kbd>
+                    open
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <kbd className="px-1.5 py-0.5 bg-muted border border-border rounded text-[10px]">esc</kbd>
+                    close
+                  </span>
+                </>
+              )}
             </div>
           </div>
         </div>

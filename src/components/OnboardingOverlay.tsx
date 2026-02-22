@@ -6,28 +6,28 @@ const ONBOARDING_KEY_PREFIX = 'pulse-onboarding-complete'
 
 const steps = [
   {
-    title: 'Your project command center',
+    title: 'Add your first task',
     description:
-      'Pulse Pro keeps every client, project, and task organized in one place. No more scattered spreadsheets or forgotten deadlines.',
-    visual: 'dashboard',
+      'Press N anywhere to capture a task instantly. Type what you need to do, hit Enter. No setup required — just start.',
+    visual: 'quickadd',
   },
   {
-    title: 'Built to keep you on track',
+    title: 'Organize when you\u2019re ready',
     description:
-      'Set priorities, track deadlines, and get daily email reminders. See project health scores so you always know where things stand.',
-    visual: 'tasks',
+      'Group tasks into projects and assign them to clients — or don\u2019t. Quick tasks work great on their own. Structure is optional.',
+    visual: 'organize',
   },
   {
-    title: 'AI-powered insights',
+    title: 'Shortcuts that save time',
     description:
-      'Pulse Pro analyzes your projects and deadlines to surface what needs attention. Color-coded priorities help you focus on what matters most.',
-    visual: 'insights',
+      'Use \u2318K to search and navigate anywhere. Press N to quick-add tasks. Speak tasks using the mic icon. Everything is built for speed.',
+    visual: 'shortcuts',
   },
   {
-    title: 'Manage tasks from Telegram',
+    title: 'You\u2019re all set',
     description:
-      'Check your task list, mark things done, and create new tasks — all from a Telegram bot. Perfect for when you\u2019re on the go.',
-    visual: 'telegram',
+      'Your dashboard shows what\u2019s due, what\u2019s overdue, and what needs attention. Start adding tasks and let Pulse Pro keep you on track.',
+    visual: 'ready',
   },
 ]
 
@@ -75,25 +75,20 @@ export function OnboardingOverlay({ userId }: { userId: string }) {
         {/* Close button */}
         <button
           onClick={handleClose}
-          className="absolute top-3 left-3 z-10 w-7 h-7 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition-colors"
+          className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-muted hover:bg-muted-foreground/20 flex items-center justify-center transition-colors"
         >
-          <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <svg className="w-3.5 h-3.5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
         {/* Visual preview area */}
-        <div className="relative h-[220px] overflow-hidden">
-          {/* Gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-rose-200/80 via-blue-200/60 to-emerald-200/70" />
-          <div className="absolute inset-0 bg-gradient-to-tr from-violet-200/40 via-transparent to-amber-100/50" />
-
-          {/* Visual content */}
+        <div className="relative h-[220px] overflow-hidden bg-muted/50">
           <div className="relative h-full flex items-center justify-center p-6">
-            {step.visual === 'dashboard' && <DashboardVisual />}
-            {step.visual === 'tasks' && <TasksVisual />}
-            {step.visual === 'insights' && <InsightsVisual />}
-            {step.visual === 'telegram' && <TelegramVisual />}
+            {step.visual === 'quickadd' && <QuickAddVisual />}
+            {step.visual === 'organize' && <OrganizeVisual />}
+            {step.visual === 'shortcuts' && <ShortcutsVisual />}
+            {step.visual === 'ready' && <ReadyVisual />}
           </div>
         </div>
 
@@ -140,7 +135,7 @@ export function OnboardingOverlay({ userId }: { userId: string }) {
             onClick={handleNext}
             className="inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground px-5 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
           >
-            {isLastStep ? 'Done' : 'Continue'}
+            {isLastStep ? 'Get started' : 'Continue'}
           </button>
         </div>
       </div>
@@ -150,177 +145,150 @@ export function OnboardingOverlay({ userId }: { userId: string }) {
 
 /* ─── Visual Components for each step ─── */
 
-function DashboardVisual() {
+function QuickAddVisual() {
   return (
-    <div className="w-full max-w-[320px] bg-white rounded-lg shadow-lg overflow-hidden border border-black/5">
-      {/* Mini nav */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100">
-        <div className="w-5 h-5 rounded bg-[#171717] flex items-center justify-center">
-          <span className="text-[8px] font-bold text-white">P</span>
-        </div>
-        <span className="text-[10px] font-semibold text-gray-800">Dashboard</span>
-        <div className="ml-auto flex gap-1">
-          <div className="w-4 h-4 rounded bg-gray-100" />
-          <div className="w-4 h-4 rounded bg-gray-100" />
+    <div className="w-full max-w-[320px] bg-background rounded-lg shadow-lg overflow-hidden border border-border">
+      {/* Mock quick-add input */}
+      <div className="flex items-center gap-3 px-4 border-b border-border">
+        <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        <div className="flex-1 py-3">
+          <span className="text-sm text-foreground">Buy groceries due tomorrow</span>
+          <span className="animate-pulse text-primary">|</span>
         </div>
       </div>
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-2 p-3">
-        {[
-          { label: 'Active', value: '7', color: 'bg-blue-500' },
-          { label: 'Due soon', value: '3', color: 'bg-amber-500' },
-          { label: 'Clients', value: '4', color: 'bg-violet-500' },
-        ].map((s) => (
-          <div key={s.label} className="bg-gray-50 rounded-md p-2">
-            <div className="text-[15px] font-bold text-gray-900">{s.value}</div>
-            <div className="text-[8px] text-gray-500 mt-0.5">{s.label}</div>
-            <div className={`h-0.5 w-6 ${s.color} rounded-full mt-1.5 opacity-60`} />
+      {/* Bottom bar */}
+      <div className="flex items-center justify-between px-4 py-2.5">
+        <span className="text-[10px] text-muted-foreground">No project</span>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-muted-foreground">
+            Natural language parsing
+          </span>
+          <div className="px-2.5 py-1 bg-primary text-primary-foreground rounded text-[10px] font-medium">
+            Add
           </div>
-        ))}
+        </div>
       </div>
-      {/* Project rows */}
-      <div className="px-3 pb-3 space-y-1.5">
-        {[
-          { name: 'Acme Rebrand', status: 'In progress', dot: 'bg-blue-500' },
-          { name: 'SaaS Dashboard', status: '2 tasks due', dot: 'bg-amber-500' },
-          { name: 'Morris Design Co', status: 'On track', dot: 'bg-emerald-500' },
-        ].map((p) => (
-          <div key={p.name} className="flex items-center gap-2 py-1.5 px-2 bg-gray-50/80 rounded">
-            <div className={`w-1.5 h-1.5 rounded-full ${p.dot}`} />
-            <span className="text-[10px] font-medium text-gray-800 flex-1">{p.name}</span>
-            <span className="text-[9px] text-gray-400">{p.status}</span>
-          </div>
-        ))}
+      {/* Footer hint */}
+      <div className="px-4 py-1.5 border-t border-border flex items-center gap-3">
+        <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
+          <kbd className="px-1 py-0.5 bg-muted border border-border rounded text-[9px]">N</kbd>
+          open quick-add
+        </span>
+        <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
+          <kbd className="px-1 py-0.5 bg-muted border border-border rounded text-[9px]">&crarr;</kbd>
+          add task
+        </span>
       </div>
     </div>
   )
 }
 
-function TasksVisual() {
+function OrganizeVisual() {
   return (
-    <div className="w-full max-w-[320px] bg-white rounded-lg shadow-lg overflow-hidden border border-black/5">
+    <div className="w-full max-w-[320px] bg-background rounded-lg shadow-lg overflow-hidden border border-border">
       {/* Header */}
-      <div className="px-3 py-2 border-b border-gray-100">
-        <span className="text-[10px] font-semibold text-gray-800">Tasks</span>
-        <span className="text-[9px] text-gray-400 ml-2">Acme Rebrand</span>
+      <div className="px-3 py-2 border-b border-border">
+        <span className="text-[10px] font-semibold text-foreground">Your tasks</span>
       </div>
-      {/* Task list */}
+      {/* Tasks list */}
       <div className="p-3 space-y-1.5">
+        {/* Standalone tasks */}
+        <div className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider mb-1">Quick tasks</div>
         {[
-          { title: 'Finalize homepage copy', priority: 'High', done: true, color: 'text-red-500 bg-red-50' },
-          { title: 'Send invoice to client', priority: 'Med', done: false, color: 'text-amber-600 bg-amber-50' },
-          { title: 'Review wireframes', priority: 'High', done: false, color: 'text-red-500 bg-red-50' },
-          { title: 'Set up staging site', priority: 'Low', done: false, color: 'text-gray-500 bg-gray-50' },
+          { title: 'Buy groceries', tag: null },
+          { title: 'Call dentist', tag: null },
         ].map((t) => (
-          <div key={t.title} className="flex items-center gap-2 py-1.5 px-2 bg-gray-50/80 rounded">
-            <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${
-              t.done ? 'bg-emerald-500 border-emerald-500' : 'border-gray-300'
+          <div key={t.title} className="flex items-center gap-2 py-1.5 px-2 bg-muted/50 rounded">
+            <div className="w-3.5 h-3.5 rounded border border-border flex-shrink-0" />
+            <span className="text-[10px] text-foreground font-medium flex-1">{t.title}</span>
+          </div>
+        ))}
+        {/* Project tasks */}
+        <div className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider mt-3 mb-1">Acme Rebrand</div>
+        {[
+          { title: 'Finalize homepage copy', priority: 'High' },
+          { title: 'Review wireframes', priority: 'Med' },
+        ].map((t) => (
+          <div key={t.title} className="flex items-center gap-2 py-1.5 px-2 bg-muted/50 rounded">
+            <div className="w-3.5 h-3.5 rounded border border-border flex-shrink-0" />
+            <span className="text-[10px] text-foreground font-medium flex-1">{t.title}</span>
+            <span className={`text-[8px] font-semibold px-1.5 py-0.5 rounded ${
+              t.priority === 'High' ? 'text-red-500 bg-red-50' : 'text-amber-600 bg-amber-50'
             }`}>
-              {t.done && (
-                <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              )}
-            </div>
-            <span className={`text-[10px] flex-1 ${t.done ? 'line-through text-gray-400' : 'text-gray-800 font-medium'}`}>
-              {t.title}
-            </span>
-            <span className={`text-[8px] font-semibold px-1.5 py-0.5 rounded ${t.color}`}>
               {t.priority}
             </span>
           </div>
         ))}
       </div>
-      {/* Health bar */}
-      <div className="px-3 pb-3">
-        <div className="flex items-center gap-2 mt-1">
-          <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full w-[25%] bg-emerald-500 rounded-full" />
-          </div>
-          <span className="text-[9px] text-gray-400">1/4 done</span>
-        </div>
-      </div>
     </div>
   )
 }
 
-function InsightsVisual() {
+function ShortcutsVisual() {
   return (
-    <div className="w-full max-w-[320px] bg-white rounded-lg shadow-lg overflow-hidden border border-black/5">
-      {/* Header */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100">
-        <svg className="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-        </svg>
-        <span className="text-[10px] font-semibold text-gray-800">Insights</span>
-        <span className="text-[9px] text-gray-400 ml-auto">AI-powered</span>
+    <div className="w-full max-w-[300px] space-y-3">
+      {[
+        { keys: ['N'], label: 'Quick-add a task', desc: 'From anywhere in the app' },
+        { keys: ['\u2318', 'K'], label: 'Search & navigate', desc: 'Find anything instantly' },
+        { keys: ['\u23CE'], label: 'Create task', desc: 'While in quick-add modal' },
+      ].map((shortcut) => (
+        <div key={shortcut.label} className="flex items-center gap-3 bg-background rounded-lg border border-border px-4 py-3">
+          <div className="flex items-center gap-1">
+            {shortcut.keys.map((key) => (
+              <kbd key={key} className="min-w-[28px] h-7 flex items-center justify-center bg-muted border border-border rounded text-xs font-medium text-foreground px-1.5">
+                {key}
+              </kbd>
+            ))}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-medium text-foreground">{shortcut.label}</div>
+            <div className="text-[10px] text-muted-foreground">{shortcut.desc}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function ReadyVisual() {
+  return (
+    <div className="w-full max-w-[320px] bg-background rounded-lg shadow-lg overflow-hidden border border-border">
+      {/* Mini nav */}
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-border">
+        <div className="w-5 h-5 rounded bg-foreground flex items-center justify-center">
+          <span className="text-[8px] font-bold text-background">P</span>
+        </div>
+        <span className="text-[10px] font-semibold text-foreground">Dashboard</span>
       </div>
-      {/* Insight rows */}
-      <div className="p-3 space-y-1.5">
+      {/* Stats row */}
+      <div className="grid grid-cols-3 gap-2 p-3">
         {[
-          { dot: 'bg-rose-500', text: 'Acme Rebrand has 3 overdue tasks' },
-          { dot: 'bg-amber-500', text: 'Invoice pending for Morris Design Co' },
-          { dot: 'bg-blue-500', text: '2 tasks due tomorrow — start early' },
-        ].map((insight) => (
-          <div key={insight.text} className="flex items-center gap-2 py-1.5 px-2 bg-gray-50/80 rounded">
-            <div className={`w-1.5 h-1.5 rounded-full ${insight.dot} flex-shrink-0`} />
-            <span className="text-[10px] text-gray-800 flex-1">{insight.text}</span>
-            <svg className="w-3 h-3 text-gray-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
+          { label: 'Active', value: '3', color: 'bg-primary' },
+          { label: 'Due soon', value: '1', color: 'bg-amber-500' },
+          { label: 'Done', value: '5', color: 'bg-emerald-500' },
+        ].map((s) => (
+          <div key={s.label} className="bg-muted/50 rounded-md p-2">
+            <div className="text-[15px] font-bold text-foreground">{s.value}</div>
+            <div className="text-[8px] text-muted-foreground mt-0.5">{s.label}</div>
+            <div className={`h-0.5 w-6 ${s.color} rounded-full mt-1.5 opacity-60`} />
           </div>
         ))}
       </div>
-      {/* Footer */}
-      <div className="px-3 pb-3">
-        <div className="text-[9px] text-gray-400 text-center">Updated 2 min ago</div>
-      </div>
-    </div>
-  )
-}
-
-function TelegramVisual() {
-  return (
-    <div className="w-full max-w-[280px] bg-white rounded-lg shadow-lg overflow-hidden border border-black/5">
-      {/* Chat header */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100">
-        <div className="w-6 h-6 rounded-full bg-[#2AABEE] flex items-center justify-center flex-shrink-0">
-          <svg className="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
-          </svg>
-        </div>
-        <span className="text-[10px] font-semibold text-gray-800">Pulse Pro Bot</span>
-      </div>
-      {/* Messages */}
-      <div className="p-3 space-y-2">
-        {/* User message */}
-        <div className="flex justify-end">
-          <div className="bg-[#2AABEE] text-white text-[10px] px-2.5 py-1.5 rounded-lg rounded-br-sm max-w-[70%]">
-            tasks
+      {/* Task rows */}
+      <div className="px-3 pb-3 space-y-1.5">
+        {[
+          { name: 'Buy groceries', status: 'Due tomorrow', dot: 'bg-amber-500' },
+          { name: 'Finalize homepage copy', status: 'Acme Rebrand', dot: 'bg-primary' },
+          { name: 'Call dentist', status: 'Quick task', dot: 'bg-muted-foreground' },
+        ].map((p) => (
+          <div key={p.name} className="flex items-center gap-2 py-1.5 px-2 bg-muted/50 rounded">
+            <div className={`w-1.5 h-1.5 rounded-full ${p.dot}`} />
+            <span className="text-[10px] font-medium text-foreground flex-1">{p.name}</span>
+            <span className="text-[9px] text-muted-foreground">{p.status}</span>
           </div>
-        </div>
-        {/* Bot reply */}
-        <div className="flex justify-start">
-          <div className="bg-gray-100 text-gray-800 text-[10px] px-2.5 py-1.5 rounded-lg rounded-bl-sm max-w-[85%] leading-relaxed">
-            <span className="font-semibold">Pending Tasks</span><br />
-            1. Finalize homepage copy<br />
-            <span className="text-gray-400">  Acme Rebrand</span><br />
-            2. Send invoice<br />
-            <span className="text-gray-400">  Morris Design Co</span>
-          </div>
-        </div>
-        {/* User done */}
-        <div className="flex justify-end">
-          <div className="bg-[#2AABEE] text-white text-[10px] px-2.5 py-1.5 rounded-lg rounded-br-sm">
-            done 1
-          </div>
-        </div>
-        {/* Bot confirm */}
-        <div className="flex justify-start">
-          <div className="bg-gray-100 text-gray-800 text-[10px] px-2.5 py-1.5 rounded-lg rounded-bl-sm">
-            Done! &quot;Finalize homepage copy&quot; marked complete.
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   )

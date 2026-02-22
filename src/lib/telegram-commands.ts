@@ -37,10 +37,16 @@ export function parseCommand(text: string): Command {
     return { type: 'done', index: parseInt(doneMatch[2], 10) }
   }
 
-  // "add ProjectName: Task title" or "/add ProjectName: Task title"
-  const addMatch = text.trim().match(/^\/?(add)\s+(.+?):\s+(.+)$/i)
-  if (addMatch) {
-    return { type: 'add', projectName: addMatch[2].trim(), taskTitle: addMatch[3].trim() }
+  // "add Project: Title" or "/add Project: Title" — with project
+  const addWithProjectMatch = text.trim().match(/^\/?(add)\s+(.+?):\s+(.+)$/i)
+  if (addWithProjectMatch) {
+    return { type: 'add', projectName: addWithProjectMatch[2].trim(), taskTitle: addWithProjectMatch[3].trim() }
+  }
+
+  // "add Title" or "/add Title" — standalone task (no project)
+  const addStandaloneMatch = text.trim().match(/^\/?(add)\s+(.+)$/i)
+  if (addStandaloneMatch) {
+    return { type: 'add', projectName: '', taskTitle: addStandaloneMatch[2].trim() }
   }
 
   return { type: 'unknown' }

@@ -127,8 +127,9 @@ export async function createClient(formData: FormData) {
       notes: formData.get('notes') as string || null,
     }
 
-    await prisma.client.create({ data })
+    const client = await prisma.client.create({ data })
     revalidatePath('/clients')
+    return client
   } catch (error) {
     console.error('Failed to create client:', error)
     throw error instanceof Error ? error : new Error('Failed to create client')

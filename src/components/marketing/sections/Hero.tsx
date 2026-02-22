@@ -9,7 +9,7 @@ const announcements = [
   'Now with team workspaces',
   'Telegram bot is live',
   'Voice input — speak your tasks',
-  'Get 400% more done',
+  'Press N to add a task instantly',
   'Daily email reminders',
 ];
 
@@ -82,7 +82,7 @@ export function Hero() {
 
           <ScrollReveal delay={200}>
             <p className="text-lg md:text-xl text-muted-foreground mt-6 max-w-2xl mx-auto leading-relaxed">
-              Pulse Pro organizes every client, task, and deadline so nothing lives in memory.
+              Add your first task in 5 seconds. No setup, no project boards, no learning curve. Just your work, organized.
             </p>
           </ScrollReveal>
 

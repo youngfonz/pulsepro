@@ -20,7 +20,7 @@ interface Task {
     client: {
       name: string
     }
-  }
+  } | null
 }
 
 interface CalendarProps {
@@ -290,7 +290,7 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
                     {selectedDayTasks.map((task) => (
                       <Link
                         key={task.id}
-                        href={`/projects/${task.project.id}`}
+                        href={task.project ? `/projects/${task.project.id}` : `/tasks/${task.id}`}
                         className="block p-3  border border-border hover:bg-muted/50 transition-colors"
                       >
                         <div className="flex items-start justify-between gap-2">
@@ -308,7 +308,7 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
                           </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground mt-1">
-                          {task.project.name} &bull; {task.project.client.name}
+                          {task.project?.name ?? 'Quick task'}{task.project?.client?.name ? ` \u2022 ${task.project.client.name}` : ''}
                         </p>
                         {task.dueDate && (
                           <p className="text-xs text-muted-foreground mt-1">

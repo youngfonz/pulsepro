@@ -39,10 +39,11 @@ export default async function DashboardPage() {
 
   // Group overdue tasks by project
   const overdueByProject = overdueTasks.reduce<Record<string, { name: string; id: string; tasks: typeof overdueTasks }>>((acc, task) => {
-    if (!acc[task.project.id]) {
-      acc[task.project.id] = { name: task.project.name, id: task.project.id, tasks: [] }
+    const projectKey = task.project?.id ?? '__standalone__'
+    if (!acc[projectKey]) {
+      acc[projectKey] = { name: task.project?.name ?? 'Quick Tasks', id: task.project?.id ?? '', tasks: [] }
     }
-    acc[task.project.id].tasks.push(task)
+    acc[projectKey].tasks.push(task)
     return acc
   }, {})
   const overdueGroups = Object.values(overdueByProject)
@@ -62,9 +63,9 @@ export default async function DashboardPage() {
           <CardContent className="p-0">
             <div className="divide-y divide-border">
               {overdueGroups.map((group) => (
-                <div key={group.id}>
+                <div key={group.id || '__standalone__'}>
                   <Link
-                    href={`/projects/${group.id}`}
+                    href={group.id ? `/projects/${group.id}` : `/tasks`}
                     className="flex items-center justify-between px-4 sm:px-6 pt-3 pb-1 hover:bg-muted/30 transition-colors"
                   >
                     <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{group.name}</p>
@@ -135,7 +136,7 @@ export default async function DashboardPage() {
                           </svg>
                           <div className="flex-1 min-w-0">
                             <span className="text-sm font-medium text-foreground block truncate">{task.title}</span>
-                            <p className="text-xs text-muted-foreground truncate">{task.project.name}</p>
+                            <p className="text-xs text-muted-foreground truncate">{task.project?.name ?? 'Quick task'}</p>
                           </div>
                           <Badge className={`${priorityColors[task.priority]} flex-shrink-0`}>
                             {priorityLabels[task.priority]}
