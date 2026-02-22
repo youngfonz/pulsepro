@@ -25,8 +25,8 @@ export default async function MarketingPage() {
       <MarketingNav />
       <main id="main-content">
         <Hero />
-        <Features />
         <StatsImpact />
+        <Features />
         <TelegramFeature />
         <Testimonials />
         <WhySwitch />
