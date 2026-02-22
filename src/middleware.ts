@@ -18,6 +18,8 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhook/polar',
   '/api/cron/daily-reminder',
   '/api/webhook/telegram',
+  '/api/webhook/email',
+  '/api/v1/(.*)',
   '/api/og',
 ])
 
