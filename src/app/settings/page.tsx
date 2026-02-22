@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { SettingsClient } from './SettingsClient'
 import { BillingCard } from './BillingCard'
 import { TelegramCard } from './TelegramCard'
+import { EmailTaskCard } from './EmailTaskCard'
+import { ApiAccessCard } from './ApiAccessCard'
 
 export default function SettingsPage() {
   return (
@@ -23,6 +25,10 @@ export default function SettingsPage() {
       <BillingCard />
 
       <TelegramCard />
+
+      <EmailTaskCard />
+
+      <ApiAccessCard />
 
       <Card>
         <CardHeader>
