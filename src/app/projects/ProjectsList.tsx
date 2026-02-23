@@ -207,7 +207,7 @@ export function ProjectsList({ projects, currentSort, viewMode, healthMap }: Pro
                   href={`/projects/${project.id}`}
                   className="block p-4 hover:bg-muted/50 transition-colors"
                 >
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         {healthMap?.[project.id] && (
@@ -220,31 +220,28 @@ export function ProjectsList({ projects, currentSort, viewMode, healthMap }: Pro
                       </div>
                       <p className="text-sm text-muted-foreground truncate">{project.client.name}</p>
                     </div>
-                    <svg className="h-5 w-5 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <Badge className={statusColors[project.status]}>
-                      {statusLabels[project.status]}
-                    </Badge>
-                    <Badge className={priorityColors[project.priority]}>
-                      {priorityLabels[project.priority]}
-                    </Badge>
-                    <span className="text-sm text-muted-foreground">
-                      {completedTasks}/{totalTasks} task{totalTasks !== 1 ? 's' : ''}
-                    </span>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <Badge className={statusColors[project.status]}>
+                        {statusLabels[project.status]}
+                      </Badge>
+                      <svg className="h-4 w-4 text-muted-foreground/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
                   </div>
                   {totalTasks > 0 && (
-                    <div className="mt-2 w-full h-1 bg-secondary rounded-full overflow-hidden">
+                    <div className="mt-3 relative w-full h-5 bg-secondary rounded overflow-hidden">
                       <div
-                        className={`h-full rounded-full ${progress === 100 ? 'bg-emerald-500' : 'bg-primary'}`}
-                        style={{ width: `${progress}%` }}
+                        className={`h-full rounded transition-all ${progress === 100 ? 'bg-emerald-500' : 'bg-primary'}`}
+                        style={{ width: `${Math.max(progress, 8)}%` }}
                       />
+                      <span className="absolute inset-0 flex items-center px-2 text-xs font-medium text-white">
+                        {completedTasks}/{totalTasks} tasks
+                      </span>
                     </div>
                   )}
                   {project.dueDate && (
-                    <p className={`mt-2 text-sm ${overdue ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
+                    <p className={`mt-2 text-xs ${overdue ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
                       Due: {formatDate(project.dueDate)}
                       {overdue && ' (Overdue)'}
                     </p>
@@ -326,19 +323,16 @@ export function ProjectsList({ projects, currentSort, viewMode, healthMap }: Pro
 
                       {/* Progress */}
                       {totalTasks > 0 && (
-                        <div className="space-y-1.5">
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="text-muted-foreground">{completedTasks}/{totalTasks} tasks</span>
-                            <span className="font-medium text-foreground">{progress}%</span>
-                          </div>
-                          <div className="w-full h-1.5 bg-secondary rounded-full overflow-hidden">
-                            <div
-                              className={`h-full rounded-full transition-all ${
-                                progress === 100 ? 'bg-emerald-500' : 'bg-primary'
-                              }`}
-                              style={{ width: `${progress}%` }}
-                            />
-                          </div>
+                        <div className="relative w-full h-5 bg-secondary rounded overflow-hidden">
+                          <div
+                            className={`h-full rounded transition-all ${
+                              progress === 100 ? 'bg-emerald-500' : 'bg-primary'
+                            }`}
+                            style={{ width: `${Math.max(progress, 8)}%` }}
+                          />
+                          <span className="absolute inset-0 flex items-center px-2 text-xs font-medium text-white">
+                            {completedTasks}/{totalTasks} tasks
+                          </span>
                         </div>
                       )}
 
