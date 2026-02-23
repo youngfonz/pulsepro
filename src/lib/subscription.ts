@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { requireUserId } from '@/lib/auth'
+import { requireUserId, isAdminUser } from '@/lib/auth'
 
 export type Plan = 'free' | 'pro' | 'team'
 
@@ -26,6 +26,7 @@ const PLAN_LIMITS = {
 
 export async function getUserSubscription() {
   const userId = await requireUserId()
+  const admin = isAdminUser(userId)
 
   const subscription = await prisma.subscription.findUnique({
     where: { userId },
@@ -33,7 +34,7 @@ export async function getUserSubscription() {
 
   if (!subscription) {
     return {
-      plan: 'free' as Plan,
+      plan: (admin ? 'pro' : 'free') as Plan,
       status: 'active',
       currentPeriodEnd: null,
       cancelAtPeriodEnd: false,
@@ -42,7 +43,7 @@ export async function getUserSubscription() {
   }
 
   return {
-    plan: subscription.plan as Plan,
+    plan: (admin && subscription.plan === 'free' ? 'pro' : subscription.plan) as Plan,
     status: subscription.status,
     currentPeriodEnd: subscription.currentPeriodEnd,
     cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
