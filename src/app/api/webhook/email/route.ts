@@ -44,10 +44,14 @@ export async function POST(request: NextRequest) {
     const projectMatch = subject.match(/\[([^\]]+)\]/)
     if (projectMatch) {
       const projectName = projectMatch[1]
+      // Search projects owned by user OR shared with user
       const project = await prisma.project.findFirst({
         where: {
-          userId: subscription.userId,
           name: { equals: projectName, mode: 'insensitive' },
+          OR: [
+            { userId: subscription.userId },
+            { access: { some: { userId: subscription.userId } } },
+          ],
         },
         select: { id: true },
       })
