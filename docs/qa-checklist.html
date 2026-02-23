@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulse Pro QA Checklist</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Inter, -apple-system, system-ui, sans-serif; background: #f8f9fa; color: #1a1a1a; }
+
+  /* Dashboard header */
+  .dashboard { position: sticky; top: 0; z-index: 50; background: #fff; border-bottom: 1px solid #e5e7eb; padding: 16px 24px; }
+  .dashboard-inner { max-width: 900px; margin: 0 auto; }
+  .dashboard h1 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+  .dashboard-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+  .stat-card { flex: 1; min-width: 140px; background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px 16px; }
+  .stat-card.overall { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .stat-card.overall .stat-label { color: #a1a1aa; }
+  .stat-card.pass { border-color: #22c55e; }
+  .stat-card.fail { border-color: #ef4444; }
+  .stat-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; color: #71717a; }
+  .stat-value { font-size: 28px; font-weight: 700; margin-top: 2px; }
+  .stat-sub { font-size: 11px; color: #a1a1aa; margin-top: 2px; }
+
+  /* Progress bar */
+  .progress-bar-container { margin-top: 12px; background: #e5e7eb; border-radius: 999px; height: 8px; overflow: hidden; }
+  .progress-bar { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #22c55e, #16a34a); transition: width 0.4s ease; }
+
+  /* Persona tabs */
+  .persona-tabs { display: flex; gap: 6px; margin-top: 12px; }
+  .persona-tab { padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #e5e7eb; background: #fff; transition: all 0.15s; }
+  .persona-tab:hover { background: #f3f4f6; }
+  .persona-tab.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .persona-tab .tab-count { font-weight: 400; opacity: 0.6; margin-left: 4px; }
+
+  /* Content */
+  .content { max-width: 900px; margin: 0 auto; padding: 24px; }
+  .persona-section { display: none; }
+  .persona-section.active { display: block; }
+
+  /* Section */
+  .section { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
+  .section-header { padding: 14px 18px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; }
+  .section-header:hover { background: #fafafa; }
+  .section-title { font-size: 14px; font-weight: 600; }
+  .section-progress { display: flex; align-items: center; gap: 8px; }
+  .section-count { font-size: 12px; color: #71717a; font-weight: 500; }
+  .section-bar { width: 60px; height: 4px; background: #e5e7eb; border-radius: 999px; overflow: hidden; }
+  .section-bar-fill { height: 100%; background: #22c55e; border-radius: 999px; transition: width 0.3s; }
+  .section-chevron { width: 16px; height: 16px; color: #a1a1aa; transition: transform 0.2s; }
+  .section.open .section-chevron { transform: rotate(180deg); }
+  .section-body { display: none; padding: 0 18px 14px; }
+  .section.open .section-body { display: block; }
+
+  /* Checklist item */
+  .check-item { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 1px solid #f3f4f6; }
+  .check-item:last-child { border-bottom: none; }
+  .check-item input[type="checkbox"] { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 2px solid #d4d4d8; border-radius: 5px; cursor: pointer; flex-shrink: 0; margin-top: 1px; position: relative; transition: all 0.15s; }
+  .check-item input[type="checkbox"]:checked { background: #22c55e; border-color: #22c55e; }
+  .check-item input[type="checkbox"]:checked::after { content: ''; position: absolute; left: 5px; top: 1px; width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  .check-item label { font-size: 13px; line-height: 1.5; cursor: pointer; transition: all 0.2s; flex: 1; }
+  .check-item.checked label { text-decoration: line-through; color: #a1a1aa; }
+  .check-item .sub-items { margin-left: 28px; margin-top: 4px; }
+  .check-item code { background: #f3f4f6; padding: 1px 5px; border-radius: 4px; font-size: 12px; font-family: 'SF Mono', Monaco, monospace; }
+  .check-item.checked code { opacity: 0.5; }
+
+  /* Reset button */
+  .reset-btn { position: fixed; bottom: 24px; right: 24px; padding: 10px 18px; background: #ef4444; color: #fff; border: none; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(239,68,68,0.3); transition: all 0.15s; z-index: 100; }
+  .reset-btn:hover { background: #dc2626; transform: translateY(-1px); }
+
+  /* Completion celebration */
+  .celebration { display: none; text-align: center; padding: 48px 24px; }
+  .celebration.show { display: block; }
+  .celebration h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+  .celebration p { font-size: 14px; color: #71717a; }
+
+  /* Indent for nested items */
+  .indent { padding-left: 28px; }
+</style>
+</head>
+<body>
+
+<div class="dashboard">
+  <div class="dashboard-inner">
+    <h1>Pulse Pro QA Checklist</h1>
+    <div class="dashboard-stats">
+      <div class="stat-card overall">
+        <div class="stat-label">Overall Progress</div>
+        <div class="stat-value" id="overall-pct">0%</div>
+        <div class="stat-sub" id="overall-count">0 / 0 checks</div>
+      </div>
+      <div class="stat-card" id="p1-card">
+        <div class="stat-label">New User</div>
+        <div class="stat-value" id="p1-pct">0%</div>
+        <div class="stat-sub" id="p1-count">0 / 0</div>
+      </div>
+      <div class="stat-card" id="p2-card">
+        <div class="stat-label">Admin (Pro)</div>
+        <div class="stat-value" id="p2-pct">0%</div>
+        <div class="stat-sub" id="p2-count">0 / 0</div>
+      </div>
+      <div class="stat-card" id="p3-card">
+        <div class="stat-label">Super Admin</div>
+        <div class="stat-value" id="p3-pct">0%</div>
+        <div class="stat-sub" id="p3-count">0 / 0</div>
+      </div>
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="overall-bar" style="width: 0%"></div>
+    </div>
+    <div class="persona-tabs">
+      <div class="persona-tab active" data-persona="p1">New User<span class="tab-count" id="p1-tab-count"></span></div>
+      <div class="persona-tab" data-persona="p2">Admin (Pro)<span class="tab-count" id="p2-tab-count"></span></div>
+      <div class="persona-tab" data-persona="p3">Super Admin<span class="tab-count" id="p3-tab-count"></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ==================== PERSONA 1: NEW USER ==================== -->
+<div class="persona-section active" id="p1">
+
+<div class="section open" data-section="p1-marketing">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.1 Marketing Page</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c1"><label for="c1">Visit pulsepro.work — marketing page loads, no errors</label></div>
+    <div class="check-item"><input type="checkbox" id="c2"><label for="c2">Hero section: headline, subheadline, CTA buttons render</label></div>
+    <div class="check-item"><input type="checkbox" id="c3"><label for="c3">StatsImpact section: numbers/metrics display</label></div>
+    <div class="check-item"><input type="checkbox" id="c4"><label for="c4">Features section: dashboard mock + 4 feature cards render</label></div>
+    <div class="check-item"><input type="checkbox" id="c5"><label for="c5">"Capture tasks from anywhere" — AI Insights tab works</label></div>
+    <div class="check-item"><input type="checkbox" id="c6"><label for="c6">"Capture tasks from anywhere" — Email to Task tab works</label></div>
+    <div class="check-item"><input type="checkbox" id="c7"><label for="c7">"Capture tasks from anywhere" — Siri &amp; Voice tab works</label></div>
+    <div class="check-item"><input type="checkbox" id="c8"><label for="c8">"Capture tasks from anywhere" — Keyboard tab works</label></div>
+    <div class="check-item"><input type="checkbox" id="c9"><label for="c9">"Capture tasks from anywhere" — Telegram tab works</label></div>
+    <div class="check-item"><input type="checkbox" id="c10"><label for="c10">Auto-cycling between tabs works</label></div>
+    <div class="check-item"><input type="checkbox" id="c11"><label for="c11">Testimonials section renders</label></div>
+    <div class="check-item"><input type="checkbox" id="c12"><label for="c12">Why Switch: all 5 competitor cards display (Asana, Monday, Trello, ClickUp, Notes)</label></div>
+    <div class="check-item"><input type="checkbox" id="c13"><label for="c13">Pricing section: Free vs Pro table with correct limits</label></div>
+    <div class="check-item"><input type="checkbox" id="c14"><label for="c14">FAQ: all questions expand/collapse correctly</label></div>
+    <div class="check-item"><input type="checkbox" id="c15"><label for="c15">Final CTA section renders with button</label></div>
+    <div class="check-item"><input type="checkbox" id="c16"><label for="c16">Navigation: all anchor links work (Features, Pricing, FAQ)</label></div>
+    <div class="check-item"><input type="checkbox" id="c17"><label for="c17">Footer: all links work</label></div>
+    <div class="check-item"><input type="checkbox" id="c18"><label for="c18">Mobile responsive: all sections stack correctly on phone</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p1-legal">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.2 Legal &amp; Info Pages</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c19"><label for="c19">/about — page loads</label></div>
+    <div class="check-item"><input type="checkbox" id="c20"><label for="c20">/privacy — page loads</label></div>
+    <div class="check-item"><input type="checkbox" id="c21"><label for="c21">/terms — page loads</label></div>
+    <div class="check-item"><input type="checkbox" id="c22"><label for="c22">/contact — page loads</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p1-signup">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.3 Sign Up &amp; Auth</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c23"><label for="c23">/sign-up — form renders (no horizontal scroll)</label></div>
+    <div class="check-item"><input type="checkbox" id="c24"><label for="c24">Sign up with email — account created</label></div>
+    <div class="check-item"><input type="checkbox" id="c25"><label for="c25">Sign up with Google OAuth — works</label></div>
+    <div class="check-item"><input type="checkbox" id="c26"><label for="c26">After sign-up, redirected to /dashboard</label></div>
+    <div class="check-item"><input type="checkbox" id="c27"><label for="c27">/sign-in — form renders (no horizontal scroll)</label></div>
+    <div class="check-item"><input type="checkbox" id="c205"><label for="c205">Forgot password link visible on sign-in page</label></div>
+    <div class="check-item"><input type="checkbox" id="c206"><label for="c206">Password reset flow works (receive email, set new password)</label></div>
+    <div class="check-item"><input type="checkbox" id="c207"><label for="c207">Sign in with existing account — redirects to /dashboard</label></div>
+    <div class="check-item"><input type="checkbox" id="c208"><label for="c208">Logged-in user visits / (marketing page) — redirected to /dashboard</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p1-onboarding">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.4 Onboarding (First-Time)</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c28"><label for="c28">Onboarding overlay appears on first dashboard visit</label></div>
+    <div class="check-item"><input type="checkbox" id="c29"><label for="c29">Step 1: "Add your first task" — N key visual displays</label></div>
+    <div class="check-item"><input type="checkbox" id="c30"><label for="c30">Step 2: "Organize when ready" — projects explanation</label></div>
+    <div class="check-item"><input type="checkbox" id="c31"><label for="c31">Step 3: "Shortcuts" — Cmd+K, N, Enter keys shown</label></div>
+    <div class="check-item"><input type="checkbox" id="c32"><label for="c32">Step 4: "You're all set" — dashboard preview</label></div>
+    <div class="check-item"><input type="checkbox" id="c33"><label for="c33">Next/Back buttons work through all steps</label></div>
+    <div class="check-item"><input type="checkbox" id="c34"><label for="c34">Close button (X) dismisses overlay permanently</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p1-quickcapture">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.5 Quick Task Creation (Zero Setup)</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c35"><label for="c35">Press <code>N</code> key — quick-add modal opens</label></div>
+    <div class="check-item"><input type="checkbox" id="c36"><label for="c36">Type task title, press Enter — task created (no project required)</label></div>
+    <div class="check-item"><input type="checkbox" id="c37"><label for="c37">Task appears in /tasks page</label></div>
+    <div class="check-item"><input type="checkbox" id="c38"><label for="c38">Press <code>Cmd+K</code> — command bar opens</label></div>
+    <div class="check-item"><input type="checkbox" id="c39"><label for="c39">Type <code>add task Buy groceries</code> — creation preview shows</label></div>
+    <div class="check-item"><input type="checkbox" id="c40"><label for="c40">Press Enter — task created from command bar</label></div>
+    <div class="check-item"><input type="checkbox" id="c41"><label for="c41">Type <code>add task Fix bug high priority due tomorrow</code> — priority + date parsed correctly</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p1-tasks">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.6 Tasks Page</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c42"><label for="c42">/tasks page loads, shows created tasks</label></div>
+    <div class="check-item"><input type="checkbox" id="c43"><label for="c43">Standalone tasks show "Quick task" label</label></div>
+    <div class="check-item"><input type="checkbox" id="c44"><label for="c44">Click task — detail page loads</label></div>
+    <div class="check-item"><input type="checkbox" id="c45"><label for="c45">Edit task title — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c46"><label for="c46">Edit task description — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c47"><label for="c47">Set priority (low/medium/high) — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c48"><label for="c48">Set due date — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c49"><label for="c49">Mark task complete — checkbox toggles</label></div>
+    <div class="check-item"><input type="checkbox" id="c50"><label for="c50">Mark task incomplete — toggles back</label></div>
+    <div class="check-item"><input type="checkbox" id="c51"><label for="c51">Delete task — removed with confirmation</label></div>
+    <div class="check-item"><input type="checkbox" id="c52"><label for="c52">Add comment to task — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c53"><label for="c53">Add image to task — uploads and displays</label></div>
+    <div class="check-item"><input type="checkbox" id="c54"><label for="c54">Add file to task — uploads and displays</label></div>
+    <div class="check-item"><input type="checkbox" id="c55"><label for="c55">Filter by status (pending/completed) — works</label></div>
+    <div class="check-item"><input type="checkbox" id="c56"><label for="c56">Filter by priority — works</label></div>
+    <div class="check-item"><input type="checkbox" id="c57"><label for="c57">Sort by due date, priority, newest, oldest — all work</label></div>
+    <div class="check-item"><input type="checkbox" id="c58"><label for="c58">"Add Task" button opens dialog with project = none option</label></div>
+    <div class="check-item"><input type="checkbox" id="c209"><label for="c209">Edit task notes — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c210"><label for="c210">Set start date — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c211"><label for="c211">Delete comment from task — removed</label></div>
+    <div class="check-item"><input type="checkbox" id="c212"><label for="c212">Remove image from task — removed</label></div>
+    <div class="check-item"><input type="checkbox" id="c213"><label for="c213">Remove file from task — removed</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p1-clients">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.7 Client Management</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c59"><label for="c59">/clients page loads (empty state)</label></div>
+    <div class="check-item"><input type="checkbox" id="c60"><label for="c60">Create client (name, email, phone, company)</label></div>
+    <div class="check-item"><input type="checkbox" id="c61"><label for="c61">Client appears in list</label></div>
+    <div class="check-item"><input type="checkbox" id="c62"><label for="c62">Click client — detail page with projects</label></div>
+    <div class="check-item"><input type="checkbox" id="c63"><label for="c63">Edit client — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c64"><label for="c64">Voice input on client form — mic icon visible, auto-populates fields</label></div>
+    <div class="check-item"><input type="checkbox" id="c65"><label for="c65">Search clients — works</label></div>
+    <div class="check-item"><input type="checkbox" id="c66"><label for="c66">Filter by status, sort options — all work</label></div>
+    <div class="check-item"><input type="checkbox" id="c214"><label for="c214">Upload client logo — displays</label></div>
+    <div class="check-item"><input type="checkbox" id="c215"><label for="c215">Set client status (active/inactive) — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c216"><label for="c216">Add client notes — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c217"><label for="c217">Delete client — removed with confirmation</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p1-projects">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.8 Project Management</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c67"><label for="c67">/projects page loads</label></div>
+    <div class="check-item"><input type="checkbox" id="c68"><label for="c68">Create project — client dropdown works</label></div>
+    <div class="check-item"><input type="checkbox" id="c69"><label for="c69">"+ New client" inline creation from project form works</label></div>
+    <div class="check-item"><input type="checkbox" id="c70"><label for="c70">Voice input on project form — parses name, priority, date, budget</label></div>
+    <div class="check-item"><input type="checkbox" id="c71"><label for="c71">Project appears in list after creation</label></div>
+    <div class="check-item"><input type="checkbox" id="c72"><label for="c72">Click project — detail page with Kanban board</label></div>
+    <div class="check-item"><input type="checkbox" id="c73"><label for="c73">Drag task between Kanban columns — status updates</label></div>
+    <div class="check-item"><input type="checkbox" id="c74"><label for="c74">Add time entry — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c75"><label for="c75">Add project image — uploads</label></div>
+    <div class="check-item"><input type="checkbox" id="c76"><label for="c76">Edit project details — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c77"><label for="c77">Delete project — removed with confirmation</label></div>
+    <div class="check-item"><input type="checkbox" id="c78"><label for="c78">Filter and sort projects — all options work</label></div>
+    <div class="check-item"><input type="checkbox" id="c79"><label for="c79">Project health score displays correctly</label></div>
+    <div class="check-item"><input type="checkbox" id="c218"><label for="c218">Set project budget — saves and displays</label></div>
+    <div class="check-item"><input type="checkbox" id="c219"><label for="c219">Delete time entry — removed</label></div>
+    <div class="check-item"><input type="checkbox" id="c220"><label for="c220">Remove project image — removed</label></div>
+    <div class="check-item"><input type="checkbox" id="c221"><label for="c221">Edit project notes — saves</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p1-bookmarks">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.9 Bookmarks</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c80"><label for="c80">/bookmarks page loads</label></div>
+    <div class="check-item"><input type="checkbox" id="c81"><label for="c81">Create bookmark with URL — metadata extracted</label></div>
+    <div class="check-item"><input type="checkbox" id="c82"><label for="c82">YouTube URL — thumbnail and type detected</label></div>
+    <div class="check-item"><input type="checkbox" id="c83"><label for="c83">Filter by project, type — works</label></div>
+    <div class="check-item"><input type="checkbox" id="c84"><label for="c84">Search and sort bookmarks — works</label></div>
+    <div class="check-item"><input type="checkbox" id="c222"><label for="c222">Add tags to bookmark — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c223"><label for="c223">Delete bookmark — removed</label></div>
+    <div class="check-item"><input type="checkbox" id="c224"><label for="c224">Twitter/X URL — type detected correctly</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p1-calendar">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.10 Calendar</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c85"><label for="c85">/calendar — month view loads</label></div>
+    <div class="check-item"><input type="checkbox" id="c86"><label for="c86">Tasks with due dates appear on correct dates</label></div>
+    <div class="check-item"><input type="checkbox" id="c87"><label for="c87">Standalone tasks show as "Quick task"</label></div>
+    <div class="check-item"><input type="checkbox" id="c88"><label for="c88">Navigate between months — updates correctly</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p1-search">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.11 Search &amp; Navigation</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c89"><label for="c89"><code>Cmd+K</code> opens command bar</label></div>
+    <div class="check-item"><input type="checkbox" id="c90"><label for="c90">Search for task, project, client, bookmark — results appear</label></div>
+    <div class="check-item"><input type="checkbox" id="c91"><label for="c91">Click result — navigates to correct page</label></div>
+    <div class="check-item"><input type="checkbox" id="c92"><label for="c92">Arrow keys navigate, Enter opens, Esc closes</label></div>
+    <div class="check-item"><input type="checkbox" id="c93"><label for="c93">Quick actions: all navigation items work</label></div>
+    <div class="check-item"><input type="checkbox" id="c225"><label for="c225">Type <code>add client John Smith company Acme</code> in Cmd+K — client created</label></div>
+    <div class="check-item"><input type="checkbox" id="c226"><label for="c226">Empty search shows quick actions (no error)</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p1-limits">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.12 Free Plan Limits</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c94"><label for="c94">Create 4th project — upgrade prompt appears</label></div>
+    <div class="check-item"><input type="checkbox" id="c95"><label for="c95">Create 51st task — upgrade prompt appears</label></div>
+    <div class="check-item"><input type="checkbox" id="c96"><label for="c96">Create 2nd client — upgrade prompt appears</label></div>
+    <div class="check-item"><input type="checkbox" id="c97"><label for="c97">Upgrade prompt links to checkout</label></div>
+    <div class="check-item"><input type="checkbox" id="c227"><label for="c227">Free user: cannot share projects (collaborator limit = 0)</label></div>
+    <div class="check-item"><input type="checkbox" id="c228"><label for="c228">Usage display shows current count vs limit (e.g., "1/3 projects")</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p1-settings">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.13 Settings &amp; Dark Mode</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c98"><label for="c98">/settings page loads</label></div>
+    <div class="check-item"><input type="checkbox" id="c99"><label for="c99">Billing: shows "Free" plan</label></div>
+    <div class="check-item"><input type="checkbox" id="c100"><label for="c100">Telegram, Email, API cards all show "Upgrade to Pro"</label></div>
+    <div class="check-item"><input type="checkbox" id="c101"><label for="c101">Dark mode toggle — works, all pages render correctly</label></div>
+    <div class="check-item"><input type="checkbox" id="c102"><label for="c102">Light mode toggle — works back</label></div>
+    <div class="check-item"><input type="checkbox" id="c103"><label for="c103">About section: version + tech stack display</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p1-account">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.14 Account &amp; Profile</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c229"><label for="c229">Sidebar shows user avatar and name</label></div>
+    <div class="check-item"><input type="checkbox" id="c230"><label for="c230">Click UserButton (avatar) — Clerk profile menu opens</label></div>
+    <div class="check-item"><input type="checkbox" id="c231"><label for="c231">Edit display name via Clerk — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c232"><label for="c232">Edit email address via Clerk — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c233"><label for="c233">Sign out via UserButton — redirected to marketing page</label></div>
+    <div class="check-item"><input type="checkbox" id="c234"><label for="c234">Sign back in — data persists</label></div>
+  </div>
+</div>
+
+</div>
+
+<!-- ==================== PERSONA 2: ADMIN (PRO) ==================== -->
+<div class="persona-section" id="p2">
+
+<div class="section open" data-section="p2-upgrade">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">2.1 Upgrade to Pro</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c104"><label for="c104">Click upgrade button — Polar checkout loads</label></div>
+    <div class="check-item"><input type="checkbox" id="c105"><label for="c105">Complete checkout — subscription activated</label></div>
+    <div class="check-item"><input type="checkbox" id="c106"><label for="c106">Settings > Billing: shows "Pro" plan</label></div>
+    <div class="check-item"><input type="checkbox" id="c107"><label for="c107">"Manage subscription" link to Polar portal works</label></div>
+    <div class="check-item"><input type="checkbox" id="c108"><label for="c108">Free plan limits removed (unlimited projects/tasks/clients)</label></div>
+    <div class="check-item"><input type="checkbox" id="c235"><label for="c235">Upgrade to Team plan ($29/mo) — checkout works</label></div>
+    <div class="check-item"><input type="checkbox" id="c236"><label for="c236">Team plan: collaborator limit increased to 10</label></div>
+    <div class="check-item"><input type="checkbox" id="c237"><label for="c237">Settings &gt; Billing: shows plan name and period end date</label></div>
+    <div class="check-item"><input type="checkbox" id="c238"><label for="c238">Settings &gt; Billing: "cancels at period end" text shown after cancellation</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p2-telegram">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">2.2 Telegram Bot</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c109"><label for="c109">"Link Telegram" button appears (not upgrade prompt)</label></div>
+    <div class="check-item"><input type="checkbox" id="c110"><label for="c110">Click link — verification code generated (LINK-XXXXXX)</label></div>
+    <div class="check-item"><input type="checkbox" id="c111"><label for="c111">Send code in Telegram — "Account linked!" confirmed</label></div>
+    <div class="check-item"><input type="checkbox" id="c112"><label for="c112">Green dot "Telegram linked" shows in settings</label></div>
+    <div class="check-item"><input type="checkbox" id="c113"><label for="c113">Toggle daily reminders ON/OFF — saves</label></div>
+    <div class="check-item"><input type="checkbox" id="c114"><label for="c114">Telegram: <code>tasks</code> — task list returned</label></div>
+    <div class="check-item"><input type="checkbox" id="c115"><label for="c115">Telegram: <code>today</code> — today's tasks returned</label></div>
+    <div class="check-item"><input type="checkbox" id="c116"><label for="c116">Telegram: <code>overdue</code> — overdue tasks returned</label></div>
+    <div class="check-item"><input type="checkbox" id="c117"><label for="c117">Telegram: <code>bookmarks</code> — bookmarks returned</label></div>
+    <div class="check-item"><input type="checkbox" id="c118"><label for="c118">Telegram: <code>add Buy milk</code> — standalone task created</label></div>
+    <div class="check-item"><input type="checkbox" id="c119"><label for="c119">Telegram: <code>add ProjectName: Fix logo</code> — task assigned to project</label></div>
+    <div class="check-item"><input type="checkbox" id="c120"><label for="c120">Telegram: <code>done 1</code> — task marked complete</label></div>
+    <div class="check-item"><input type="checkbox" id="c121"><label for="c121">Telegram: <code>help</code> — command list returned</label></div>
+    <div class="check-item"><input type="checkbox" id="c122"><label for="c122">Unlink Telegram — status clears, commands stop working</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p2-email">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">2.3 Email-to-Task</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c123"><label for="c123">"Generate Email Address" button appears</label></div>
+    <div class="check-item"><input type="checkbox" id="c124"><label for="c124">Click generate — email address displayed</label></div>
+    <div class="check-item"><input type="checkbox" id="c125"><label for="c125">Copy button works — address copied to clipboard</label></div>
+    <div class="check-item"><input type="checkbox" id="c126"><label for="c126">"How it works" instructions display</label></div>
+    <div class="check-item"><input type="checkbox" id="c127"><label for="c127">Forward a real email — task created with subject as title</label></div>
+    <div class="check-item"><input type="checkbox" id="c128"><label for="c128">Email body becomes task description</label></div>
+    <div class="check-item"><input type="checkbox" id="c129"><label for="c129">Email with <code>[ProjectName]</code> in subject — assigned to matching project</label></div>
+    <div class="check-item"><input type="checkbox" id="c130"><label for="c130">Email without project tag — standalone task created</label></div>
+    <div class="check-item"><input type="checkbox" id="c131"><label for="c131">Regenerate address — new address works, old one stops</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p2-api">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">2.4 Siri &amp; Shortcuts API</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c132"><label for="c132">"Generate API Token" button appears</label></div>
+    <div class="check-item"><input type="checkbox" id="c133"><label for="c133">Click generate — token displayed (pp_... format)</label></div>
+    <div class="check-item"><input type="checkbox" id="c134"><label for="c134">Token masked by default, show/hide toggle works</label></div>
+    <div class="check-item"><input type="checkbox" id="c135"><label for="c135">Copy button works</label></div>
+    <div class="check-item"><input type="checkbox" id="c136"><label for="c136">Apple Shortcuts setup instructions display</label></div>
+    <div class="check-item"><input type="checkbox" id="c137"><label for="c137">curl example displays</label></div>
+    <div class="check-item"><input type="checkbox" id="c138"><label for="c138">POST <code>/api/v1/tasks</code> with title — returns 201</label></div>
+    <div class="check-item"><input type="checkbox" id="c139"><label for="c139">POST with priority + dueDate + project — all fields correct</label></div>
+    <div class="check-item"><input type="checkbox" id="c140"><label for="c140">GET <code>/api/v1/tasks</code> — returns task list</label></div>
+    <div class="check-item"><input type="checkbox" id="c141"><label for="c141">GET with <code>?status=todo</code> — filters correctly</label></div>
+    <div class="check-item"><input type="checkbox" id="c142"><label for="c142">Invalid token — returns 401</label></div>
+    <div class="check-item"><input type="checkbox" id="c143"><label for="c143">Missing title — returns 400</label></div>
+    <div class="check-item"><input type="checkbox" id="c144"><label for="c144">Regenerate token — old token fails, new token works</label></div>
+    <div class="check-item"><input type="checkbox" id="c145"><label for="c145">Revoke token — all API access disabled</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p2-dashboard">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">2.5 Dashboard (With Data)</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c146"><label for="c146">Stats: all counts accurate</label></div>
+    <div class="check-item"><input type="checkbox" id="c147"><label for="c147">Overdue tasks section: correct, grouped by project</label></div>
+    <div class="check-item"><input type="checkbox" id="c148"><label for="c148">Standalone overdue tasks display correctly</label></div>
+    <div class="check-item"><input type="checkbox" id="c149"><label for="c149">Tasks due this week — correct</label></div>
+    <div class="check-item"><input type="checkbox" id="c150"><label for="c150">Recently viewed — shows last accessed items</label></div>
+    <div class="check-item"><input type="checkbox" id="c151"><label for="c151">Project health cards: green/yellow/red scores correct</label></div>
+    <div class="check-item"><input type="checkbox" id="c152"><label for="c152">Smart insights panel displays</label></div>
+    <div class="check-item"><input type="checkbox" id="c239"><label for="c239">Dashboard sections: drag-to-reorder works</label></div>
+    <div class="check-item"><input type="checkbox" id="c240"><label for="c240">Reordered layout persists on page refresh</label></div>
+    <div class="check-item"><input type="checkbox" id="c241"><label for="c241">AI insights: "Generate" button triggers analysis (Pro feature)</label></div>
+    <div class="check-item"><input type="checkbox" id="c242"><label for="c242">AI insights cached — loads quickly on second visit</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p2-collab">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">2.6 Project Collaboration</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c153"><label for="c153">Share project with another user — works</label></div>
+    <div class="check-item"><input type="checkbox" id="c154"><label for="c154">Viewer role: can view only</label></div>
+    <div class="check-item"><input type="checkbox" id="c155"><label for="c155">Editor role: can edit tasks</label></div>
+    <div class="check-item"><input type="checkbox" id="c156"><label for="c156">Revoke access — user removed</label></div>
+    <div class="check-item"><input type="checkbox" id="c157"><label for="c157">Collaborator limit (3) enforced</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p2-voice">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">2.7 Voice Input</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c158"><label for="c158">Task form voice: parses title + priority + due date</label></div>
+    <div class="check-item"><input type="checkbox" id="c159"><label for="c159">Client form voice: parses name + email + phone + company</label></div>
+    <div class="check-item"><input type="checkbox" id="c160"><label for="c160">Project form voice: parses name + description + priority</label></div>
+    <div class="check-item"><input type="checkbox" id="c161"><label for="c161">Mic permission denied — graceful fallback, no crash</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p2-all6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">2.8 All 6 Task Creation Methods</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c162"><label for="c162">Create task via <code>N</code> key (standalone)</label></div>
+    <div class="check-item"><input type="checkbox" id="c163"><label for="c163">Create task via <code>Cmd+K</code> inline</label></div>
+    <div class="check-item"><input type="checkbox" id="c164"><label for="c164">Create task via Add Task dialog (with project)</label></div>
+    <div class="check-item"><input type="checkbox" id="c165"><label for="c165">Create task via Telegram bot</label></div>
+    <div class="check-item"><input type="checkbox" id="c166"><label for="c166">Create task via email forward</label></div>
+    <div class="check-item"><input type="checkbox" id="c167"><label for="c167">Create task via API (curl or Siri)</label></div>
+    <div class="check-item"><input type="checkbox" id="c168"><label for="c168">All 6 tasks visible in /tasks, searchable in Cmd+K, on calendar</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p2-reminders">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">2.9 Daily Reminders</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c169"><label for="c169">Email reminder: overdue + due today tasks listed</label></div>
+    <div class="check-item"><input type="checkbox" id="c170"><label for="c170">Email: color-coded by priority, links work</label></div>
+    <div class="check-item"><input type="checkbox" id="c171"><label for="c171">Telegram reminder: summary received (if opted in)</label></div>
+    <div class="check-item"><input type="checkbox" id="c172"><label for="c172">Standalone tasks display as "Quick task" in reminders</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p2-subscription">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">2.10 Subscription Management</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c253"><label for="c253">Polar portal: "Manage subscription" link opens billing portal</label></div>
+    <div class="check-item"><input type="checkbox" id="c254"><label for="c254">Cancel subscription via Polar portal — cancelAtPeriodEnd flag set</label></div>
+    <div class="check-item"><input type="checkbox" id="c255"><label for="c255">Settings shows "cancels at [date]" after cancellation</label></div>
+    <div class="check-item"><input type="checkbox" id="c256"><label for="c256">Features remain active until period ends</label></div>
+    <div class="check-item"><input type="checkbox" id="c257"><label for="c257">After period ends: plan reverts to Free</label></div>
+    <div class="check-item"><input type="checkbox" id="c258"><label for="c258">After downgrade: existing data preserved but limits enforced</label></div>
+    <div class="check-item"><input type="checkbox" id="c259"><label for="c259">Re-subscribe after cancellation — Pro features restored</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p2-team">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">2.11 Team &amp; Organization</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c260"><label for="c260">Create Clerk organization — org created</label></div>
+    <div class="check-item"><input type="checkbox" id="c261"><label for="c261">Invite member to organization via Clerk — user joins</label></div>
+    <div class="check-item"><input type="checkbox" id="c262"><label for="c262">Org members visible in project Team tab dropdown</label></div>
+    <div class="check-item"><input type="checkbox" id="c263"><label for="c263">Add org member to project as Viewer — they see the project</label></div>
+    <div class="check-item"><input type="checkbox" id="c264"><label for="c264">Add org member to project as Editor — they can edit tasks</label></div>
+    <div class="check-item"><input type="checkbox" id="c265"><label for="c265">Add org member to project as Manager — they can manage access</label></div>
+    <div class="check-item"><input type="checkbox" id="c266"><label for="c266">Manager grants access to another member — works</label></div>
+    <div class="check-item"><input type="checkbox" id="c267"><label for="c267">Owner badge displays for project creator</label></div>
+    <div class="check-item"><input type="checkbox" id="c268"><label for="c268">Cannot add yourself as collaborator</label></div>
+    <div class="check-item"><input type="checkbox" id="c269"><label for="c269">Cannot add the project owner as collaborator</label></div>
+    <div class="check-item"><input type="checkbox" id="c270"><label for="c270">Remove member from project — access revoked</label></div>
+    <div class="check-item"><input type="checkbox" id="c271"><label for="c271">Pro plan: collaborator limit of 3 enforced</label></div>
+    <div class="check-item"><input type="checkbox" id="c272"><label for="c272">Team plan: collaborator limit of 10 enforced</label></div>
+    <div class="check-item"><input type="checkbox" id="c273"><label for="c273">Shared project appears in collaborator's project list</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p2-delete">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">2.12 Delete Everything</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c274"><label for="c274">Delete a task — removed from tasks page, calendar, search</label></div>
+    <div class="check-item"><input type="checkbox" id="c275"><label for="c275">Delete a task comment — removed</label></div>
+    <div class="check-item"><input type="checkbox" id="c276"><label for="c276">Remove a task image — removed</label></div>
+    <div class="check-item"><input type="checkbox" id="c277"><label for="c277">Remove a task file — removed</label></div>
+    <div class="check-item"><input type="checkbox" id="c278"><label for="c278">Delete a project — all project tasks cascade-deleted</label></div>
+    <div class="check-item"><input type="checkbox" id="c279"><label for="c279">Delete a project image — removed</label></div>
+    <div class="check-item"><input type="checkbox" id="c280"><label for="c280">Delete a time entry — removed</label></div>
+    <div class="check-item"><input type="checkbox" id="c281"><label for="c281">Delete a client — client and all projects cascade-deleted</label></div>
+    <div class="check-item"><input type="checkbox" id="c282"><label for="c282">Delete a bookmark — removed from bookmarks page and search</label></div>
+    <div class="check-item"><input type="checkbox" id="c283"><label for="c283">Standalone task: delete — removed (not affected by project deletion)</label></div>
+    <div class="check-item"><input type="checkbox" id="c284"><label for="c284">Delete client with multiple projects — all cascade correctly</label></div>
+  </div>
+</div>
+
+</div>
+
+<!-- ==================== PERSONA 3: SUPER ADMIN ==================== -->
+<div class="persona-section" id="p3">
+
+<div class="section open" data-section="p3-admin">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">3.1 Admin Panel</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c173"><label for="c173">/admin — page loads with access control</label></div>
+    <div class="check-item"><input type="checkbox" id="c174"><label for="c174">/admin/users — user list displays</label></div>
+    <div class="check-item"><input type="checkbox" id="c175"><label for="c175">Non-admin users cannot access /admin (redirected)</label></div>
+    <div class="check-item"><input type="checkbox" id="c243"><label for="c243">Admin dashboard shows: total users, pro users, total projects, tasks, clients</label></div>
+    <div class="check-item"><input type="checkbox" id="c244"><label for="c244">Admin users table: avatar, name, email, plan badge, project/task/client counts, join date</label></div>
+    <div class="check-item"><input type="checkbox" id="c245"><label for="c245">Admin pagination works for large user lists</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p3-security">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">3.2 API Security</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c176"><label for="c176"><code>/api/v1/tasks</code> without auth — returns 401</label></div>
+    <div class="check-item"><input type="checkbox" id="c177"><label for="c177"><code>/api/v1/tasks</code> with invalid token — returns 401</label></div>
+    <div class="check-item"><input type="checkbox" id="c178"><label for="c178"><code>/api/webhook/email</code> without valid token — returns 400/404</label></div>
+    <div class="check-item"><input type="checkbox" id="c179"><label for="c179"><code>/api/webhook/telegram</code> without secret — returns 401</label></div>
+    <div class="check-item"><input type="checkbox" id="c180"><label for="c180">Pro-only features return 403 for free users via API</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p3-routes">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">3.3 Route Protection</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c181"><label for="c181">Public routes accessible without auth (/, /about, /sign-in, webhooks)</label></div>
+    <div class="check-item"><input type="checkbox" id="c182"><label for="c182">/dashboard redirects to sign-in when not authenticated</label></div>
+    <div class="check-item"><input type="checkbox" id="c183"><label for="c183">/tasks, /projects, /clients, /calendar, /settings — all protected</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p3-data">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">3.4 Data Integrity</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c184"><label for="c184">Delete client — cascades to projects correctly</label></div>
+    <div class="check-item"><input type="checkbox" id="c185"><label for="c185">Delete project — cascades to tasks, images, time entries</label></div>
+    <div class="check-item"><input type="checkbox" id="c186"><label for="c186">Standalone tasks survive project deletion</label></div>
+    <div class="check-item"><input type="checkbox" id="c187"><label for="c187">User A cannot see User B's data</label></div>
+    <div class="check-item"><input type="checkbox" id="c246"><label for="c246">Delete task cascade: images, files, comments all removed</label></div>
+    <div class="check-item"><input type="checkbox" id="c247"><label for="c247">Delete project cascade: tasks, images, time entries, access records all removed</label></div>
+    <div class="check-item"><input type="checkbox" id="c248"><label for="c248">Shared project: revoking all access cleans up ProjectAccess records</label></div>
+    <div class="check-item"><input type="checkbox" id="c249"><label for="c249">Org-scoped data: switching org context shows correct data</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p3-subs">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">3.5 Subscription Enforcement</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c188"><label for="c188">Free user: project/task/client limits enforced</label></div>
+    <div class="check-item"><input type="checkbox" id="c189"><label for="c189">Free user: Telegram shows upgrade prompt</label></div>
+    <div class="check-item"><input type="checkbox" id="c190"><label for="c190">Free user: Email-to-Task shows upgrade prompt</label></div>
+    <div class="check-item"><input type="checkbox" id="c191"><label for="c191">Free user: API Access shows upgrade prompt</label></div>
+    <div class="check-item"><input type="checkbox" id="c192"><label for="c192">Pro user: all limits removed</label></div>
+    <div class="check-item"><input type="checkbox" id="c250"><label for="c250">Pro user cancels: features remain until period end</label></div>
+    <div class="check-item"><input type="checkbox" id="c251"><label for="c251">After period end: reverts to Free, limits re-enforced</label></div>
+    <div class="check-item"><input type="checkbox" id="c252"><label for="c252">Usage at 80%+ of limit: warning displayed</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p3-perf">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">3.6 Performance</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c193"><label for="c193">Marketing page loads under 3 seconds</label></div>
+    <div class="check-item"><input type="checkbox" id="c194"><label for="c194">Dashboard loads under 2 seconds</label></div>
+    <div class="check-item"><input type="checkbox" id="c195"><label for="c195">Search results appear within 500ms</label></div>
+    <div class="check-item"><input type="checkbox" id="c196"><label for="c196">Command bar + Quick-add open instantly</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p3-errors">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">3.7 Error Handling</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c197"><label for="c197">Visit /nonexistent — proper 404 page</label></div>
+    <div class="check-item"><input type="checkbox" id="c198"><label for="c198">Invalid task ID — handles gracefully</label></div>
+    <div class="check-item"><input type="checkbox" id="c199"><label for="c199">Invalid project ID — handles gracefully</label></div>
+    <div class="check-item"><input type="checkbox" id="c200"><label for="c200">Network error during form submit — user sees error, no data loss</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p3-browser">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">3.8 Cross-Browser</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c201"><label for="c201">Chrome (desktop) — full pass</label></div>
+    <div class="check-item"><input type="checkbox" id="c202"><label for="c202">Safari (desktop) — full pass</label></div>
+    <div class="check-item"><input type="checkbox" id="c203"><label for="c203">Safari (iOS) — core flows work</label></div>
+    <div class="check-item"><input type="checkbox" id="c204"><label for="c204">Chrome (Android) — core flows work</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p3-lifecycle">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">3.9 Account Lifecycle</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c285"><label for="c285">New sign-up: Subscription record created (Free plan)</label></div>
+    <div class="check-item"><input type="checkbox" id="c286"><label for="c286">Upgrade: Subscription updated via Polar webhook</label></div>
+    <div class="check-item"><input type="checkbox" id="c287"><label for="c287">Downgrade: Subscription reverted via Polar webhook</label></div>
+    <div class="check-item"><input type="checkbox" id="c288"><label for="c288">Account deletion: contact privacy@pulsepro.work — verify process exists</label></div>
+    <div class="check-item"><input type="checkbox" id="c289"><label for="c289">Stale verification codes (&gt;10 min): Telegram link codes expire correctly</label></div>
+    <div class="check-item"><input type="checkbox" id="c290"><label for="c290">API tokens: revoked tokens immediately rejected</label></div>
+    <div class="check-item"><input type="checkbox" id="c291"><label for="c291">Email tokens: regenerated tokens immediately replace old ones</label></div>
+  </div>
+</div>
+
+</div>
+
+<!-- Celebration -->
+<div class="celebration" id="celebration">
+  <h2>Pulse Pro is officially tested.</h2>
+  <p>Every feature verified. Every persona covered. Ship it.</p>
+</div>
+
+</div>
+
+<button class="reset-btn" onclick="resetAll()">Reset All</button>
+
+<script>
+  const STORAGE_KEY = 'pulsepro-qa-checks';
+
+  // Load saved state
+  function loadState() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    } catch { return {}; }
+  }
+
+  function saveState(state) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  // Initialize
+  const state = loadState();
+  const allCheckboxes = document.querySelectorAll('.check-item input[type="checkbox"]');
+
+  allCheckboxes.forEach(cb => {
+    cb.checked = !!state[cb.id];
+    if (cb.checked) cb.closest('.check-item').classList.add('checked');
+
+    cb.addEventListener('change', () => {
+      const s = loadState();
+      s[cb.id] = cb.checked;
+      saveState(s);
+      cb.closest('.check-item').classList.toggle('checked', cb.checked);
+      updateStats();
+    });
+  });
+
+  // Section toggle
+  function toggleSection(header) {
+    header.closest('.section').classList.toggle('open');
+  }
+
+  // Persona tabs
+  document.querySelectorAll('.persona-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.persona-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.persona-section').forEach(s => s.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.persona).classList.add('active');
+    });
+  });
+
+  // Stats
+  function getPersonaChecks(personaId) {
+    const section = document.getElementById(personaId);
+    const checks = section.querySelectorAll('input[type="checkbox"]');
+    const checked = Array.from(checks).filter(c => c.checked).length;
+    return { total: checks.length, checked };
+  }
+
+  function updateStats() {
+    const personas = ['p1', 'p2', 'p3'];
+    let totalAll = 0, checkedAll = 0;
+
+    personas.forEach(p => {
+      const { total, checked } = getPersonaChecks(p);
+      totalAll += total;
+      checkedAll += checked;
+      const pct = total ? Math.round((checked / total) * 100) : 0;
+
+      document.getElementById(`${p}-pct`).textContent = `${pct}%`;
+      document.getElementById(`${p}-count`).textContent = `${checked} / ${total}`;
+      document.getElementById(`${p}-tab-count`).textContent = ` ${checked}/${total}`;
+
+      const card = document.getElementById(`${p}-card`);
+      card.classList.toggle('pass', pct === 100);
+    });
+
+    const overallPct = totalAll ? Math.round((checkedAll / totalAll) * 100) : 0;
+    document.getElementById('overall-pct').textContent = `${overallPct}%`;
+    document.getElementById('overall-count').textContent = `${checkedAll} / ${totalAll} checks`;
+    document.getElementById('overall-bar').style.width = `${overallPct}%`;
+
+    // Celebration
+    document.getElementById('celebration').classList.toggle('show', overallPct === 100);
+
+    // Update section progress
+    document.querySelectorAll('.section').forEach(section => {
+      const checks = section.querySelectorAll('input[type="checkbox"]');
+      const checked = Array.from(checks).filter(c => c.checked).length;
+      const total = checks.length;
+      const pct = total ? Math.round((checked / total) * 100) : 0;
+      const countEl = section.querySelector('.section-count');
+      const barEl = section.querySelector('.section-bar-fill');
+      if (countEl) countEl.textContent = `${checked}/${total}`;
+      if (barEl) barEl.style.width = `${pct}%`;
+    });
+  }
+
+  function resetAll() {
+    if (!confirm('Reset all checks? This cannot be undone.')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    allCheckboxes.forEach(cb => {
+      cb.checked = false;
+      cb.closest('.check-item').classList.remove('checked');
+    });
+    updateStats();
+  }
+
+  updateStats();
+</script>
+
+</body>
+</html>

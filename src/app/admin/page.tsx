@@ -33,7 +33,7 @@ export default async function AdminPage() {
         ))}
       </div>
 
-      <div>
+      <div className="space-y-3">
         <Link
           href="/admin/users"
           className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80"
@@ -43,6 +43,30 @@ export default async function AdminPage() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </Link>
+      </div>
+
+      <div>
+        <h2 className="text-sm font-semibold text-foreground mb-3">Internal Docs</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <a
+            href="/api/admin/docs/qa"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-lg border border-border px-4 py-3 hover:bg-muted/50 transition-colors"
+          >
+            <p className="text-sm font-medium text-foreground">QA Checklist</p>
+            <p className="text-xs text-muted-foreground mt-1">262/291 verified (90%)</p>
+          </a>
+          <a
+            href="/api/admin/docs/features"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-lg border border-border px-4 py-3 hover:bg-muted/50 transition-colors"
+          >
+            <p className="text-sm font-medium text-foreground">Feature Catalog</p>
+            <p className="text-xs text-muted-foreground mt-1">206 features across 12 categories</p>
+          </a>
+        </div>
       </div>
     </div>
   )
