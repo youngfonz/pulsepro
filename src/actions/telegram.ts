@@ -71,7 +71,7 @@ export async function getTelegramSettings() {
 
   if (!subscription) {
     return {
-      plan: (admin ? 'pro' : 'free') as const,
+      plan: (admin ? 'pro' : 'free') as 'pro' | 'free',
       linked: false,
       remindersEnabled: false,
     }
