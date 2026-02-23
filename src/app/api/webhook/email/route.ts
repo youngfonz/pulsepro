@@ -63,15 +63,14 @@ export async function POST(request: NextRequest) {
         title,
         description,
         priority: 'medium',
-        projectId,
+        projectId: projectId ?? null,
       },
     })
 
     return NextResponse.json({ ok: true })
   } catch (error) {
     console.error('Email webhook error:', error)
-    const message = error instanceof Error ? error.message : String(error)
-    return NextResponse.json({ error: 'Internal error', detail: message }, { status: 500 })
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
   }
 }
 
