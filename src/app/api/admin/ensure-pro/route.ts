@@ -1,20 +1,34 @@
 import { NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth'
+import { auth } from '@clerk/nextjs/server'
+import { isAdminUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export async function GET() {
-  const userId = await requireAdmin()
+  try {
+    const { userId } = await auth()
 
-  const subscription = await prisma.subscription.upsert({
-    where: { userId },
-    create: { userId, plan: 'pro' },
-    update: { plan: 'pro' },
-  })
+    if (!userId) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+    }
 
-  return NextResponse.json({
-    ok: true,
-    userId,
-    plan: subscription.plan,
-    message: 'Subscription set to Pro',
-  })
+    if (!isAdminUser(userId)) {
+      return NextResponse.json({ error: 'Not an admin' }, { status: 403 })
+    }
+
+    const subscription = await prisma.subscription.upsert({
+      where: { userId },
+      create: { userId, plan: 'pro' },
+      update: { plan: 'pro' },
+    })
+
+    return NextResponse.json({
+      ok: true,
+      userId,
+      plan: subscription.plan,
+      message: 'Subscription set to Pro',
+    })
+  } catch (error) {
+    console.error('ensure-pro error:', error)
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+  }
 }
