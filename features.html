@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulse Pro — Feature Catalog</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Inter, -apple-system, system-ui, sans-serif; background: #f8f9fa; color: #1a1a1a; }
+
+  /* Header */
+  .header { background: #1a1a1a; color: #fff; padding: 32px 24px; }
+  .header-inner { max-width: 900px; margin: 0 auto; }
+  .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .header p { font-size: 13px; color: #a1a1aa; margin-bottom: 16px; }
+  .header-stats { display: flex; gap: 10px; flex-wrap: wrap; }
+  .header-stat { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 18px; min-width: 120px; }
+  .header-stat .stat-value { font-size: 28px; font-weight: 700; }
+  .header-stat .stat-label { font-size: 11px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+  /* Plan legend */
+  .plan-legend { display: flex; gap: 16px; margin-top: 16px; font-size: 12px; color: #a1a1aa; }
+  .plan-legend span { display: flex; align-items: center; gap: 6px; }
+
+  /* Content */
+  .content { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+  /* Section */
+  .section { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
+  .section-header { padding: 14px 18px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; }
+  .section-header:hover { background: #fafafa; }
+  .section-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+  .section-title .icon { font-size: 16px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; background: #f3f4f6; border-radius: 8px; }
+  .section-meta { display: flex; align-items: center; gap: 10px; }
+  .section-count { font-size: 12px; color: #71717a; font-weight: 500; }
+  .section-chevron { width: 16px; height: 16px; color: #a1a1aa; transition: transform 0.2s; }
+  .section.open .section-chevron { transform: rotate(180deg); }
+  .section-body { display: none; padding: 0 18px 14px; }
+  .section.open .section-body { display: block; }
+
+  /* Feature item */
+  .feature { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 13px; line-height: 1.5; }
+  .feature:last-child { border-bottom: none; }
+  .feature .dot { width: 6px; height: 6px; border-radius: 50%; background: #d4d4d8; margin-top: 7px; flex-shrink: 0; }
+  .feature .text { flex: 1; }
+  .feature .detail { color: #71717a; font-size: 12px; margin-top: 2px; }
+  .feature code { background: #f3f4f6; padding: 1px 5px; border-radius: 4px; font-size: 11px; font-family: 'SF Mono', Monaco, monospace; }
+
+  /* Plan badge */
+  .plan-badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 4px; vertical-align: middle; margin-left: 4px; letter-spacing: 0.3px; }
+  .plan-badge.free { background: #f3f4f6; color: #52525b; }
+  .plan-badge.pro { background: #dbeafe; color: #1d4ed8; }
+  .plan-badge.team { background: #ede9fe; color: #6d28d9; }
+
+  /* Subsection */
+  .subsection { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #a1a1aa; padding: 12px 0 6px; border-bottom: 1px solid #f3f4f6; }
+  .subsection:first-child { padding-top: 4px; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .header-stats { flex-direction: column; }
+    .header-stat { min-width: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <h1>Pulse Pro — Feature Catalog</h1>
+    <p>Complete inventory of every feature, organized by domain. Last updated Feb 22, 2026.</p>
+    <div class="header-stats">
+      <div class="header-stat">
+        <div class="stat-value">12</div>
+        <div class="stat-label">Categories</div>
+      </div>
+      <div class="header-stat">
+        <div class="stat-value" id="feature-count">206</div>
+        <div class="stat-label">Features</div>
+      </div>
+      <div class="header-stat">
+        <div class="stat-value">3</div>
+        <div class="stat-label">Plans</div>
+      </div>
+      <div class="header-stat">
+        <div class="stat-value">6</div>
+        <div class="stat-label">Input Methods</div>
+      </div>
+    </div>
+    <div class="plan-legend">
+      <span><span class="plan-badge free">FREE</span> All users</span>
+      <span><span class="plan-badge pro">PRO</span> $12/mo</span>
+      <span><span class="plan-badge team">TEAM</span> $29/mo</span>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- 1. Task Management -->
+<div class="section open">
+  <div class="section-header" onclick="this.closest('.section').classList.toggle('open')">
+    <div class="section-title"><span class="icon">1</span> Task Management</div>
+    <div class="section-meta">
+      <span class="section-count">28 features</span>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="subsection">CRUD</div>
+    <div class="feature"><span class="dot"></span><span class="text">Create tasks with title, description, notes, priority, dates, and project</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Create standalone "quick tasks" with no project <span class="plan-badge free">FREE</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Update all task fields inline (title, description, notes, priority, dates, tags, thumbnail)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Delete tasks with cascade to images, files, and comments</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Toggle task completion — flips <code>completed</code> flag and sets status to done/todo</span></div>
+
+    <div class="subsection">Organization</div>
+    <div class="feature"><span class="dot"></span><span class="text">Priority levels: high, medium, low — with color coding</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Status tracking: todo, in_progress, done</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Start date and due date scheduling</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Optional project association — tasks can live independently or under a project</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Tags for categorization (especially bookmarks)</span></div>
+
+    <div class="subsection">Filtering & Sorting</div>
+    <div class="feature"><span class="dot"></span><span class="text">Filter by status: all, pending, completed</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Filter by priority: all, high, medium, low</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Filter by project</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Filter by date (specific day)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Search by title text</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Sort: due date, newest, oldest, name, project, client, priority (asc/desc)</span></div>
+
+    <div class="subsection">Attachments & Comments</div>
+    <div class="feature"><span class="dot"></span><span class="text">Attach multiple images to a task</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Attach files with metadata (name, type, size, path)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Add inline comments to tasks</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Delete individual comments</span></div>
+
+    <div class="subsection">Views</div>
+    <div class="feature"><span class="dot"></span><span class="text">List view with multi-column sort</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Kanban board with 3 columns (todo, in progress, done) — drag to change status <span class="plan-badge free">FREE</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Calendar view — tasks shown by start/due date on a monthly grid</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Overdue tasks view</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Due today view</span></div>
+
+    <div class="subsection">Limits</div>
+    <div class="feature"><span class="dot"></span><span class="text">Free plan: 50 tasks max <span class="plan-badge free">FREE</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Pro plan: unlimited tasks <span class="plan-badge pro">PRO</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Upgrade prompt shown when limit reached — links directly to checkout</span></div>
+  </div>
+</div>
+
+<!-- 2. Project Management -->
+<div class="section">
+  <div class="section-header" onclick="this.closest('.section').classList.toggle('open')">
+    <div class="section-title"><span class="icon">2</span> Project Management</div>
+    <div class="section-meta">
+      <span class="section-count">24 features</span>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="subsection">CRUD</div>
+    <div class="feature"><span class="dot"></span><span class="text">Create projects with name, description, notes, status, priority, due date, budget, and client</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Update all project fields inline</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Delete projects — cascades to tasks, images, time entries, and access records</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Status workflow: not started, in progress, on hold, completed</span></div>
+
+    <div class="subsection">Organization</div>
+    <div class="feature"><span class="dot"></span><span class="text">Priority levels: high, medium, low</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Due date scheduling</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Budget tracking (numeric field)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Client association (required) — every project belongs to a client</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Attach multiple images to a project</span></div>
+
+    <div class="subsection">Time Tracking</div>
+    <div class="feature"><span class="dot"></span><span class="text">Add time entries with hours, description, and date</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Delete individual time entries</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Time summary displayed on project detail</span></div>
+
+    <div class="subsection">Filtering & Sorting</div>
+    <div class="feature"><span class="dot"></span><span class="text">Search by name or description</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Filter by status, priority, or client</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Sort: newest, oldest, name, client, due date, priority, status (12+ combos)</span></div>
+
+    <div class="subsection">Health Scoring</div>
+    <div class="feature"><span class="dot"></span><span class="text">Automatic health score (0-100) per project</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Health labels: healthy (70+), at risk (40-69), critical (0-39), completed</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Scoring factors: overdue ratio (-40), staleness (-20), deadline risk (-20), completion bonus (+10)</span></div>
+
+    <div class="subsection">Inline Creation</div>
+    <div class="feature"><span class="dot"></span><span class="text">Create new client inline from the project form (toggle)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Voice input for project creation — parses name, priority, date, budget</span></div>
+
+    <div class="subsection">Limits</div>
+    <div class="feature"><span class="dot"></span><span class="text">Free plan: 3 projects max <span class="plan-badge free">FREE</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Pro plan: unlimited projects <span class="plan-badge pro">PRO</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Upgrade prompt shown when limit reached</span></div>
+  </div>
+</div>
+
+<!-- 3. Client Management -->
+<div class="section">
+  <div class="section-header" onclick="this.closest('.section').classList.toggle('open')">
+    <div class="section-title"><span class="icon">3</span> Client Management</div>
+    <div class="section-meta">
+      <span class="section-count">16 features</span>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="subsection">CRUD</div>
+    <div class="feature"><span class="dot"></span><span class="text">Create clients with name, email, phone, company, logo, status, and notes</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Update all client fields</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Delete clients — cascades to all associated projects (and their tasks)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Status: active or inactive</span></div>
+
+    <div class="subsection">Organization</div>
+    <div class="feature"><span class="dot"></span><span class="text">Upload client logo (image)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">View all projects associated with a client</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Project count displayed per client</span></div>
+
+    <div class="subsection">Filtering & Sorting</div>
+    <div class="feature"><span class="dot"></span><span class="text">Search by name, email, or company</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Filter by status: all, active, inactive</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Sort: name, company, newest, oldest, project count (asc/desc)</span></div>
+
+    <div class="subsection">Voice & Inline</div>
+    <div class="feature"><span class="dot"></span><span class="text">Voice input for client creation — parses name, email, phone, company</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Create via <code>Cmd+K</code>: type "add client [name]" to create inline</span></div>
+
+    <div class="subsection">Limits</div>
+    <div class="feature"><span class="dot"></span><span class="text">Free plan: 1 client max <span class="plan-badge free">FREE</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Pro plan: unlimited clients <span class="plan-badge pro">PRO</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Upgrade prompt shown when limit reached</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Client count badge in sidebar navigation</span></div>
+  </div>
+</div>
+
+<!-- 4. Quick Capture (6 Methods) -->
+<div class="section">
+  <div class="section-header" onclick="this.closest('.section').classList.toggle('open')">
+    <div class="section-title"><span class="icon">4</span> Quick Capture — 6 Input Methods</div>
+    <div class="section-meta">
+      <span class="section-count">20 features</span>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="subsection">1. Quick Add — Press N</div>
+    <div class="feature"><span class="dot"></span><span class="text">Press <code>N</code> anywhere to open quick-add overlay <span class="plan-badge free">FREE</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Title field auto-focused for instant typing</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Optional project selection — defaults to last used project (localStorage)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">"No project" option creates a standalone quick task</span></div>
+
+    <div class="subsection">2. Command Bar — Cmd+K</div>
+    <div class="feature"><span class="dot"></span><span class="text">Press <code>Cmd+K</code> (or <code>Ctrl+K</code>) to open command palette <span class="plan-badge free">FREE</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Type "add task [title]" to create a task inline</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Type "add client [name]" to create a client inline</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Full keyboard navigation: arrow keys, Enter, Escape</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Quick actions shown on empty search state</span></div>
+
+    <div class="subsection">3. Voice Input</div>
+    <div class="feature"><span class="dot"></span><span class="text">Mic button on task, project, and client forms <span class="plan-badge free">FREE</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Natural language parsing: "Design homepage high priority due next Friday"</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Extracts: title, priority, dates, budget, email, phone, company</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Graceful mic permission denied — shows human-readable error message</span></div>
+
+    <div class="subsection">4. Telegram Bot</div>
+    <div class="feature"><span class="dot"></span><span class="text"><code>/add [title]</code> creates a task from Telegram <span class="plan-badge pro">PRO</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text"><code>/add [Project:] title</code> creates a task under a specific project</span></div>
+
+    <div class="subsection">5. Email-to-Task</div>
+    <div class="feature"><span class="dot"></span><span class="text">Forward any email to your unique address — creates a task from subject line <span class="plan-badge pro">PRO</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text"><code>[ProjectName]</code> in subject assigns to matching project</span></div>
+
+    <div class="subsection">6. Siri / API</div>
+    <div class="feature"><span class="dot"></span><span class="text">"Hey Siri, add task" via Apple Shortcuts integration <span class="plan-badge pro">PRO</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text"><code>POST /api/v1/tasks</code> with Bearer token — create from any automation</span></div>
+  </div>
+</div>
+
+<!-- 5. Bookmarks -->
+<div class="section">
+  <div class="section-header" onclick="this.closest('.section').classList.toggle('open')">
+    <div class="section-title"><span class="icon">5</span> Bookmarks & Link Collection</div>
+    <div class="section-meta">
+      <span class="section-count">10 features</span>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="feature"><span class="dot"></span><span class="text">Save any URL as a bookmark task <span class="plan-badge free">FREE</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Bookmark types: YouTube, Twitter/X, Website — auto-detected or manual</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Thumbnail preview extracted from URL</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Tags for organizing bookmarks</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Associate bookmarks with projects</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Filter by type, project, or search text</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Sort by newest, oldest, title, or project</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Bookmarks separated from regular tasks in all views</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Quick tasks and bookmarks show "Quick task" label when no project assigned</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Bookmarks searchable via global <code>Cmd+K</code> search</span></div>
+  </div>
+</div>
+
+<!-- 6. Dashboard & Insights -->
+<div class="section">
+  <div class="section-header" onclick="this.closest('.section').classList.toggle('open')">
+    <div class="section-title"><span class="icon">6</span> Dashboard & Insights</div>
+    <div class="section-meta">
+      <span class="section-count">18 features</span>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="subsection">Stats</div>
+    <div class="feature"><span class="dot"></span><span class="text">6 stat cards: total clients, active clients, total projects, active projects, total tasks, pending tasks</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Tasks due this week count</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Overdue tasks grouped by project</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Tasks due today with priority sorting</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Projects due this week with task counts</span></div>
+
+    <div class="subsection">Health & Insights</div>
+    <div class="feature"><span class="dot"></span><span class="text">Project health scores with color-coded labels (healthy, at risk, critical)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">AI-powered smart insights — high-priority due soon, stale projects <span class="plan-badge pro">PRO</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Rule-based insights fallback when AI unavailable</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Cached insights with expiry — refresh on demand</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Color-coded alerts: red, amber, blue, green</span></div>
+
+    <div class="subsection">Recent Activity</div>
+    <div class="feature"><span class="dot"></span><span class="text">Recently viewed projects, tasks, and bookmarks — top 8 items</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Sorted by most recently updated</span></div>
+
+    <div class="subsection">Customization</div>
+    <div class="feature"><span class="dot"></span><span class="text">Drag-to-reorder dashboard sections (@dnd-kit)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Hide/show individual sections</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Layout order and visibility persisted in localStorage</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Reset to default layout option</span></div>
+
+    <div class="subsection">Calendar</div>
+    <div class="feature"><span class="dot"></span><span class="text">Monthly calendar with task dots on start/due dates</span></div>
+  </div>
+</div>
+
+<!-- 7. Collaboration & Teams -->
+<div class="section">
+  <div class="section-header" onclick="this.closest('.section').classList.toggle('open')">
+    <div class="section-title"><span class="icon">7</span> Collaboration & Teams</div>
+    <div class="section-meta">
+      <span class="section-count">14 features</span>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="subsection">Project Sharing</div>
+    <div class="feature"><span class="dot"></span><span class="text">Share projects with other users <span class="plan-badge pro">PRO</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Role-based access: viewer, editor, manager, owner</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Role hierarchy enforced: viewer &lt; editor &lt; manager &lt; owner</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Minimum role requirements on actions (e.g. manager to revoke access)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Revoke access — removes ProjectAccess record</span></div>
+
+    <div class="subsection">Guards</div>
+    <div class="feature"><span class="dot"></span><span class="text">Cannot add yourself as a collaborator — validation with error message</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Cannot add the project owner as a collaborator</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Collaborator limit enforced before granting access</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Kanban <code>canEdit</code> prop — read-only for viewers</span></div>
+
+    <div class="subsection">Shared Data</div>
+    <div class="feature"><span class="dot"></span><span class="text">Shared projects appear in task lists, project lists, and search results</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Shared project tasks accessible via all views (calendar, dashboard, etc.)</span></div>
+
+    <div class="subsection">Limits</div>
+    <div class="feature"><span class="dot"></span><span class="text">Free plan: 0 collaborators <span class="plan-badge free">FREE</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Pro plan: 3 collaborators per project <span class="plan-badge pro">PRO</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Team plan: 10 collaborators per project <span class="plan-badge team">TEAM</span></span></div>
+  </div>
+</div>
+
+<!-- 8. Integrations -->
+<div class="section">
+  <div class="section-header" onclick="this.closest('.section').classList.toggle('open')">
+    <div class="section-title"><span class="icon">8</span> Integrations</div>
+    <div class="section-meta">
+      <span class="section-count">26 features</span>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="subsection">Telegram Bot <span class="plan-badge pro">PRO</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Link Telegram account via verification code (10-min expiry)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Unlink Telegram account — clears chatId and all settings</span></div>
+    <div class="feature"><span class="dot"></span><span class="text"><code>/tasks</code> — list all pending tasks</span></div>
+    <div class="feature"><span class="dot"></span><span class="text"><code>/today</code> — show tasks due today</span></div>
+    <div class="feature"><span class="dot"></span><span class="text"><code>/overdue</code> — show overdue tasks</span></div>
+    <div class="feature"><span class="dot"></span><span class="text"><code>/bookmarks</code> — list saved bookmarks</span></div>
+    <div class="feature"><span class="dot"></span><span class="text"><code>/done N</code> — mark task #N as complete</span></div>
+    <div class="feature"><span class="dot"></span><span class="text"><code>/add [Project:] title</code> — create a task</span></div>
+    <div class="feature"><span class="dot"></span><span class="text"><code>/help</code> — show command reference</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Toggle daily reminders on/off per user</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Command reference card in settings UI</span></div>
+
+    <div class="subsection">Email-to-Task <span class="plan-badge pro">PRO</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Unique inbound email address per user (<code>{token}@in.pulsepro.work</code>)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Task created from email subject line</span></div>
+    <div class="feature"><span class="dot"></span><span class="text"><code>[ProjectName]</code> in subject auto-assigns to matching project</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Email body cleaned and attached as task description (2000 char limit)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Regenerate email token — old address immediately invalid</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Copy button and "How it works" instructions in settings card</span></div>
+
+    <div class="subsection">REST API / Siri Shortcuts <span class="plan-badge pro">PRO</span></div>
+    <div class="feature"><span class="dot"></span><span class="text"><code>POST /api/v1/tasks</code> — create task (title, project, priority, dueDate, description)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text"><code>GET /api/v1/tasks</code> — list tasks with <code>?status=</code> and <code>?limit=</code> filters</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Bearer token authentication (<code>pp_</code> prefixed tokens)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Token masked by default with show/hide toggle in settings</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Copy button, curl example, and Apple Shortcuts 4-step setup guide</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Generate / regenerate / revoke API tokens</span></div>
+
+    <div class="subsection">Daily Reminders</div>
+    <div class="feature"><span class="dot"></span><span class="text">Automated daily email with overdue and due-today tasks <span class="plan-badge pro">PRO</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">HTML-formatted email with priority colors and task links</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Telegram reminder for opted-in users (overdue count + due today count)</span></div>
+  </div>
+</div>
+
+<!-- 9. Search & Navigation -->
+<div class="section">
+  <div class="section-header" onclick="this.closest('.section').classList.toggle('open')">
+    <div class="section-title"><span class="icon">9</span> Search & Navigation</div>
+    <div class="section-meta">
+      <span class="section-count">12 features</span>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="subsection">Global Search</div>
+    <div class="feature"><span class="dot"></span><span class="text">Search across projects, tasks, clients, and bookmarks simultaneously <span class="plan-badge free">FREE</span></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Case-insensitive matching with 2-character minimum</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Results include shared projects (not just owned)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Top 5 results per entity type</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Click result to navigate directly to item</span></div>
+
+    <div class="subsection">Command Palette</div>
+    <div class="feature"><span class="dot"></span><span class="text"><code>Cmd+K</code> opens command bar from anywhere</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Quick actions on empty state: new task, new project, new client, navigation links</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Full keyboard navigation: up/down arrows, Enter to select, Escape to close</span></div>
+
+    <div class="subsection">Sidebar Navigation</div>
+    <div class="feature"><span class="dot"></span><span class="text">8 navigation items: Dashboard, Projects, Tasks, Calendar, Bookmarks, Clients, Admin, Settings</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Collapsible sidebar — preference saved in localStorage</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Mobile responsive — hamburger menu on small screens</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">User avatar and name displayed via Clerk <code>UserButton</code></span></div>
+  </div>
+</div>
+
+<!-- 10. Billing & Subscription -->
+<div class="section">
+  <div class="section-header" onclick="this.closest('.section').classList.toggle('open')">
+    <div class="section-title"><span class="icon">10</span> Billing & Subscription</div>
+    <div class="section-meta">
+      <span class="section-count">16 features</span>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="subsection">Checkout & Plans</div>
+    <div class="feature"><span class="dot"></span><span class="text">Upgrade to Pro ($12/mo) via Polar checkout</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Upgrade to Team ($29/mo) via Polar checkout</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">No per-seat pricing — flat rate per plan</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Upgrade prompt shown at limit boundaries — links directly to checkout</span></div>
+
+    <div class="subsection">Subscription Lifecycle (Polar webhooks)</div>
+    <div class="feature"><span class="dot"></span><span class="text">Subscription created on first checkout (upsert)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Cancel via Polar portal — sets <code>cancelAtPeriodEnd</code> flag, features remain active</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">After period ends — plan reverts to Free via <code>onSubscriptionRevoked</code></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Re-subscribe after cancellation — Pro features immediately restored</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Existing data preserved on downgrade — only limits re-enforced</span></div>
+
+    <div class="subsection">Billing UI</div>
+    <div class="feature"><span class="dot"></span><span class="text">Settings &gt; Billing card shows current plan name and period end date</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">"Cancels at period end" text displayed after cancellation</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">"Manage subscription" link opens Polar billing portal</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Usage bars showing projects, tasks, clients against plan limits</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Amber warning when usage hits 80%+ of any limit</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Plan comparison displayed in pricing section</span></div>
+  </div>
+</div>
+
+<!-- 11. Auth & Onboarding -->
+<div class="section">
+  <div class="section-header" onclick="this.closest('.section').classList.toggle('open')">
+    <div class="section-title"><span class="icon">11</span> Auth & Onboarding</div>
+    <div class="section-meta">
+      <span class="section-count">12 features</span>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="subsection">Authentication (Clerk)</div>
+    <div class="feature"><span class="dot"></span><span class="text">Sign up with email or Google OAuth</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Sign in — redirects to <code>/dashboard</code> on success</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Logged-in users visiting <code>/</code> auto-redirect to <code>/dashboard</code></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Protected routes via Clerk middleware — unauthenticated users redirect to sign-in</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Password reset flow via Clerk</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Edit profile (display name, email) via Clerk UserButton</span></div>
+
+    <div class="subsection">Onboarding</div>
+    <div class="feature"><span class="dot"></span><span class="text">4-step onboarding overlay for first-time users</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Steps: Quick Add, Organize, Shortcuts, Ready</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Next/Back navigation between steps</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Close button permanently dismisses (localStorage per user)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Visual illustrations per step (QuickAddVisual, OrganizeVisual, etc.)</span></div>
+
+    <div class="subsection">Preferences</div>
+    <div class="feature"><span class="dot"></span><span class="text">Dark mode / light mode toggle — persisted in localStorage</span></div>
+  </div>
+</div>
+
+<!-- 12. Security & Admin -->
+<div class="section">
+  <div class="section-header" onclick="this.closest('.section').classList.toggle('open')">
+    <div class="section-title"><span class="icon">12</span> Security & Admin</div>
+    <div class="section-meta">
+      <span class="section-count">14 features</span>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="subsection">Data Isolation</div>
+    <div class="feature"><span class="dot"></span><span class="text">Every server action calls <code>requireUserId()</code> and filters by <code>userId</code></span></div>
+    <div class="feature"><span class="dot"></span><span class="text">User A cannot see, edit, or delete User B's data</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Shared project access explicitly granted via <code>ProjectAccess</code> records</span></div>
+
+    <div class="subsection">API Security</div>
+    <div class="feature"><span class="dot"></span><span class="text">Telegram webhook validates <code>x-telegram-bot-api-secret-token</code> header</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">API endpoints return 403 for free users attempting Pro features</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">API tokens: revoked tokens immediately rejected (lookup returns null)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Email tokens: regeneration overwrites old token (unique constraint)</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Telegram link codes expire after 10 minutes</span></div>
+
+    <div class="subsection">Data Integrity</div>
+    <div class="feature"><span class="dot"></span><span class="text">Delete client → cascades to all projects, tasks, images, time entries</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Delete project → cascades to tasks, images, time entries, access records</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Delete task → cascades to images, files, comments</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Standalone tasks survive project deletion (nullable <code>projectId</code>)</span></div>
+
+    <div class="subsection">Admin Panel</div>
+    <div class="feature"><span class="dot"></span><span class="text">Admin-only route protected by <code>requireAdmin()</code> gate</span></div>
+    <div class="feature"><span class="dot"></span><span class="text">Admin dashboard: 5 stat cards (users, subscriptions, projects, tasks, clients) + paginated user table with avatar, plan, counts</span></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+  // Open first section by default, rest closed
+  // (already handled via class="open" on first section)
+
+  // Count features per section dynamically
+  document.querySelectorAll('.section').forEach(section => {
+    const count = section.querySelectorAll('.feature').length;
+    const countEl = section.querySelector('.section-count');
+    if (countEl) countEl.textContent = `${count} features`;
+  });
+
+  // Total feature count
+  const total = document.querySelectorAll('.feature').length;
+  document.querySelector('.header-stat .stat-value').textContent = '12';
+  document.querySelectorAll('.header-stat')[1].querySelector('.stat-value').textContent = total;
+</script>
+
+</body>
+</html>
