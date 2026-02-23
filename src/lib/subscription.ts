@@ -28,13 +28,20 @@ export async function getUserSubscription() {
   const userId = await requireUserId()
   const admin = isAdminUser(userId)
 
-  const subscription = await prisma.subscription.findUnique({
+  let subscription = await prisma.subscription.findUnique({
     where: { userId },
   })
 
+  // Auto-create Pro subscription for admin users
+  if (!subscription && admin) {
+    subscription = await prisma.subscription.create({
+      data: { userId, plan: 'pro' },
+    })
+  }
+
   if (!subscription) {
     return {
-      plan: (admin ? 'pro' : 'free') as Plan,
+      plan: 'free' as Plan,
       status: 'active',
       currentPeriodEnd: null,
       cancelAtPeriodEnd: false,
@@ -43,7 +50,7 @@ export async function getUserSubscription() {
   }
 
   return {
-    plan: (admin && subscription.plan === 'free' ? 'pro' : subscription.plan) as Plan,
+    plan: subscription.plan as Plan,
     status: subscription.status,
     currentPeriodEnd: subscription.currentPeriodEnd,
     cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
