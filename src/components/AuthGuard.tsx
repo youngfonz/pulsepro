@@ -13,7 +13,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter()
   const pathname = usePathname()
 
-  const publicPaths = ['/sign-in', '/sign-up', '/about', '/contact', '/privacy', '/terms']
+  const publicPaths = ['/sign-in', '/sign-up', '/about', '/contact', '/privacy', '/terms', '/kb']
   const isPublicPath = pathname === '/' || publicPaths.some(path => pathname.startsWith(path))
 
   useEffect(() => {
