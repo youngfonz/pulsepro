@@ -1,0 +1,39 @@
+name: Prisma Schema Check
+
+on:
+  pull_request:
+    paths:
+      - 'prisma/schema.prisma'
+      - 'prisma/migrations/**'
+
+jobs:
+  check-migration:
+    name: Check for missing migrations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Prisma CLI
+        run: npm install prisma --no-save
+
+      - name: Check schema drift
+        run: |
+          DRIFT=$(npx prisma migrate diff \
+            --from-migrations-directory prisma/migrations \
+            --to-schema-datamodel prisma/schema.prisma \
+            --script 2>&1) || true
+
+          if [ -n "$DRIFT" ] && [ "$DRIFT" != "-- This is an empty migration." ]; then
+            echo "❌ Schema has changes not covered by migrations:"
+            echo ""
+            echo "$DRIFT"
+            echo ""
+            echo "Run 'npx prisma migrate dev --name <description>' to create a migration."
+            exit 1
+          else
+            echo "✅ Schema and migrations are in sync"
+          fi
