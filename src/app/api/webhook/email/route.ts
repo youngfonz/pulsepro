@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     // Parse the email into a task
     const title = cleanSubject(subject)
-    const description = buildDescription(text || html, from)
+    const description = buildDescription(text || html)
 
     // Check for [ProjectName] pattern in subject
     let projectId: string | undefined
@@ -97,15 +97,14 @@ function cleanSubject(subject: string): string {
     .trim() || 'Untitled task'
 }
 
-function buildDescription(body: string | null, from: string | null): string | null {
-  if (!body) return from ? `From: ${from}` : null
+function buildDescription(body: string | null): string | null {
+  if (!body) return null
 
   // Strip HTML tags if present
   const text = body.replace(/<[^>]*>/g, '').trim()
 
   // Truncate long emails
   const truncated = text.length > 2000 ? text.slice(0, 2000) + '...' : text
-  const fromLine = from ? `From: ${from}\n\n` : ''
 
-  return `${fromLine}${truncated}` || null
+  return truncated || null
 }
