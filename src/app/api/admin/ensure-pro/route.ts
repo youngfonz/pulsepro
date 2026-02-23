@@ -29,6 +29,7 @@ export async function GET() {
     })
   } catch (error) {
     console.error('ensure-pro error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    const message = error instanceof Error ? error.message : String(error)
+    return NextResponse.json({ error: 'Internal error', detail: message }, { status: 500 })
   }
 }
