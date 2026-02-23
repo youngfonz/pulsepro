@@ -8,6 +8,7 @@ export function MarketingFooter() {
       links: [
         { label: 'Features', href: '#features' },
         { label: 'Pricing', href: '#pricing' },
+        { label: 'Knowledge Base', href: '/kb' },
       ],
     },
     {
