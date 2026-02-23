@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { requireUserId } from '@/lib/auth'
+import { requireUserId, isAdminUser } from '@/lib/auth'
 import crypto from 'crypto'
 
 export async function generateTelegramLink() {
@@ -12,7 +12,7 @@ export async function generateTelegramLink() {
     where: { userId },
   })
 
-  if (!subscription || subscription.plan !== 'pro') {
+  if (!subscription || (subscription.plan !== 'pro' && !isAdminUser(userId))) {
     return { error: 'Telegram integration is a Pro feature.' }
   }
 
@@ -63,6 +63,7 @@ export async function toggleTelegramReminders(enabled: boolean) {
 
 export async function getTelegramSettings() {
   const userId = await requireUserId()
+  const admin = isAdminUser(userId)
 
   const subscription = await prisma.subscription.findUnique({
     where: { userId },
@@ -70,14 +71,14 @@ export async function getTelegramSettings() {
 
   if (!subscription) {
     return {
-      plan: 'free' as const,
+      plan: (admin ? 'pro' : 'free') as const,
       linked: false,
       remindersEnabled: false,
     }
   }
 
   return {
-    plan: subscription.plan as 'free' | 'pro',
+    plan: (admin && subscription.plan === 'free' ? 'pro' : subscription.plan) as 'free' | 'pro',
     linked: !!subscription.telegramChatId,
     remindersEnabled: subscription.telegramRemindersEnabled,
   }

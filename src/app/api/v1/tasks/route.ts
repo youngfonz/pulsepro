@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { isAdminUser } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid API token' }, { status: 401 })
     }
 
-    if (subscription.plan !== 'pro') {
+    if (subscription.plan !== 'pro' && !isAdminUser(subscription.userId)) {
       return NextResponse.json({ error: 'Pro plan required' }, { status: 403 })
     }
 
@@ -104,7 +105,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid API token' }, { status: 401 })
     }
 
-    if (subscription.plan !== 'pro') {
+    if (subscription.plan !== 'pro' && !isAdminUser(subscription.userId)) {
       return NextResponse.json({ error: 'Pro plan required' }, { status: 403 })
     }
 

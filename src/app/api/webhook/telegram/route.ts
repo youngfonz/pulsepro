@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { isAdminUser } from '@/lib/auth'
 import { sendTelegramMessage } from '@/lib/telegram'
 import { parseCommand } from '@/lib/telegram-commands'
 import { executeCommand } from '@/lib/telegram-executor'
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Check Pro plan
-  if (subscription.plan !== 'pro') {
+  if (subscription.plan !== 'pro' && !isAdminUser(subscription.userId)) {
     await sendTelegramMessage(
       chatId,
       `The Telegram bot is a Pro feature. Upgrade your plan at pulsepro.work/settings to use it.`
