@@ -1,13 +1,14 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { requireUserId } from '@/lib/auth'
+import { requireUserId, isAdminUser } from '@/lib/auth'
 import crypto from 'crypto'
 
 // ── Settings ────────────────────────────────────────────────────────
 
 export async function getIntegrationSettings() {
   const userId = await requireUserId()
+  const admin = isAdminUser(userId)
 
   const subscription = await prisma.subscription.findUnique({
     where: { userId },
@@ -15,14 +16,14 @@ export async function getIntegrationSettings() {
 
   if (!subscription) {
     return {
-      plan: 'free' as const,
+      plan: admin ? ('pro' as const) : ('free' as const),
       emailToken: null,
       apiToken: null,
     }
   }
 
   return {
-    plan: subscription.plan as 'free' | 'pro',
+    plan: (admin || subscription.plan === 'pro') ? ('pro' as const) : ('free' as const),
     emailToken: subscription.inboundEmailToken,
     apiToken: subscription.apiToken,
   }
@@ -32,12 +33,19 @@ export async function getIntegrationSettings() {
 
 export async function generateEmailToken() {
   const userId = await requireUserId()
+  const admin = isAdminUser(userId)
 
-  const subscription = await prisma.subscription.findUnique({
+  let subscription = await prisma.subscription.findUnique({
     where: { userId },
   })
 
-  if (!subscription || subscription.plan !== 'pro') {
+  if (!subscription && admin) {
+    subscription = await prisma.subscription.create({
+      data: { userId, plan: 'pro' },
+    })
+  }
+
+  if (!subscription || (subscription.plan !== 'pro' && !admin)) {
     return { error: 'Email-to-Task is a Pro feature.' }
   }
 
@@ -57,12 +65,13 @@ export async function generateEmailToken() {
 
 export async function regenerateEmailToken() {
   const userId = await requireUserId()
+  const admin = isAdminUser(userId)
 
   const subscription = await prisma.subscription.findUnique({
     where: { userId },
   })
 
-  if (!subscription || subscription.plan !== 'pro') {
+  if (!subscription || (subscription.plan !== 'pro' && !admin)) {
     return { error: 'Email-to-Task is a Pro feature.' }
   }
 
@@ -80,12 +89,19 @@ export async function regenerateEmailToken() {
 
 export async function generateApiToken() {
   const userId = await requireUserId()
+  const admin = isAdminUser(userId)
 
-  const subscription = await prisma.subscription.findUnique({
+  let subscription = await prisma.subscription.findUnique({
     where: { userId },
   })
 
-  if (!subscription || subscription.plan !== 'pro') {
+  if (!subscription && admin) {
+    subscription = await prisma.subscription.create({
+      data: { userId, plan: 'pro' },
+    })
+  }
+
+  if (!subscription || (subscription.plan !== 'pro' && !admin)) {
     return { error: 'API access is a Pro feature.' }
   }
 
@@ -116,12 +132,13 @@ export async function revokeApiToken() {
 
 export async function regenerateApiToken() {
   const userId = await requireUserId()
+  const admin = isAdminUser(userId)
 
   const subscription = await prisma.subscription.findUnique({
     where: { userId },
   })
 
-  if (!subscription || subscription.plan !== 'pro') {
+  if (!subscription || (subscription.plan !== 'pro' && !admin)) {
     return { error: 'API access is a Pro feature.' }
   }
 
