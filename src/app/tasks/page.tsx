@@ -142,21 +142,19 @@ export default async function TasksPage({ searchParams }: Props) {
                   <div className="flex items-start gap-3">
                     <TaskCheckbox taskId={task.id} completed={task.completed} />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0 flex-1">
-                          <Link
-                            href={`/tasks/${task.id}`}
-                            className="font-medium block truncate hover:text-link text-muted-foreground line-through"
-                          >
-                            {task.title}
-                          </Link>
-                          <p className="text-sm text-muted-foreground truncate mt-0.5">
-                            {task.project?.name ?? 'Quick task'}{task.project?.client?.name ? ` \u2022 ${task.project.client.name}` : ''}
-                          </p>
-                        </div>
+                      <Link
+                        href={`/tasks/${task.id}`}
+                        className="font-medium block truncate hover:text-link text-muted-foreground line-through"
+                      >
+                        {task.title}
+                      </Link>
+                      <div className="flex items-center gap-2 mt-0.5">
                         <Badge className={`${priorityColors[task.priority]} flex-shrink-0 opacity-50`}>
                           {priorityLabels[task.priority]}
                         </Badge>
+                        <p className="text-sm text-muted-foreground truncate">
+                          {task.project?.name ?? 'Quick task'}{task.project?.client?.name ? ` \u2022 ${task.project.client.name}` : ''}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -187,25 +185,23 @@ export default async function TasksPage({ searchParams }: Props) {
                         <div className="flex items-start gap-3">
                           <TaskCheckbox taskId={task.id} completed={task.completed} />
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="min-w-0 flex-1">
-                                <Link
-                                  href={`/tasks/${task.id}`}
-                                  className={`font-medium block truncate hover:text-link ${
-                                    isOverdue
-                                      ? 'text-destructive'
-                                      : 'text-foreground'
-                                  }`}
-                                >
-                                  {task.title}
-                                </Link>
-                                <p className="text-sm text-muted-foreground truncate mt-0.5">
-                                  {task.project?.name ?? 'Quick task'}{task.project?.client?.name ? ` \u2022 ${task.project.client.name}` : ''}
-                                </p>
-                              </div>
+                            <Link
+                              href={`/tasks/${task.id}`}
+                              className={`font-medium block truncate hover:text-link ${
+                                isOverdue
+                                  ? 'text-destructive'
+                                  : 'text-foreground'
+                              }`}
+                            >
+                              {task.title}
+                            </Link>
+                            <div className="flex items-center gap-2 mt-0.5">
                               <Badge className={`${priorityColors[task.priority]} flex-shrink-0`}>
                                 {priorityLabels[task.priority]}
                               </Badge>
+                              <p className="text-sm text-muted-foreground truncate">
+                                {task.project?.name ?? 'Quick task'}{task.project?.client?.name ? ` \u2022 ${task.project.client.name}` : ''}
+                              </p>
                             </div>
                             {task.description && (
                               <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
@@ -241,21 +237,19 @@ export default async function TasksPage({ searchParams }: Props) {
                         <div className="flex items-start gap-3">
                           <TaskCheckbox taskId={task.id} completed={task.completed} />
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="min-w-0 flex-1">
-                                <Link
-                                  href={`/tasks/${task.id}`}
-                                  className="font-medium block truncate hover:text-link text-muted-foreground line-through"
-                                >
-                                  {task.title}
-                                </Link>
-                                <p className="text-sm text-muted-foreground truncate mt-0.5">
-                                  {task.project?.name ?? 'Quick task'}{task.project?.client?.name ? ` \u2022 ${task.project.client.name}` : ''}
-                                </p>
-                              </div>
+                            <Link
+                              href={`/tasks/${task.id}`}
+                              className="font-medium block truncate hover:text-link text-muted-foreground line-through"
+                            >
+                              {task.title}
+                            </Link>
+                            <div className="flex items-center gap-2 mt-0.5">
                               <Badge className={`${priorityColors[task.priority]} flex-shrink-0 opacity-50`}>
                                 {priorityLabels[task.priority]}
                               </Badge>
+                              <p className="text-sm text-muted-foreground truncate">
+                                {task.project?.name ?? 'Quick task'}{task.project?.client?.name ? ` \u2022 ${task.project.client.name}` : ''}
+                              </p>
                             </div>
                           </div>
                         </div>
