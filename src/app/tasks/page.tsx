@@ -1,13 +1,13 @@
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
-import { Button } from '@/components/ui/Button'
 import { getAllTasks, getProjectsForTaskFilter } from '@/actions/tasks'
 import { getDashboardStats, getTasksDueThisWeek } from '@/actions/dashboard'
 import { priorityColors, priorityLabels, formatDate } from '@/lib/utils'
 import { TasksFilter } from './TasksFilter'
 import { TaskCheckbox } from './TaskCheckbox'
 import { AddTaskDialog } from './AddTaskDialog'
+import { CompletedSection } from './CompletedSection'
 import { ProgressRing } from '@/components/ui/ProgressRing'
 
 interface Props {
@@ -46,6 +46,11 @@ export default async function TasksPage({ searchParams }: Props) {
         year: 'numeric',
       })
     : null
+
+  // Split into active vs completed — unless user explicitly filtered to "completed"
+  const showingCompleted = params.status === 'completed'
+  const activeTasks = showingCompleted ? [] : tasks.filter((t) => !t.completed)
+  const completedTasksList = showingCompleted ? tasks : tasks.filter((t) => t.completed)
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -115,7 +120,10 @@ export default async function TasksPage({ searchParams }: Props) {
       <Card>
         <CardHeader>
           <CardTitle>
-            {tasks.length} {tasks.length === 1 ? 'Task' : 'Tasks'}
+            {showingCompleted
+              ? `${completedTasksList.length} Completed ${completedTasksList.length === 1 ? 'Task' : 'Tasks'}`
+              : `${activeTasks.length} Active ${activeTasks.length === 1 ? 'Task' : 'Tasks'}`
+            }
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -123,67 +131,140 @@ export default async function TasksPage({ searchParams }: Props) {
             <div className="px-6 py-12 text-center text-muted-foreground">
               No tasks found matching your filters.
             </div>
-          ) : (
+          ) : showingCompleted ? (
+            /* User explicitly filtered to "Completed" — show flat list */
             <div className="divide-y divide-border">
-              {tasks.map((task) => {
-                const isOverdue =
-                  !task.completed &&
-                  task.dueDate &&
-                  new Date(task.dueDate) < new Date()
-
-                return (
-                  <div
-                    key={task.id}
-                    className={`px-4 py-3 hover:bg-muted/50 transition-colors ${
-                      isOverdue ? 'bg-destructive/5 hover:bg-destructive/10' : ''
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <TaskCheckbox taskId={task.id} completed={task.completed} />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0 flex-1">
-                            <Link
-                              href={`/tasks/${task.id}`}
-                              className={`font-medium block truncate hover:text-link ${
-                                task.completed
-                                  ? 'text-muted-foreground line-through'
-                                  : isOverdue
-                                  ? 'text-destructive'
-                                  : 'text-foreground'
-                              }`}
-                            >
-                              {task.title}
-                            </Link>
-                            <p className="text-sm text-muted-foreground truncate mt-0.5">
-                              {task.project?.name ?? 'Quick task'}{task.project?.client?.name ? ` \u2022 ${task.project.client.name}` : ''}
-                            </p>
-                          </div>
-                          <Badge className={`${priorityColors[task.priority]} flex-shrink-0`}>
-                            {priorityLabels[task.priority]}
-                          </Badge>
-                        </div>
-                        {task.description && (
-                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                            {task.description}
+              {completedTasksList.map((task) => (
+                <div
+                  key={task.id}
+                  className="px-4 py-3 hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-start gap-3">
+                    <TaskCheckbox taskId={task.id} completed={task.completed} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <Link
+                            href={`/tasks/${task.id}`}
+                            className="font-medium block truncate hover:text-link text-muted-foreground line-through"
+                          >
+                            {task.title}
+                          </Link>
+                          <p className="text-sm text-muted-foreground truncate mt-0.5">
+                            {task.project?.name ?? 'Quick task'}{task.project?.client?.name ? ` \u2022 ${task.project.client.name}` : ''}
                           </p>
-                        )}
-                        <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                          {task.startDate && (
-                            <span>Start: {formatDate(task.startDate)}</span>
-                          )}
-                          {task.dueDate && (
-                            <span className={isOverdue ? 'text-destructive font-medium' : ''}>
-                              Due: {formatDate(task.dueDate)}
-                            </span>
-                          )}
                         </div>
+                        <Badge className={`${priorityColors[task.priority]} flex-shrink-0 opacity-50`}>
+                          {priorityLabels[task.priority]}
+                        </Badge>
                       </div>
                     </div>
                   </div>
-                )
-              })}
+                </div>
+              ))}
             </div>
+          ) : (
+            /* Default view: active tasks + collapsible completed */
+            <>
+              {activeTasks.length === 0 ? (
+                <div className="px-6 py-8 text-center text-muted-foreground">
+                  All caught up — no active tasks.
+                </div>
+              ) : (
+                <div className="divide-y divide-border">
+                  {activeTasks.map((task) => {
+                    const isOverdue =
+                      task.dueDate &&
+                      new Date(task.dueDate) < new Date()
+
+                    return (
+                      <div
+                        key={task.id}
+                        className={`px-4 py-3 hover:bg-muted/50 transition-colors ${
+                          isOverdue ? 'bg-destructive/5 hover:bg-destructive/10' : ''
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <TaskCheckbox taskId={task.id} completed={task.completed} />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="min-w-0 flex-1">
+                                <Link
+                                  href={`/tasks/${task.id}`}
+                                  className={`font-medium block truncate hover:text-link ${
+                                    isOverdue
+                                      ? 'text-destructive'
+                                      : 'text-foreground'
+                                  }`}
+                                >
+                                  {task.title}
+                                </Link>
+                                <p className="text-sm text-muted-foreground truncate mt-0.5">
+                                  {task.project?.name ?? 'Quick task'}{task.project?.client?.name ? ` \u2022 ${task.project.client.name}` : ''}
+                                </p>
+                              </div>
+                              <Badge className={`${priorityColors[task.priority]} flex-shrink-0`}>
+                                {priorityLabels[task.priority]}
+                              </Badge>
+                            </div>
+                            {task.description && (
+                              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                                {task.description}
+                              </p>
+                            )}
+                            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                              {task.startDate && (
+                                <span>Start: {formatDate(task.startDate)}</span>
+                              )}
+                              {task.dueDate && (
+                                <span className={isOverdue ? 'text-destructive font-medium' : ''}>
+                                  Due: {formatDate(task.dueDate)}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+
+              {completedTasksList.length > 0 && (
+                <CompletedSection count={completedTasksList.length}>
+                  <div className="divide-y divide-border">
+                    {completedTasksList.map((task) => (
+                      <div
+                        key={task.id}
+                        className="px-4 py-3 hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="flex items-start gap-3">
+                          <TaskCheckbox taskId={task.id} completed={task.completed} />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="min-w-0 flex-1">
+                                <Link
+                                  href={`/tasks/${task.id}`}
+                                  className="font-medium block truncate hover:text-link text-muted-foreground line-through"
+                                >
+                                  {task.title}
+                                </Link>
+                                <p className="text-sm text-muted-foreground truncate mt-0.5">
+                                  {task.project?.name ?? 'Quick task'}{task.project?.client?.name ? ` \u2022 ${task.project.client.name}` : ''}
+                                </p>
+                              </div>
+                              <Badge className={`${priorityColors[task.priority]} flex-shrink-0 opacity-50`}>
+                                {priorityLabels[task.priority]}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CompletedSection>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
