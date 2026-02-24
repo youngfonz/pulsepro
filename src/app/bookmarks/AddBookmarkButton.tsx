@@ -20,8 +20,13 @@ interface BookmarkMetadata {
   type: 'youtube' | 'twitter' | 'website'
 }
 
-export function AddBookmarkButton({ projects }: { projects: Project[] }) {
-  const [isOpen, setIsOpen] = useState(false)
+export function AddBookmarkButton({ projects, defaultOpen = false }: { projects: Project[]; defaultOpen?: boolean }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen)
+
+  // Sync defaultOpen prop changes (e.g. navigating to /bookmarks?add=true from CommandBar)
+  useEffect(() => {
+    if (defaultOpen) setIsOpen(true)
+  }, [defaultOpen])
   const [projectId, setProjectId] = useState('')
   const [url, setUrl] = useState('')
   const [metadata, setMetadata] = useState<BookmarkMetadata | null>(null)

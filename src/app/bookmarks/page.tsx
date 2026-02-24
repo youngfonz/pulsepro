@@ -6,7 +6,7 @@ import { BookmarksList } from './BookmarksList'
 import { AddBookmarkButton } from './AddBookmarkButton'
 
 interface Props {
-  searchParams: Promise<{ search?: string; projectId?: string; type?: string; sort?: string }>
+  searchParams: Promise<{ search?: string; projectId?: string; type?: string; sort?: string; add?: string }>
 }
 
 export default async function BookmarksPage({ searchParams }: Props) {
@@ -39,7 +39,7 @@ export default async function BookmarksPage({ searchParams }: Props) {
             All your saved YouTube videos and X posts across projects
           </p>
         </div>
-        <AddBookmarkButton projects={projects} />
+        <AddBookmarkButton projects={projects} defaultOpen={params.add === 'true'} />
       </div>
 
       <BookmarksFilter projects={projects} />

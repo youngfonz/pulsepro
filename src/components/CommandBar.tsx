@@ -21,7 +21,7 @@ const QUICK_ACTIONS = [
   { title: 'New Project', href: '/projects/new', icon: 'plus' },
   { title: 'New Client', href: '/clients/new', icon: 'plus' },
   { title: 'Add Task', href: '/tasks?add=true', icon: 'plus' },
-  { title: 'Add Bookmark', href: '/bookmarks', icon: 'plus' },
+  { title: 'Add Bookmark', href: '/bookmarks?add=true', icon: 'plus' },
 ]
 
 function TypeIcon({ type, className = 'w-4 h-4' }: { type: string; className?: string }) {
