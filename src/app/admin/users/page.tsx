@@ -59,11 +59,13 @@ export default async function AdminUsersPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <Badge className={user.plan === 'pro'
+                    <Badge className={user.plan === 'team'
+                      ? 'bg-violet-500/10 text-violet-500 border-violet-500/30'
+                      : user.plan === 'pro'
                       ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30'
                       : 'bg-muted text-muted-foreground'
                     }>
-                      {user.plan === 'pro' ? 'Pro' : 'Free'}
+                      {user.plan === 'team' ? 'Team' : user.plan === 'pro' ? 'Pro' : 'Free'}
                     </Badge>
                   </td>
                   <td className="px-4 py-3 text-right text-foreground">{user.projectCount}</td>

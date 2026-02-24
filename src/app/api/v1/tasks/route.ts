@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid API token' }, { status: 401 })
     }
 
-    if (subscription.plan !== 'pro' && !isAdminUser(subscription.userId)) {
+    if (subscription.plan !== 'pro' && subscription.plan !== 'team' && !isAdminUser(subscription.userId)) {
       return NextResponse.json({ error: 'Pro plan required' }, { status: 403 })
     }
 
@@ -105,7 +105,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid API token' }, { status: 401 })
     }
 
-    if (subscription.plan !== 'pro' && !isAdminUser(subscription.userId)) {
+    if (subscription.plan !== 'pro' && subscription.plan !== 'team' && !isAdminUser(subscription.userId)) {
       return NextResponse.json({ error: 'Pro plan required' }, { status: 403 })
     }
 

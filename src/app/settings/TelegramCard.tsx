@@ -43,7 +43,7 @@ export function TelegramCard() {
     )
   }
 
-  if (!state || state.plan !== 'pro') {
+  if (!state || (state.plan !== 'pro' && state.plan !== 'team')) {
     return (
       <Card>
         <CardHeader>

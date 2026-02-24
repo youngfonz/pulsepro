@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Check Pro plan
-  if (subscription.plan !== 'pro' && !isAdminUser(subscription.userId)) {
+  if (subscription.plan !== 'pro' && subscription.plan !== 'team' && !isAdminUser(subscription.userId)) {
     await sendTelegramMessage(
       chatId,
       `The Telegram bot is a Pro feature. Upgrade your plan at pulsepro.work/settings to use it.`

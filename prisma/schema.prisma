@@ -179,7 +179,7 @@ model Subscription {
   orgId                 String?
   polarCustomerId       String?
   polarSubscriptionId   String?
-  plan                  String    @default("free") // free, pro
+  plan                  String    @default("free") // free, pro, team
   status                String    @default("active") // active, canceled, past_due, trialing
   currentPeriodEnd      DateTime?
   cancelAtPeriodEnd     Boolean   @default(false)

@@ -22,8 +22,9 @@ export async function getIntegrationSettings() {
     }
   }
 
+  const effectivePlan = admin ? 'pro' : subscription.plan
   return {
-    plan: (admin || subscription.plan === 'pro') ? ('pro' as const) : ('free' as const),
+    plan: effectivePlan as 'free' | 'pro' | 'team',
     emailToken: subscription.inboundEmailToken,
     apiToken: subscription.apiToken,
   }
@@ -45,7 +46,7 @@ export async function generateEmailToken() {
     })
   }
 
-  if (!subscription || (subscription.plan !== 'pro' && !admin)) {
+  if (!subscription || (subscription.plan !== 'pro' && subscription.plan !== 'team' && !admin)) {
     return { error: 'Email-to-Task is a Pro feature.' }
   }
 
@@ -71,7 +72,7 @@ export async function regenerateEmailToken() {
     where: { userId },
   })
 
-  if (!subscription || (subscription.plan !== 'pro' && !admin)) {
+  if (!subscription || (subscription.plan !== 'pro' && subscription.plan !== 'team' && !admin)) {
     return { error: 'Email-to-Task is a Pro feature.' }
   }
 
@@ -101,7 +102,7 @@ export async function generateApiToken() {
     })
   }
 
-  if (!subscription || (subscription.plan !== 'pro' && !admin)) {
+  if (!subscription || (subscription.plan !== 'pro' && subscription.plan !== 'team' && !admin)) {
     return { error: 'API access is a Pro feature.' }
   }
 
@@ -141,7 +142,7 @@ export async function regenerateApiToken() {
     where: { userId },
   })
 
-  if (!subscription || (subscription.plan !== 'pro' && !admin)) {
+  if (!subscription || (subscription.plan !== 'pro' && subscription.plan !== 'team' && !admin)) {
     return { error: 'API access is a Pro feature.' }
   }
 
