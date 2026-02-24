@@ -37,7 +37,9 @@ export async function grantProjectAccess(
         throw new Error('Upgrade to Pro to share projects with collaborators.')
       }
       throw new Error(
-        `Your ${collabLimit.plan} plan allows ${collabLimit.limit} collaborators per project. Upgrade to add more.`
+        collabLimit.plan === 'team'
+          ? `You've reached the maximum of ${collabLimit.limit} collaborators per project.`
+          : `Your ${collabLimit.plan} plan allows ${collabLimit.limit} collaborators per project. Upgrade to Team for up to 10.`
       )
     }
   }
