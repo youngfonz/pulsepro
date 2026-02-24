@@ -45,7 +45,7 @@ export function ApiAccessCard() {
     )
   }
 
-  if (plan !== 'pro') {
+  if (plan !== 'pro' && plan !== 'team') {
     return (
       <Card>
         <CardHeader>

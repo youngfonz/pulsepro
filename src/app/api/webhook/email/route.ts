@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unknown token' }, { status: 404 })
     }
 
-    if (subscription.plan !== 'pro' && !isAdminUser(subscription.userId)) {
+    if (subscription.plan !== 'pro' && subscription.plan !== 'team' && !isAdminUser(subscription.userId)) {
       return NextResponse.json({ error: 'Pro plan required' }, { status: 403 })
     }
 

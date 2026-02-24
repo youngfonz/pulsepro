@@ -12,7 +12,7 @@ export async function generateTelegramLink() {
     where: { userId },
   })
 
-  if (!subscription || (subscription.plan !== 'pro' && !isAdminUser(userId))) {
+  if (!subscription || (subscription.plan !== 'pro' && subscription.plan !== 'team' && !isAdminUser(userId))) {
     return { error: 'Telegram integration is a Pro feature.' }
   }
 
@@ -77,14 +77,14 @@ export async function getTelegramSettings() {
 
   if (!subscription) {
     return {
-      plan: (admin ? 'pro' : 'free') as 'pro' | 'free',
+      plan: (admin ? 'pro' : 'free') as 'pro' | 'free' | 'team',
       linked: false,
       remindersEnabled: false,
     }
   }
 
   return {
-    plan: (admin && subscription.plan === 'free' ? 'pro' : subscription.plan) as 'free' | 'pro',
+    plan: (admin && subscription.plan === 'free' ? 'pro' : subscription.plan) as 'free' | 'pro' | 'team',
     linked: !!subscription.telegramChatId,
     remindersEnabled: subscription.telegramRemindersEnabled,
   }
