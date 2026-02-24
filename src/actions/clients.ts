@@ -72,9 +72,9 @@ export async function getClients(search?: string, status?: string, sort?: string
     // Sort by project count if requested (can't do this in Prisma directly)
     if (sortByProjects) {
       if (sort === 'projects_desc') {
-        clients.sort((a, b) => a.projects.length - b.projects.length)
-      } else {
         clients.sort((a, b) => b.projects.length - a.projects.length)
+      } else {
+        clients.sort((a, b) => a.projects.length - b.projects.length)
       }
     }
 

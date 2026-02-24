@@ -122,6 +122,9 @@ export async function generateApiToken() {
 export async function revokeApiToken() {
   const userId = await requireUserId()
 
+  const subscription = await prisma.subscription.findUnique({ where: { userId } })
+  if (!subscription) return { error: 'No subscription found.' }
+
   await prisma.subscription.update({
     where: { userId },
     data: { apiToken: null },

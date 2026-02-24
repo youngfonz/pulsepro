@@ -69,31 +69,46 @@ export function TelegramCard() {
 
   async function handleGenerateLink() {
     setActionLoading(true)
-    const result = await generateTelegramLink()
-    if ('code' in result && result.code) {
-      setLinkCode(result.code)
-      setBotUsername(result.botUsername || null)
+    try {
+      const result = await generateTelegramLink()
+      if ('code' in result && result.code) {
+        setLinkCode(result.code)
+        setBotUsername(result.botUsername || null)
+      }
+    } catch {
+      // silently fail — button returns to normal
+    } finally {
+      setActionLoading(false)
     }
-    setActionLoading(false)
   }
 
   async function handleUnlink() {
     if (!confirm('Are you sure you want to unlink Telegram? You will stop receiving reminders.')) return
     setActionLoading(true)
-    await unlinkTelegram()
-    setState((s) => (s ? { ...s, linked: false, remindersEnabled: false } : s))
-    setLinkCode(null)
-    setBotUsername(null)
-    setActionLoading(false)
+    try {
+      await unlinkTelegram()
+      setState((s) => (s ? { ...s, linked: false, remindersEnabled: false } : s))
+      setLinkCode(null)
+      setBotUsername(null)
+    } catch {
+      // silently fail — button returns to normal
+    } finally {
+      setActionLoading(false)
+    }
   }
 
   async function handleToggleReminders() {
     if (!state) return
     const newVal = !state.remindersEnabled
     setActionLoading(true)
-    await toggleTelegramReminders(newVal)
-    setState((s) => (s ? { ...s, remindersEnabled: newVal } : s))
-    setActionLoading(false)
+    try {
+      await toggleTelegramReminders(newVal)
+      setState((s) => (s ? { ...s, remindersEnabled: newVal } : s))
+    } catch {
+      // silently fail — button returns to normal
+    } finally {
+      setActionLoading(false)
+    }
   }
 
   return (

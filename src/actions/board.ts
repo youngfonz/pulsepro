@@ -21,13 +21,11 @@ export async function updateTaskStatus(
       where: { id: taskId },
       select: { projectId: true },
     })
-    if (found) {
-      if (found.projectId) await requireProjectAccess(found.projectId, 'editor')
-      task = found
-    }
+    if (!found) return
+    if (!found.projectId) throw new Error('Not authorized')
+    await requireProjectAccess(found.projectId, 'editor')
+    task = found
   }
-
-  if (!task) return
 
   await prisma.task.update({
     where: { id: taskId },
