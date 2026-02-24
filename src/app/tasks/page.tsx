@@ -195,27 +195,20 @@ export default async function TasksPage({ searchParams }: Props) {
                             >
                               {task.title}
                             </Link>
-                            <div className="flex items-center gap-2 mt-0.5">
+                            <div className="flex items-center gap-1.5 mt-0.5 text-xs text-muted-foreground">
                               <Badge className={`${priorityColors[task.priority]} flex-shrink-0`}>
                                 {priorityLabels[task.priority]}
                               </Badge>
-                              <p className="text-sm text-muted-foreground truncate">
+                              <span className="truncate">
                                 {task.project?.name ?? 'Quick task'}{task.project?.client?.name ? ` \u2022 ${task.project.client.name}` : ''}
-                              </p>
-                            </div>
-                            {task.description && (
-                              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                                {task.description}
-                              </p>
-                            )}
-                            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                              {task.startDate && (
-                                <span>Start: {formatDate(task.startDate)}</span>
-                              )}
+                              </span>
                               {task.dueDate && (
-                                <span className={isOverdue ? 'text-destructive font-medium' : ''}>
-                                  Due: {formatDate(task.dueDate)}
-                                </span>
+                                <>
+                                  <span className="text-border">&middot;</span>
+                                  <span className={`flex-shrink-0 ${isOverdue ? 'text-destructive font-medium' : ''}`}>
+                                    {isOverdue ? 'Overdue' : 'Due'}: {formatDate(task.dueDate)}
+                                  </span>
+                                </>
                               )}
                             </div>
                           </div>
