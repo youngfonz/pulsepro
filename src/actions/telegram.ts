@@ -37,6 +37,9 @@ export async function generateTelegramLink() {
 export async function unlinkTelegram() {
   const userId = await requireUserId()
 
+  const subscription = await prisma.subscription.findUnique({ where: { userId } })
+  if (!subscription) return { error: 'No subscription found.' }
+
   await prisma.subscription.update({
     where: { userId },
     data: {
@@ -52,6 +55,9 @@ export async function unlinkTelegram() {
 
 export async function toggleTelegramReminders(enabled: boolean) {
   const userId = await requireUserId()
+
+  const subscription = await prisma.subscription.findUnique({ where: { userId } })
+  if (!subscription) return { error: 'No subscription found.' }
 
   await prisma.subscription.update({
     where: { userId },

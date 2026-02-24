@@ -71,32 +71,47 @@ export function ApiAccessCard() {
 
   async function handleGenerate() {
     setActionLoading(true)
-    const result = await generateApiToken()
-    if ('token' in result && result.token) {
-      setToken(result.token)
-      setShowToken(true)
+    try {
+      const result = await generateApiToken()
+      if ('token' in result && result.token) {
+        setToken(result.token)
+        setShowToken(true)
+      }
+    } catch {
+      // silently fail — button returns to normal
+    } finally {
+      setActionLoading(false)
     }
-    setActionLoading(false)
   }
 
   async function handleRevoke() {
     if (!confirm('Revoking will immediately disable API access. Continue?')) return
     setActionLoading(true)
-    await revokeApiToken()
-    setToken(null)
-    setShowToken(false)
-    setActionLoading(false)
+    try {
+      await revokeApiToken()
+      setToken(null)
+      setShowToken(false)
+    } catch {
+      // silently fail — button returns to normal
+    } finally {
+      setActionLoading(false)
+    }
   }
 
   async function handleRegenerate() {
     if (!confirm('Regenerating will invalidate your current token. Continue?')) return
     setActionLoading(true)
-    const result = await regenerateApiToken()
-    if ('token' in result && result.token) {
-      setToken(result.token)
-      setShowToken(true)
+    try {
+      const result = await regenerateApiToken()
+      if ('token' in result && result.token) {
+        setToken(result.token)
+        setShowToken(true)
+      }
+    } catch {
+      // silently fail — button returns to normal
+    } finally {
+      setActionLoading(false)
     }
-    setActionLoading(false)
   }
 
   function handleCopy() {

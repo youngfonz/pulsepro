@@ -49,6 +49,7 @@ export function AddTaskDialog({ projects, defaultOpen = false }: AddTaskDialogPr
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState('medium')
   const [dueDate, setDueDate] = useState('')
+  const [error, setError] = useState<string | null>(null)
 
   const handleVoiceInput = (transcript: string) => {
     const parsed = parseTaskFromVoice(transcript)
@@ -66,19 +67,24 @@ export function AddTaskDialog({ projects, defaultOpen = false }: AddTaskDialogPr
     const formData = new FormData(e.currentTarget)
 
     startTransition(async () => {
-      await createTask(projectId || null, formData)
-      setIsOpen(false)
-      // Remember last-used project for smart defaults
-      if (projectId) {
-        try { localStorage.setItem('lastUsedProjectId', projectId) } catch {}
+      try {
+        await createTask(projectId || null, formData)
+        setIsOpen(false)
+        setError(null)
+        // Remember last-used project for smart defaults
+        if (projectId) {
+          try { localStorage.setItem('lastUsedProjectId', projectId) } catch {}
+        }
+        // Reset form
+        setProjectId('')
+        setTitle('')
+        setDescription('')
+        setPriority('medium')
+        setDueDate('')
+        router.refresh()
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to create task. Please try again.')
       }
-      // Reset form
-      setProjectId('')
-      setTitle('')
-      setDescription('')
-      setPriority('medium')
-      setDueDate('')
-      router.refresh()
     })
   }
 
@@ -191,6 +197,9 @@ export function AddTaskDialog({ projects, defaultOpen = false }: AddTaskDialogPr
                   />
                 </div>
 
+                {error && (
+                  <p className="text-sm text-destructive">{error}</p>
+                )}
                 <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row">
                   <Button
                     type="button"

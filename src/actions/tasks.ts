@@ -28,7 +28,7 @@ export async function getTask(id: string) {
     const sharedIds = await getAccessibleProjectIds()
     if (sharedIds.length > 0) {
       task = await prisma.task.findFirst({
-        where: { id, OR: [{ projectId: { in: sharedIds } }, { projectId: null }] },
+        where: { id, projectId: { in: sharedIds } },
         include,
       })
     }
@@ -78,7 +78,7 @@ export async function createTask(projectId: string | null, formData: FormData) {
     revalidatePath('/tasks')
   } catch (error) {
     console.error('createTask:', error)
-    throw new Error('Failed to create task')
+    throw error instanceof Error ? error : new Error('Failed to create task')
   }
 }
 
@@ -92,9 +92,10 @@ export async function updateTask(id: string, formData: FormData) {
 
     if (!task) {
       task = await prisma.task.findFirst({ where: { id }, select: { projectId: true, url: true } })
-      if (task && task.projectId) await requireProjectAccess(task.projectId, 'editor')
+      if (!task) return
+      if (!task.projectId) throw new Error('Not authorized')
+      await requireProjectAccess(task.projectId, 'editor')
     }
-    if (!task) return
 
     const data: Record<string, unknown> = {
       title: formData.get('title') as string,
@@ -145,9 +146,10 @@ export async function toggleTask(id: string) {
 
     if (!task) {
       task = await prisma.task.findFirst({ where: { id }, select: { completed: true, projectId: true } })
-      if (task && task.projectId) await requireProjectAccess(task.projectId, 'editor')
+      if (!task) return
+      if (!task.projectId) throw new Error('Not authorized')
+      await requireProjectAccess(task.projectId, 'editor')
     }
-    if (!task) return
 
     const newCompleted = !task.completed
     await prisma.task.update({
@@ -176,9 +178,10 @@ export async function deleteTask(id: string) {
 
     if (!task) {
       task = await prisma.task.findFirst({ where: { id }, select: { projectId: true } })
-      if (task && task.projectId) await requireProjectAccess(task.projectId, 'editor')
+      if (!task) return
+      if (!task.projectId) throw new Error('Not authorized')
+      await requireProjectAccess(task.projectId, 'editor')
     }
-    if (!task) return
 
     await prisma.task.delete({
       where: { id },
@@ -669,7 +672,7 @@ export async function createBookmarkTask(
     revalidatePath(`/projects/${projectId}`)
   } catch (error) {
     console.error('createBookmarkTask:', error)
-    throw new Error('Failed to create bookmark task')
+    throw error instanceof Error ? error : new Error('Failed to create bookmark task')
   }
 }
 

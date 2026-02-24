@@ -71,21 +71,31 @@ export function EmailTaskCard() {
 
   async function handleGenerate() {
     setActionLoading(true)
-    const result = await generateEmailToken()
-    if ('token' in result && result.token) {
-      setToken(result.token)
+    try {
+      const result = await generateEmailToken()
+      if ('token' in result && result.token) {
+        setToken(result.token)
+      }
+    } catch {
+      // silently fail — button returns to normal
+    } finally {
+      setActionLoading(false)
     }
-    setActionLoading(false)
   }
 
   async function handleRegenerate() {
     if (!confirm('Regenerating will invalidate your current email address. Continue?')) return
     setActionLoading(true)
-    const result = await regenerateEmailToken()
-    if ('token' in result && result.token) {
-      setToken(result.token)
+    try {
+      const result = await regenerateEmailToken()
+      if ('token' in result && result.token) {
+        setToken(result.token)
+      }
+    } catch {
+      // silently fail — button returns to normal
+    } finally {
+      setActionLoading(false)
     }
-    setActionLoading(false)
   }
 
   function handleCopy() {
