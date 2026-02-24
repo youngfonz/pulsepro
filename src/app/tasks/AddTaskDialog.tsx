@@ -28,6 +28,11 @@ export function AddTaskDialog({ projects, defaultOpen = false }: AddTaskDialogPr
   const [isOpen, setIsOpen] = useState(defaultOpen)
   const [isPending, startTransition] = useTransition()
 
+  // Sync defaultOpen prop changes (e.g. navigating to /tasks?add=true from CommandBar)
+  useEffect(() => {
+    if (defaultOpen) setIsOpen(true)
+  }, [defaultOpen])
+
   // Smart project defaults: pre-select last-used project
   const [projectId, setProjectId] = useState('')
   useEffect(() => {

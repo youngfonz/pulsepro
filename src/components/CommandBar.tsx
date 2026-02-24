@@ -100,6 +100,7 @@ export function CommandBar() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isPending, startTransition] = useTransition()
   const [createSuccess, setCreateSuccess] = useState<string | null>(null)
+  const [createError, setCreateError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -121,31 +122,36 @@ export function CommandBar() {
 
   const handleCreate = useCallback(() => {
     if (!createMode) return
+    setCreateError(null)
     startTransition(async () => {
-      if (createMode.type === 'task') {
-        const parsed = createMode.parsed as ReturnType<typeof parseTaskFromVoice>
-        const formData = new FormData()
-        formData.append('title', parsed.title)
-        if (parsed.priority) formData.append('priority', parsed.priority)
-        if (parsed.dueDate) formData.append('dueDate', parsed.dueDate)
-        if (parsed.description) formData.append('description', parsed.description)
-        await createTask(null, formData)
-        setCreateSuccess(`Task "${parsed.title}" created`)
-      } else {
-        const parsed = createMode.parsed as ReturnType<typeof parseClientFromVoice>
-        const formData = new FormData()
-        formData.append('name', parsed.name)
-        if (parsed.email) formData.append('email', parsed.email)
-        if (parsed.phone) formData.append('phone', parsed.phone)
-        if (parsed.company) formData.append('company', parsed.company)
-        await createClient(formData)
-        setCreateSuccess(`Client "${parsed.name}" created`)
+      try {
+        if (createMode.type === 'task') {
+          const parsed = createMode.parsed as ReturnType<typeof parseTaskFromVoice>
+          const formData = new FormData()
+          formData.append('title', parsed.title)
+          if (parsed.priority) formData.append('priority', parsed.priority)
+          if (parsed.dueDate) formData.append('dueDate', parsed.dueDate)
+          if (parsed.description) formData.append('description', parsed.description)
+          await createTask(null, formData)
+          setCreateSuccess(`Task "${parsed.title}" created`)
+        } else {
+          const parsed = createMode.parsed as ReturnType<typeof parseClientFromVoice>
+          const formData = new FormData()
+          formData.append('name', parsed.name)
+          if (parsed.email) formData.append('email', parsed.email)
+          if (parsed.phone) formData.append('phone', parsed.phone)
+          if (parsed.company) formData.append('company', parsed.company)
+          await createClient(formData)
+          setCreateSuccess(`Client "${parsed.name}" created`)
+        }
+        router.refresh()
+        setTimeout(() => {
+          setIsOpen(false)
+          setCreateSuccess(null)
+        }, 800)
+      } catch (err) {
+        setCreateError(err instanceof Error ? err.message : 'Failed to create. Please try again.')
       }
-      router.refresh()
-      setTimeout(() => {
-        setIsOpen(false)
-        setCreateSuccess(null)
-      }, 800)
     })
   }, [createMode, router])
 
@@ -225,6 +231,7 @@ export function CommandBar() {
       setResults([])
       setActiveIndex(0)
       setCreateSuccess(null)
+      setCreateError(null)
     }
   }, [isOpen])
 
@@ -438,6 +445,9 @@ export function CommandBar() {
                     </kbd>
                   )}
                 </button>
+                {createError && (
+                  <p className="mt-2 px-4 text-xs text-destructive">{createError}</p>
+                )}
               </div>
             ) : null}
 

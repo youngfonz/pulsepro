@@ -17,6 +17,7 @@ export function QuickAdd() {
   const [projects, setProjects] = useState<Project[]>([])
   const [isPending, startTransition] = useTransition()
   const [success, setSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
@@ -67,6 +68,7 @@ export function QuickAdd() {
       setTitle('')
       setProjectId('')
       setSuccess(false)
+      setError(null)
     }
   }, [isOpen])
 
@@ -82,16 +84,21 @@ export function QuickAdd() {
     if (parsed.priority) formData.append('priority', parsed.priority)
     if (parsed.dueDate) formData.append('dueDate', parsed.dueDate)
 
+    setError(null)
     startTransition(async () => {
-      await createTask(projectId || null, formData)
-      // Remember project choice
-      if (projectId) {
-        try { localStorage.setItem('lastUsedProjectId', projectId) } catch {}
+      try {
+        await createTask(projectId || null, formData)
+        // Remember project choice
+        if (projectId) {
+          try { localStorage.setItem('lastUsedProjectId', projectId) } catch {}
+        }
+        setSuccess(true)
+        router.refresh()
+        // Close after brief success flash
+        setTimeout(() => setIsOpen(false), 600)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to create task. Please try again.')
       }
-      setSuccess(true)
-      router.refresh()
-      // Close after brief success flash
-      setTimeout(() => setIsOpen(false), 600)
     })
   }
 
@@ -146,6 +153,9 @@ export function QuickAdd() {
                 )}
               </div>
 
+              {error && (
+                <div className="px-4 py-2 text-xs text-destructive">{error}</div>
+              )}
               <div className="flex items-center justify-between px-4 py-2.5">
                 <select
                   value={projectId}
