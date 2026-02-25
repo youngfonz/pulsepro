@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { DatePicker } from '@/components/ui/DatePicker'
 import { addTimeEntry, deleteTimeEntry } from '@/actions/projects'
 import { formatDate } from '@/lib/utils'
 
@@ -75,10 +76,9 @@ export function TimeTracker({ projectId, timeEntries, canEdit = true }: TimeTrac
               required
               autoFocus
             />
-            <Input
+            <DatePicker
               id="date"
               name="date"
-              type="date"
               defaultValue={new Date().toISOString().split('T')[0]}
             />
           </div>

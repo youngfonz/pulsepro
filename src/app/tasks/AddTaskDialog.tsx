@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { VoiceInput } from '@/components/ui/VoiceInput'
+import { DatePicker } from '@/components/ui/DatePicker'
 import { createTask } from '@/actions/tasks'
 import { parseTaskFromVoice } from '@/lib/voice'
 
@@ -180,22 +181,13 @@ export function AddTaskDialog({ projects, defaultOpen = false }: AddTaskDialogPr
                   ]}
                 />
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <Input
-                    id="startDate"
-                    name="startDate"
-                    type="date"
-                    label="Start Date"
-                  />
-                  <Input
-                    id="dueDate"
-                    name="dueDate"
-                    type="date"
-                    label="Due Date"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                  />
-                </div>
+                <DatePicker
+                  id="dueDate"
+                  name="dueDate"
+                  label="Due Date"
+                  value={dueDate}
+                  onChange={setDueDate}
+                />
 
                 {error && (
                   <p className="text-sm text-destructive">{error}</p>

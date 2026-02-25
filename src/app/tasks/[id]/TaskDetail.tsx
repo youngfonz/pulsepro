@@ -12,6 +12,7 @@ import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { FileUpload } from '@/components/ui/FileUpload'
 import { TagInput } from '@/components/ui/TagInput'
+import { DatePicker } from '@/components/ui/DatePicker'
 import {
   toggleTask,
   deleteTask,
@@ -393,7 +394,7 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
             defaultValue={task.notes || ''}
             placeholder="Add any additional notes..."
           />
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Select
               id="priority"
               name="priority"
@@ -405,17 +406,9 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
                 { value: 'high', label: 'High' },
               ]}
             />
-            <Input
-              id="startDate"
-              name="startDate"
-              type="date"
-              label="Start Date"
-              defaultValue={formatDateForInput(task.startDate)}
-            />
-            <Input
+            <DatePicker
               id="dueDate"
               name="dueDate"
-              type="date"
               label="Due Date"
               defaultValue={formatDateForInput(task.dueDate)}
             />
