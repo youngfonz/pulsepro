@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { VoiceInput } from '@/components/ui/VoiceInput'
+import { DatePicker } from '@/components/ui/DatePicker'
 import { UpgradePrompt, isLimitError } from '@/components/ui/UpgradePrompt'
 import { createProject, updateProject } from '@/actions/projects'
 import { createClient } from '@/actions/clients'
@@ -218,13 +219,12 @@ export function ProjectForm({ project, clients, defaultClientId, onSuccess }: Pr
         />
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Input
+        <DatePicker
           id="dueDate"
           name="dueDate"
-          type="date"
           label="Due Date"
           value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
+          onChange={setDueDate}
         />
         <Input
           id="budget"

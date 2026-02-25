@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/Textarea'
 import { Modal } from '@/components/ui/Modal'
 import { FileUpload } from '@/components/ui/FileUpload'
 import { TagInput } from '@/components/ui/TagInput'
+import { DatePicker } from '@/components/ui/DatePicker'
 import { toggleTask, deleteTask, updateTask, addTaskImage, removeTaskImage, addTaskFile, removeTaskFile, addTaskComment, deleteTaskComment, getAllTags } from '@/actions/tasks'
 import { priorityColors, priorityLabels, formatDate, isOverdue, formatFileSize, getFileIcon } from '@/lib/utils'
 
@@ -409,21 +410,13 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
             { value: 'high', label: 'High' },
           ]}
         />
-        <Input
-          id="startDate"
-          name="startDate"
-          type="date"
-          label="Start Date"
-          defaultValue={formatDateForInput(task.startDate)}
+        <DatePicker
+          id="dueDate"
+          name="dueDate"
+          label="Due Date"
+          defaultValue={formatDateForInput(task.dueDate)}
         />
       </div>
-      <Input
-        id="dueDate"
-        name="dueDate"
-        type="date"
-        label="Due Date"
-        defaultValue={formatDateForInput(task.dueDate)}
-      />
 
       {isBookmark && (
         <>

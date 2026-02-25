@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { VoiceInput } from '@/components/ui/VoiceInput'
+import { DatePicker } from '@/components/ui/DatePicker'
 import { UpgradePrompt, isLimitError } from '@/components/ui/UpgradePrompt'
 import { createTask } from '@/actions/tasks'
 import { parseTaskFromVoice } from '@/lib/voice'
@@ -97,28 +98,13 @@ export function AddTaskForm({ projectId, onSuccess }: { projectId: string; onSuc
           className="w-full sm:flex-1"
         />
       </div>
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="w-full sm:flex-1">
-          <label className="block text-xs text-muted-foreground mb-1">Start Date</label>
-          <Input
-            id="startDate"
-            name="startDate"
-            type="date"
-            className="w-full"
-          />
-        </div>
-        <div className="w-full sm:flex-1">
-          <label className="block text-xs text-muted-foreground mb-1">Due Date</label>
-          <Input
-            id="dueDate"
-            name="dueDate"
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            className="w-full"
-          />
-        </div>
-      </div>
+      <DatePicker
+        id="dueDate"
+        name="dueDate"
+        label="Due Date"
+        value={dueDate}
+        onChange={setDueDate}
+      />
       <Textarea
         id="notes"
         name="notes"
