@@ -33,16 +33,12 @@ const priorityOptions = [
 ]
 
 const sortOptions = [
-  { value: 'due_date', label: 'Due Date (Soonest)' },
-  { value: 'due_date_desc', label: 'Due Date (Latest)' },
-  { value: 'newest', label: 'Newest First' },
-  { value: 'oldest', label: 'Oldest First' },
-  { value: 'name', label: 'Name (A-Z)' },
-  { value: 'name_desc', label: 'Name (Z-A)' },
-  { value: 'project', label: 'Project (A-Z)' },
-  { value: 'client', label: 'Client (A-Z)' },
-  { value: 'priority_high', label: 'Priority (High First)' },
-  { value: 'priority_low', label: 'Priority (Low First)' },
+  { value: 'due_date', label: 'Due Soonest' },
+  { value: 'priority_high', label: 'Priority' },
+  { value: 'newest', label: 'Newest' },
+  { value: 'name', label: 'A-Z' },
+  { value: 'project', label: 'By Project' },
+  { value: 'client', label: 'By Client' },
 ]
 
 export function TasksFilter({ currentDate, currentStatus, currentPriority, currentProjectId, currentSort, projects }: TasksFilterProps) {
@@ -63,7 +59,7 @@ export function TasksFilter({ currentDate, currentStatus, currentPriority, curre
     router.push('/tasks')
   }
 
-  const hasFilters = currentDate || currentStatus || currentPriority || currentProjectId
+  const hasFilters = currentDate || currentStatus || currentPriority || currentProjectId || (currentSort && currentSort !== 'due_date')
 
   return (
     <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center">

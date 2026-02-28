@@ -156,22 +156,19 @@ export function QuickAdd() {
               {error && (
                 <div className="px-4 py-2 text-xs text-destructive">{error}</div>
               )}
-              <div className="flex items-center justify-between px-4 py-2.5">
-                <select
-                  value={projectId}
-                  onChange={(e) => setProjectId(e.target.value)}
-                  className="text-xs bg-transparent text-muted-foreground border border-border rounded-md px-2 py-1 outline-none focus:border-primary max-w-[200px]"
-                >
-                  <option value="">No project</option>
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
-                  ))}
-                </select>
+              <div className="px-4 py-2.5 space-y-2">
+                <div className="flex items-center justify-between">
+                  <select
+                    value={projectId}
+                    onChange={(e) => setProjectId(e.target.value)}
+                    className="text-xs bg-transparent text-muted-foreground border border-border rounded-md px-2 py-1 outline-none focus:border-primary max-w-[200px]"
+                  >
+                    <option value="">No project</option>
+                    {projects.map((p) => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
 
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-muted-foreground">
-                    Try: &ldquo;Buy groceries due tomorrow&rdquo;
-                  </span>
                   <button
                     type="submit"
                     disabled={isPending || !title.trim()}
@@ -180,6 +177,11 @@ export function QuickAdd() {
                     Add
                   </button>
                 </div>
+                {!title.trim() && (
+                  <p className="text-[10px] text-muted-foreground">
+                    Tip: Try natural language like &ldquo;Buy groceries due tomorrow high priority&rdquo;
+                  </p>
+                )}
               </div>
             </form>
           )}

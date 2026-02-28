@@ -5,7 +5,7 @@ const clerkEnabled = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 
 // Static pages and metadata routes — bypass Clerk entirely
 // Note: '/' is NOT bypassed because page.tsx calls auth() to redirect logged-in users
-const bypassPaths = new Set(['/about', '/contact', '/privacy', '/terms', '/kb', '/sitemap.xml', '/robots.txt'])
+const bypassPaths = new Set(['/about', '/contact', '/privacy', '/terms', '/kb', '/maintenance', '/suspended', '/sitemap.xml', '/robots.txt'])
 
 const isPublicRoute = createRouteMatcher([
   '/',
@@ -23,6 +23,9 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhook/email',
   '/api/v1/(.*)',
   '/api/og',
+  '/invoice/(.*)',
+  '/maintenance',
+  '/suspended',
 ])
 
 const clerkHandler = clerkMiddleware(async (auth, request) => {

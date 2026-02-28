@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { title: 'Calendar', href: '/calendar', icon: 'calendar' },
   { title: 'Bookmarks', href: '/bookmarks', icon: 'bookmark' },
   { title: 'Clients', href: '/clients', icon: 'client' },
+  { title: 'Invoices', href: '/invoices', icon: 'invoice' },
   { title: 'Settings', href: '/settings', icon: 'settings' },
 ]
 
@@ -22,6 +23,7 @@ const QUICK_ACTIONS = [
   { title: 'New Client', href: '/clients/new', icon: 'plus' },
   { title: 'Add Task', href: '/tasks?add=true', icon: 'plus' },
   { title: 'Add Bookmark', href: '/bookmarks?add=true', icon: 'plus' },
+  { title: 'New Invoice', href: '/invoices/new', icon: 'plus' },
 ]
 
 function TypeIcon({ type, className = 'w-4 h-4' }: { type: string; className?: string }) {
@@ -60,6 +62,12 @@ function TypeIcon({ type, className = 'w-4 h-4' }: { type: string; className?: s
       return (
         <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      )
+    case 'invoice':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
         </svg>
       )
     case 'settings':
@@ -358,7 +366,7 @@ export function CommandBar() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Search or type &quot;add task...&quot; to create"
+              placeholder="Search, or try: add task Buy groceries"
               className="flex-1 py-3.5 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm"
             />
             {isPending && (

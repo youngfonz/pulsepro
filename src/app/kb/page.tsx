@@ -69,6 +69,7 @@ export default function KnowledgeBasePage() {
             ['#bookmarks', 'Bookmarks'],
             ['#dashboard', 'Dashboard'],
             ['#search', 'Search'],
+            ['#invoicing', 'Invoicing'],
             ['#collaboration', 'Collaboration'],
             ['#integrations', 'Integrations'],
             ['#billing', 'Billing & Plans'],
@@ -401,35 +402,108 @@ export default function KnowledgeBasePage() {
             </div>
           </Section>
 
-          {/* 9. Collaboration */}
+          {/* 9. Invoicing */}
+          <Section title="Invoicing" id="invoicing">
+            <p className="text-foreground font-medium">Create professional invoices and send them to clients in seconds.</p>
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">Creating invoices</h3>
+              <p>
+                Go to <strong>Invoices</strong> in the sidebar and click <strong>Create Invoice</strong>. Select a client (required) and optionally link a project. Set the due date, add line items with descriptions, quantities, and rates, and the totals calculate automatically. You can also set a tax rate percentage.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">Importing time entries</h3>
+              <p>
+                If you select a project that has an hourly rate set, an &quot;Import Time Entries&quot; button appears. Click it to auto-populate line items from your tracked time entries — each entry becomes a line item with the hours as quantity and the project&apos;s hourly rate.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">Business info</h3>
+              <p>
+                The &quot;From&quot; section lets you enter your business name, email, and address. This info is saved to your browser and auto-fills on future invoices so you only enter it once.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">Invoice lifecycle</h3>
+              <p>
+                Invoices have four statuses: <strong>Draft</strong> (editable, not yet sent), <strong>Sent</strong> (emailed to client), <strong>Paid</strong> (marked as received), and <strong>Overdue</strong> (past due date). You can edit or delete draft invoices. Once sent, you can resend, mark as paid, or copy the share link.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">Sending invoices</h3>
+              <p>
+                Click &quot;Send Invoice&quot; to email the invoice directly to your client. The email includes the invoice number, amount due, due date, and a &quot;View Invoice&quot; button that links to a professional, print-ready public page. The client does not need an account to view it.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">Share link</h3>
+              <p>
+                Every invoice gets a unique shareable URL. Copy it with the &quot;Copy Share Link&quot; button and send it via any channel. The public page is clean, professional, and optimized for printing. Paid invoices show a &quot;PAID&quot; watermark.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">Filtering and sorting</h3>
+              <p>
+                Filter invoices by status (draft, sent, paid, overdue) or client. Search by invoice number or client name. Sort by date, amount, or number.
+              </p>
+            </div>
+          </Section>
+
+          {/* 10. Collaboration */}
           <Section title="Collaboration" id="collaboration">
-            <p className="text-foreground font-medium">Share projects with your team. <Badge variant="pro">Pro</Badge> <Badge variant="team">Team</Badge></p>
+            <p className="text-foreground font-medium">Work on projects together with your team. <Badge variant="pro">Pro</Badge> <Badge variant="team">Team</Badge></p>
 
             <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-foreground">Sharing projects</h3>
+              <h3 className="text-sm font-semibold text-foreground">Who is this for?</h3>
               <p>
-                On any project, add collaborators by their user ID. Each collaborator gets a role: <strong>Viewer</strong> (read-only), <strong>Editor</strong> (can edit tasks and project), or <strong>Manager</strong> (can also manage collaborators). The project creator is always the <strong>Owner</strong> with full control.
+                Collaboration is for <strong>internal teams</strong> — people who work together and all have Pulse Pro accounts. For example, an agency owner sharing projects with their designers, copywriters, and project managers. This is not for sharing with external clients — clients receive invoice share links instead (see <a href="#invoicing" className="text-primary underline">Invoicing</a>).
               </p>
             </div>
 
             <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-foreground">What collaborators see</h3>
+              <h3 className="text-sm font-semibold text-foreground">How to add team members</h3>
               <p>
-                Shared projects appear in collaborators&apos; project lists, task lists, calendar, dashboard, and search results — just like their own projects. Viewers see a read-only Kanban board.
+                Open any project and click the <strong>Team</strong> tab. Click <strong>Add team member</strong>, pick someone from the dropdown, choose their role, and click Add. The dropdown shows people in your organization — everyone must have a Pulse Pro account first.
               </p>
             </div>
 
             <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-foreground">Access controls</h3>
+              <h3 className="text-sm font-semibold text-foreground">Roles explained</h3>
               <p>
-                You can&apos;t add yourself as a collaborator. You can&apos;t add the project owner as a collaborator (they already have full access). Managers can grant and revoke access for other users. Revoking access removes the user immediately.
+                <strong>Viewer</strong> — Can see the project, tasks, and Kanban board but cannot change anything. Good for people who need visibility without editing, like a junior team member reviewing work.<br />
+                <strong>Editor</strong> — Can create tasks, mark them complete, add notes, and upload files. Cannot invite or remove people. Good for contractors or team members doing the work.<br />
+                <strong>Manager</strong> — Everything an Editor can do, plus they can add and remove Viewers and Editors. Good for a project manager who runs the day-to-day.<br />
+                <strong>Owner</strong> — The person who created the project. Full control — can do everything including deleting the project and managing Managers. Cannot be changed.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">What team members see</h3>
+              <p>
+                Shared projects show up in their project list, task list, calendar, dashboard, and search — just like their own projects. They can tell shared projects apart because they didn&apos;t create them.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">Removing access</h3>
+              <p>
+                Owners and Managers can remove any team member by clicking the X next to their name in the Team tab. Access is revoked immediately — the project disappears from their workspace.
               </p>
             </div>
 
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-foreground">Collaborator limits</h3>
               <p>
-                Free plan: no collaborators. Pro plan: up to 3 collaborators per project. Team plan: up to 10 collaborators per project.
+                <strong>Free plan:</strong> No collaboration — upgrade to share projects.<br />
+                <strong>Pro plan ($12/mo):</strong> Up to 3 team members per project.<br />
+                <strong>Team plan ($29/mo):</strong> Up to 10 team members per project.
               </p>
             </div>
           </Section>

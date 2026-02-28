@@ -98,7 +98,7 @@ export function DatePicker({ id, name, label, value: controlledValue, defaultVal
     }
   }, [open])
 
-  // Position calendar above if it would overflow below
+  // Position calendar above if it would overflow below, and scroll into view
   useEffect(() => {
     if (!open || !calendarRef.current || !containerRef.current) return
     const cal = calendarRef.current
@@ -117,6 +117,10 @@ export function DatePicker({ id, name, label, value: controlledValue, defaultVal
       cal.style.marginTop = '4px'
       cal.style.marginBottom = '0'
     }
+    // Scroll calendar into view within scrollable parent
+    requestAnimationFrame(() => {
+      cal.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    })
   }, [open, viewMonth, viewYear])
 
   function prevMonth() {
@@ -199,10 +203,10 @@ export function DatePicker({ id, name, label, value: controlledValue, defaultVal
       {open && (
         <div
           ref={calendarRef}
-          className="absolute left-0 z-[60] w-[280px] rounded-lg border border-border bg-card shadow-lg"
+          className="absolute left-0 z-[60] w-[252px] rounded-lg border border-border bg-card shadow-lg"
         >
           {/* Header: month navigation */}
-          <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+          <div className="flex items-center justify-between px-2 py-1.5 border-b border-border">
             <button
               type="button"
               onClick={prevMonth}
@@ -227,16 +231,16 @@ export function DatePicker({ id, name, label, value: controlledValue, defaultVal
           </div>
 
           {/* Day-of-week headers */}
-          <div className="grid grid-cols-7 px-2 pt-2">
+          <div className="grid grid-cols-7 px-1.5 pt-1.5">
             {DAYS.map((d) => (
-              <div key={d} className="text-center text-[11px] font-medium text-muted-foreground py-1">
+              <div key={d} className="text-center text-[10px] font-medium text-muted-foreground py-0.5">
                 {d}
               </div>
             ))}
           </div>
 
           {/* Day grid */}
-          <div className="grid grid-cols-7 px-2 pb-2">
+          <div className="grid grid-cols-7 px-1.5 pb-1.5">
             {cells.map((day, i) => {
               if (day === null) {
                 return <div key={`empty-${i}`} />
@@ -250,7 +254,7 @@ export function DatePicker({ id, name, label, value: controlledValue, defaultVal
                   type="button"
                   onClick={() => selectDay(day)}
                   className={cn(
-                    'h-8 w-8 mx-auto rounded-md text-sm transition-colors',
+                    'h-7 w-7 mx-auto rounded-md text-xs transition-colors',
                     isSelected
                       ? 'bg-primary text-primary-foreground font-medium'
                       : isToday
@@ -265,7 +269,7 @@ export function DatePicker({ id, name, label, value: controlledValue, defaultVal
           </div>
 
           {/* Today shortcut */}
-          <div className="border-t border-border px-3 py-1.5">
+          <div className="border-t border-border px-2 py-1">
             <button
               type="button"
               onClick={() => {

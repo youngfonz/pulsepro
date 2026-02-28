@@ -32,11 +32,18 @@ export async function getUserSubscription() {
     where: { userId },
   })
 
-  // Auto-create Pro subscription for admin users
-  if (!subscription && admin) {
-    subscription = await prisma.subscription.create({
-      data: { userId, plan: 'pro' },
-    })
+  // Auto-create Team subscription for admin users (highest tier, full access)
+  if (admin) {
+    if (!subscription) {
+      subscription = await prisma.subscription.create({
+        data: { userId, plan: 'team' },
+      })
+    } else if (subscription.plan !== 'team') {
+      subscription = await prisma.subscription.update({
+        where: { userId },
+        data: { plan: 'team' },
+      })
+    }
   }
 
   if (!subscription) {

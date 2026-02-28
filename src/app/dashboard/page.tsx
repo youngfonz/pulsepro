@@ -197,24 +197,24 @@ export default async function DashboardPage() {
                   href={project.href}
                   className="flex items-center gap-3 px-4 py-3 sm:px-6 hover:bg-muted/50 transition-colors"
                 >
-                  <div
-                    className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                  <span
+                    className={`inline-flex items-center gap-1.5 text-[10px] font-medium px-1.5 py-0.5 rounded flex-shrink-0 ${
+                      project.label === 'completed' || project.label === 'healthy'
+                        ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10'
+                        : project.label === 'at_risk'
+                        ? 'text-amber-600 dark:text-amber-400 bg-amber-500/10'
+                        : 'text-rose-600 dark:text-rose-400 bg-rose-500/10'
+                    }`}
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full ${
                       project.label === 'completed' || project.label === 'healthy'
                         ? 'bg-emerald-500'
                         : project.label === 'at_risk'
                         ? 'bg-amber-500'
                         : 'bg-rose-500'
-                    }`}
-                    title={
-                      project.label === 'completed'
-                        ? 'Completed'
-                        : project.label === 'healthy'
-                        ? 'Healthy'
-                        : project.label === 'at_risk'
-                        ? 'At Risk'
-                        : 'Critical'
-                    }
-                  />
+                    }`} />
+                    {project.label === 'completed' ? 'Done' : project.label === 'healthy' ? 'Healthy' : project.label === 'at_risk' ? 'At Risk' : 'Critical'}
+                  </span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{project.projectName}</p>
                     <p className="text-xs text-muted-foreground truncate">{project.clientName}</p>
@@ -259,7 +259,7 @@ export default async function DashboardPage() {
                 href="/projects/new"
                 className="block px-4 py-8 text-center text-muted-foreground hover:bg-muted transition-colors"
               >
-                No activity yet. Create your first project to get started.
+                Start by creating a project, task, or bookmark to see it here.
               </Link>
             ) : (
               <div className="divide-y divide-border">

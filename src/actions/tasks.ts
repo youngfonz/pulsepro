@@ -159,9 +159,36 @@ export async function toggleTask(id: string) {
         status: newCompleted ? 'done' : 'todo',
       },
     })
-    if (task.projectId) revalidatePath(`/projects/${task.projectId}`)
+
+    // Auto-update project status based on task completion (excludes bookmarks)
+    if (task.projectId) {
+      const realTasks = await prisma.task.findMany({
+        where: { projectId: task.projectId, url: null },
+        select: { completed: true },
+      })
+      const allCompleted = realTasks.length > 0 && realTasks.every(t => t.completed)
+      const project = await prisma.project.findUnique({
+        where: { id: task.projectId },
+        select: { status: true },
+      })
+
+      if (allCompleted && project?.status !== 'completed') {
+        await prisma.project.update({
+          where: { id: task.projectId },
+          data: { status: 'completed' },
+        })
+      } else if (!allCompleted && project?.status === 'completed') {
+        await prisma.project.update({
+          where: { id: task.projectId },
+          data: { status: 'in_progress' },
+        })
+      }
+
+      revalidatePath(`/projects/${task.projectId}`)
+    }
     revalidatePath(`/tasks/${id}`)
     revalidatePath('/tasks')
+    revalidatePath('/projects')
   } catch (error) {
     console.error('toggleTask:', error)
     throw new Error('Failed to toggle task')
@@ -186,8 +213,35 @@ export async function deleteTask(id: string) {
     await prisma.task.delete({
       where: { id },
     })
-    if (task.projectId) revalidatePath(`/projects/${task.projectId}`)
+
+    // Auto-update project status after deletion (excludes bookmarks)
+    if (task.projectId) {
+      const remaining = await prisma.task.findMany({
+        where: { projectId: task.projectId, url: null },
+        select: { completed: true },
+      })
+      const allCompleted = remaining.length > 0 && remaining.every(t => t.completed)
+      const project = await prisma.project.findUnique({
+        where: { id: task.projectId },
+        select: { status: true },
+      })
+
+      if (allCompleted && project?.status !== 'completed') {
+        await prisma.project.update({
+          where: { id: task.projectId },
+          data: { status: 'completed' },
+        })
+      } else if (!allCompleted && project?.status === 'completed') {
+        await prisma.project.update({
+          where: { id: task.projectId },
+          data: { status: 'in_progress' },
+        })
+      }
+
+      revalidatePath(`/projects/${task.projectId}`)
+    }
     revalidatePath('/tasks')
+    revalidatePath('/projects')
   } catch (error) {
     console.error('deleteTask:', error)
     throw new Error('Failed to delete task')

@@ -1,8 +1,9 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { requireAdmin } from '@/lib/auth'
+import { requireAdmin, isAdminUser } from '@/lib/auth'
 import { clerkClient } from '@clerk/nextjs/server'
+import { revalidatePath } from 'next/cache'
 
 export async function getAdminStats() {
   await requireAdmin()
@@ -69,10 +70,139 @@ export async function getAdminUsers(page = 1, limit = 50) {
       createdAt: user.createdAt,
       plan: (subMap.get(user.id)?.plan as string) ?? 'free',
       status: (subMap.get(user.id)?.status as string) ?? 'active',
+      suspendedAt: subMap.get(user.id)?.suspendedAt ?? null,
       projectCount: projectMap.get(user.id) ?? 0,
       taskCount: taskMap.get(user.id) ?? 0,
       clientCount: clientMap.get(user.id) ?? 0,
     })),
     totalCount: users.totalCount,
   }
+}
+
+export async function updateUserPlan(userId: string, plan: string) {
+  const adminId = await requireAdmin()
+
+  if (userId === adminId) {
+    throw new Error('Cannot change your own plan')
+  }
+
+  const validPlans = ['free', 'pro', 'team']
+  if (!validPlans.includes(plan)) {
+    throw new Error('Invalid plan')
+  }
+
+  await prisma.subscription.upsert({
+    where: { userId },
+    create: { userId, plan, status: 'active' },
+    update: { plan },
+  })
+
+  revalidatePath('/admin/users')
+}
+
+export async function suspendUser(userId: string) {
+  const adminId = await requireAdmin()
+
+  if (userId === adminId) {
+    throw new Error('Cannot suspend yourself')
+  }
+  if (isAdminUser(userId)) {
+    throw new Error('Cannot suspend an admin')
+  }
+
+  await prisma.subscription.upsert({
+    where: { userId },
+    create: { userId, plan: 'free', status: 'active', suspendedAt: new Date() },
+    update: { suspendedAt: new Date() },
+  })
+
+  revalidatePath('/admin/users')
+}
+
+export async function unsuspendUser(userId: string) {
+  await requireAdmin()
+
+  await prisma.subscription.update({
+    where: { userId },
+    data: { suspendedAt: null },
+  })
+
+  revalidatePath('/admin/users')
+}
+
+export async function wipeUserData(userId: string) {
+  const adminId = await requireAdmin()
+
+  if (userId === adminId) {
+    throw new Error('Cannot wipe your own data')
+  }
+  if (isAdminUser(userId)) {
+    throw new Error('Cannot wipe an admin')
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.projectAccess.deleteMany({ where: { userId } })
+    await tx.task.deleteMany({ where: { userId } })
+    await tx.invoiceItem.deleteMany({ where: { invoice: { userId } } })
+    await tx.invoice.deleteMany({ where: { userId } })
+    await tx.cachedInsight.deleteMany({ where: { userId } })
+    await tx.client.deleteMany({ where: { userId } })
+    await tx.project.deleteMany({ where: { userId } })
+  })
+
+  revalidatePath('/admin/users')
+}
+
+export async function deleteUser(userId: string) {
+  const adminId = await requireAdmin()
+
+  if (userId === adminId) {
+    throw new Error('Cannot delete yourself')
+  }
+  if (isAdminUser(userId)) {
+    throw new Error('Cannot delete an admin')
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.projectAccess.deleteMany({ where: { userId } })
+    await tx.task.deleteMany({ where: { userId } })
+    await tx.invoiceItem.deleteMany({ where: { invoice: { userId } } })
+    await tx.invoice.deleteMany({ where: { userId } })
+    await tx.cachedInsight.deleteMany({ where: { userId } })
+    await tx.subscription.deleteMany({ where: { userId } })
+    await tx.client.deleteMany({ where: { userId } })
+    await tx.project.deleteMany({ where: { userId } })
+  })
+
+  try {
+    const clerk = await clerkClient()
+    await clerk.users.deleteUser(userId)
+  } catch (err) {
+    console.error('Failed to delete Clerk user:', err)
+  }
+
+  revalidatePath('/admin/users')
+}
+
+export async function getMaintenanceMode() {
+  const config = await prisma.systemConfig.findUnique({
+    where: { key: 'maintenance_mode' },
+  })
+  return config?.value === 'true'
+}
+
+export async function toggleMaintenanceMode() {
+  await requireAdmin()
+
+  const current = await getMaintenanceMode()
+
+  await prisma.systemConfig.upsert({
+    where: { key: 'maintenance_mode' },
+    create: { key: 'maintenance_mode', value: current ? 'false' : 'true' },
+    update: { value: current ? 'false' : 'true' },
+  })
+
+  revalidatePath('/admin')
+  revalidatePath('/', 'layout')
+  return !current
 }

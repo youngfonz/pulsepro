@@ -32,14 +32,14 @@ export async function getProjects(filters?: {
         conditions.push({
           OR: [
             { status: 'completed' },
-            { tasks: { every: { completed: true }, some: {} } },
+            { tasks: { every: { OR: [{ completed: true }, { url: { not: null } }] }, some: { url: null } } },
           ],
         })
       } else {
-        // For non-completed statuses, exclude projects where all tasks are done
+        // For non-completed statuses, exclude projects where all real tasks (non-bookmarks) are done
         where.status = filters.status
         where.NOT = {
-          tasks: { every: { completed: true }, some: {} },
+          tasks: { every: { OR: [{ completed: true }, { url: { not: null } }] }, some: { url: null } },
         }
       }
     }
@@ -107,7 +107,7 @@ export async function getProjects(filters?: {
           },
         },
         tasks: {
-          select: { id: true, completed: true },
+          select: { id: true, completed: true, url: true },
         },
         _count: {
           select: { tasks: true },
@@ -248,6 +248,9 @@ export async function createProject(formData: FormData) {
       budget: formData.get('budget')
         ? parseFloat(formData.get('budget') as string)
         : null,
+      hourlyRate: formData.get('hourlyRate')
+        ? parseFloat(formData.get('hourlyRate') as string)
+        : null,
       clientId: formData.get('clientId') as string,
     }
 
@@ -280,6 +283,9 @@ export async function updateProject(id: string, formData: FormData) {
         : null,
       budget: formData.get('budget')
         ? parseFloat(formData.get('budget') as string)
+        : null,
+      hourlyRate: formData.get('hourlyRate')
+        ? parseFloat(formData.get('hourlyRate') as string)
         : null,
       clientId: formData.get('clientId') as string,
     }

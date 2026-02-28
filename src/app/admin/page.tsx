@@ -1,8 +1,12 @@
 import Link from 'next/link'
-import { getAdminStats } from '@/actions/admin'
+import { getAdminStats, getMaintenanceMode } from '@/actions/admin'
+import { MaintenanceToggle } from './MaintenanceToggle'
 
 export default async function AdminPage() {
-  const stats = await getAdminStats()
+  const [stats, maintenanceMode] = await Promise.all([
+    getAdminStats(),
+    getMaintenanceMode(),
+  ])
 
   const cards = [
     { label: 'Total Users', value: stats.totalUsers },
@@ -20,6 +24,8 @@ export default async function AdminPage() {
           <p className="text-sm text-muted-foreground mt-1">Platform overview</p>
         </div>
       </div>
+
+      <MaintenanceToggle enabled={maintenanceMode} />
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {cards.map((card) => (

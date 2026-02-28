@@ -24,6 +24,7 @@ model Client {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   projects  Project[]
+  invoices  Invoice[]
 
   @@index([userId])
   @@index([orgId])
@@ -40,6 +41,7 @@ model Project {
   priority    String   @default("medium") // low, medium, high
   dueDate     DateTime?
   budget      Float?
+  hourlyRate  Float?
   clientId    String
   client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
@@ -47,6 +49,7 @@ model Project {
   tasks       Task[]
   images      ProjectImage[]
   timeEntries TimeEntry[]
+  invoices    Invoice[]
   access      ProjectAccess[]
 
   @@index([userId])
@@ -191,6 +194,8 @@ model Subscription {
   // API access
   apiToken              String?   @unique
   inboundEmailToken     String?   @unique
+  // Admin controls
+  suspendedAt           DateTime?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
@@ -198,4 +203,49 @@ model Subscription {
   @@index([orgId])
   @@index([polarCustomerId])
   @@index([polarSubscriptionId])
+}
+
+model Invoice {
+  id          String        @id @default(cuid())
+  userId      String
+  number      String        // "INV-001" auto-incremented per user
+  clientId    String
+  client      Client        @relation(fields: [clientId], references: [id])
+  projectId   String?
+  project     Project?      @relation(fields: [projectId], references: [id])
+  status      String        @default("draft") // draft, sent, paid, overdue
+  issueDate   DateTime      @default(now())
+  dueDate     DateTime
+  taxRate     Float         @default(0)
+  notes       String?
+  fromName    String?
+  fromEmail   String?
+  fromAddress String?
+  shareToken  String        @unique @default(cuid())
+  paidAt      DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  items       InvoiceItem[]
+
+  @@index([userId])
+  @@index([clientId])
+}
+
+model SystemConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model InvoiceItem {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  quantity    Float
+  rate        Float
+  amount      Float
+
+  @@index([invoiceId])
 }
