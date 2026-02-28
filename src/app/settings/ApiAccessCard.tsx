@@ -274,28 +274,35 @@ export function ApiAccessCard() {
                     <p>Tap <b>Request Body</b> and change it to <b>JSON</b>. Then tap <b>Add new field</b>:</p>
                     <ul className="mt-1.5 space-y-1 pl-3">
                       <li>Choose <b>Text</b> as the type</li>
-                      <li>Set the key to <b>title</b></li>
-                      <li>For the value, tap the field, then tap the <b>variable icon</b> (wand) above the keyboard and select <b>Ask for Input</b> from the list. This connects your voice input to the task title.</li>
+                      <li>Set the key to <b>text</b></li>
+                      <li>For the value, tap the field, then tap the <b>variable icon</b> (wand) above the keyboard and select <b>Ask for Input</b> from the list</li>
                     </ul>
                   </div>
 
                   {/* Step 7 */}
                   <div>
-                    <div className="font-medium text-foreground mb-1">Step 7: Name it and add to Siri</div>
-                    <p>Tap the name at the top (e.g. &quot;New Shortcut 1&quot;) and rename it to something like <b>Add Pulse Task</b>. Now you can say:</p>
-                    <p className="mt-1 font-medium text-foreground">&quot;Hey Siri, Add Pulse Task&quot;</p>
-                    <p className="mt-1">Siri will ask &quot;What&apos;s the task?&quot;, you say the title, and it creates the task in Pulse Pro.</p>
+                    <div className="font-medium text-foreground mb-1">Step 7: Add confirmation</div>
+                    <p>Search for <b>Get Dictionary Value</b> and add it. Set the key to <b>message</b>. Then search for <b>Show Notification</b> and add it &mdash; set the body to the <b>Dictionary Value</b> variable. This shows a confirmation after each task is created.</p>
                   </div>
 
-                  {/* Optional fields */}
+                  {/* Step 8 */}
+                  <div>
+                    <div className="font-medium text-foreground mb-1">Step 8: Name it and try it</div>
+                    <p>Tap the name at the top and rename it to <b>Add Pulse Task</b>. Now say:</p>
+                    <p className="mt-1 font-medium text-foreground">&quot;Hey Siri, Add Pulse Task&quot;</p>
+                  </div>
+
+                  {/* Voice examples */}
                   <div className="pt-2 border-t border-border">
-                    <div className="font-medium text-foreground mb-1">Optional: Extra fields</div>
-                    <p>You can add more JSON fields in step 6 to set priority, project, or due date:</p>
-                    <ul className="mt-1.5 space-y-0.5 pl-3">
-                      <li><code className="text-foreground">priority</code> &mdash; &quot;low&quot;, &quot;medium&quot;, or &quot;high&quot;</li>
-                      <li><code className="text-foreground">project</code> &mdash; project name (matched automatically)</li>
-                      <li><code className="text-foreground">dueDate</code> &mdash; e.g. &quot;2025-03-15&quot;</li>
+                    <div className="font-medium text-foreground mb-1">What you can say</div>
+                    <p>Pulse Pro parses your full sentence &mdash; just speak naturally:</p>
+                    <ul className="mt-1.5 space-y-1 pl-3">
+                      <li>&quot;Buy groceries&quot;</li>
+                      <li>&quot;Send invoice for the <b>Acme</b> project&quot;</li>
+                      <li>&quot;Call plumber <b>high priority</b>&quot;</li>
+                      <li>&quot;Review mockups for <b>Rebrand</b>, <b>due tomorrow</b>&quot;</li>
                     </ul>
+                    <p className="mt-1.5">Project names are matched automatically. Priority, due dates, and project are all optional.</p>
                   </div>
                 </div>
               )}
