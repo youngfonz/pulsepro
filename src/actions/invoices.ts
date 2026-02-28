@@ -56,7 +56,12 @@ export async function getInvoices(filters?: {
     }
 
     if (filters?.status && filters.status !== 'all') {
-      conditions.push({ status: filters.status })
+      if (filters.status === 'overdue') {
+        // Overdue = sent + past due date
+        conditions.push({ status: 'sent', dueDate: { lt: new Date() } })
+      } else {
+        conditions.push({ status: filters.status })
+      }
     }
 
     if (filters?.clientId && filters.clientId !== 'all') {
@@ -109,11 +114,13 @@ export async function getInvoices(filters?: {
       orderBy,
     })
 
-    // Compute total = sum of item amounts + tax
+    // Compute total and auto-detect overdue status
+    const now = new Date()
     const withTotal = invoices.map((invoice) => {
       const subtotal = invoice.items.reduce((sum, item) => sum + item.amount, 0)
       const total = subtotal + subtotal * (invoice.taxRate / 100)
-      return { ...invoice, subtotal, total }
+      const status = invoice.status === 'sent' && invoice.dueDate < now ? 'overdue' : invoice.status
+      return { ...invoice, status, subtotal, total }
     })
 
     // In-memory sort for amount (Prisma can't aggregate across relations)
@@ -158,8 +165,9 @@ export async function getInvoice(id: string) {
 
     const subtotal = invoice.items.reduce((sum, item) => sum + item.amount, 0)
     const total = subtotal + subtotal * (invoice.taxRate / 100)
+    const status = invoice.status === 'sent' && invoice.dueDate < new Date() ? 'overdue' : invoice.status
 
-    return { ...invoice, subtotal, total }
+    return { ...invoice, status, subtotal, total }
   } catch (error) {
     console.error('Failed to fetch invoice:', error)
     return null
@@ -192,8 +200,9 @@ export async function getInvoiceByToken(token: string) {
 
     const subtotal = invoice.items.reduce((sum, item) => sum + item.amount, 0)
     const total = subtotal + subtotal * (invoice.taxRate / 100)
+    const status = invoice.status === 'sent' && invoice.dueDate < new Date() ? 'overdue' : invoice.status
 
-    return { ...invoice, subtotal, total }
+    return { ...invoice, status, subtotal, total }
   } catch (error) {
     console.error('Failed to fetch invoice by token:', error)
     return null

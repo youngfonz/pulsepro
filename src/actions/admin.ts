@@ -122,9 +122,10 @@ export async function suspendUser(userId: string) {
 export async function unsuspendUser(userId: string) {
   await requireAdmin()
 
-  await prisma.subscription.update({
+  await prisma.subscription.upsert({
     where: { userId },
-    data: { suspendedAt: null },
+    create: { userId, plan: 'free', status: 'active', suspendedAt: null },
+    update: { suspendedAt: null },
   })
 
   revalidatePath('/admin/users')
