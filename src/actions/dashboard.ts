@@ -90,9 +90,12 @@ export async function getProjectsDueThisWeek() {
         _count: {
           select: { tasks: true },
         },
+        tasks: {
+          select: { completed: true },
+        },
       },
       orderBy: { dueDate: 'asc' },
-      take: 5,
+      take: 10,
     })
 
     const sharedIds = await getAccessibleProjectIds()
@@ -106,14 +109,22 @@ export async function getProjectsDueThisWeek() {
         include: {
           client: { select: { id: true, name: true } },
           _count: { select: { tasks: true } },
+          tasks: { select: { completed: true } },
         },
         orderBy: { dueDate: 'asc' },
-        take: 5,
+        take: 10,
       })
       results.push(...sharedDue)
     }
 
-    return results
+    // Exclude projects where all tasks are completed
+    const filtered = results.filter((p) => {
+      if (p.tasks.length === 0) return true // no tasks = still show it
+      return p.tasks.some((t) => !t.completed)
+    })
+
+    // Strip the tasks array from the return (only needed _count and client)
+    return filtered.slice(0, 5).map(({ tasks, ...rest }) => rest)
   } catch (error) {
     console.error('Failed to fetch projects due this week:', error)
     return []
