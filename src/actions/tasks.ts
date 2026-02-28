@@ -97,11 +97,13 @@ export async function updateTask(id: string, formData: FormData) {
       await requireProjectAccess(task.projectId, 'editor')
     }
 
+    const projectIdValue = formData.get('projectId') as string | null
     const data: Record<string, unknown> = {
       title: formData.get('title') as string,
       description: formData.get('description') as string || null,
       notes: formData.get('notes') as string || null,
       priority: formData.get('priority') as string,
+      projectId: projectIdValue === 'none' ? null : projectIdValue || task.projectId,
       startDate: formData.get('startDate')
         ? new Date(formData.get('startDate') as string)
         : null,
@@ -127,6 +129,8 @@ export async function updateTask(id: string, formData: FormData) {
       data,
     })
     if (task.projectId) revalidatePath(`/projects/${task.projectId}`)
+    const newProjectId = data.projectId as string | null
+    if (newProjectId && newProjectId !== task.projectId) revalidatePath(`/projects/${newProjectId}`)
     revalidatePath(`/tasks/${id}`)
     revalidatePath('/tasks')
     revalidatePath('/bookmarks')
@@ -523,7 +527,9 @@ export async function getAllTasks(options?: {
     where.priority = options.priority
   }
 
-  if (options?.projectId && options.projectId !== 'all') {
+  if (options?.projectId === 'none') {
+    where.projectId = null
+  } else if (options?.projectId && options.projectId !== 'all') {
     where.projectId = options.projectId
   }
 

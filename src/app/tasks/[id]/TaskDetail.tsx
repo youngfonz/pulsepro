@@ -77,7 +77,13 @@ interface Task {
   } | null
 }
 
-export function TaskDetail({ task }: { task: Task }) {
+interface Project {
+  id: string
+  name: string
+  client: { name: string }
+}
+
+export function TaskDetail({ task, projects }: { task: Task; projects: Project[] }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isEditing, setIsEditing] = useState(false)
@@ -176,7 +182,7 @@ export function TaskDetail({ task }: { task: Task }) {
       </div>
 
       {isEditing ? (
-        <TaskEditForm task={task} onClose={() => setIsEditing(false)} />
+        <TaskEditForm task={task} projects={projects} onClose={() => setIsEditing(false)} />
       ) : (
         <TaskReadView task={task} overdue={overdue} />
       )}
@@ -290,7 +296,7 @@ function TaskReadView({ task, overdue }: { task: Task; overdue: boolean }) {
   )
 }
 
-function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
+function TaskEditForm({ task, projects, onClose }: { task: Task; projects: Project[]; onClose: () => void }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [images, setImages] = useState<TaskImage[]>(task.images)
@@ -393,6 +399,16 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
             rows={4}
             defaultValue={task.notes || ''}
             placeholder="Add any additional notes..."
+          />
+          <Select
+            id="projectId"
+            name="projectId"
+            label="Project"
+            defaultValue={task.project?.id || 'none'}
+            options={[
+              { value: 'none', label: 'No Project (Quick Task)' },
+              ...projects.map((p) => ({ value: p.id, label: `${p.name} (${p.client.name})` })),
+            ]}
           />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Select

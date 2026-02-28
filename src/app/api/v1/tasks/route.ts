@@ -4,14 +4,18 @@ import { isAdminUser } from '@/lib/auth'
 import { parseTaskFromVoice } from '@/lib/voice'
 
 /**
- * Extract "for <project name>" from text and return the cleaned text + project name.
+ * Extract project name from natural language text.
+ * Handles: "for X", "to X", "in X", "under X", "add it to X", "on the X project"
  */
 function extractProject(text: string): { projectName?: string; cleanedText: string } {
-  // Match "for the <project> project" or "for <project>"
+  const prepositions = 'for|to|in|under|on'
   const patterns = [
-    /\s+for\s+(?:the\s+)?(.+?)\s+project\b/i,
-    /\s+for\s+(?:the\s+)?(.+?)(?:\s*,|\s+(?:high|low|medium|urgent|critical|due)\b)/i,
-    /\s+for\s+(?:the\s+)?(.+)$/i,
+    // "for/to/in/under the X project"
+    new RegExp(`\\s+(?:add\\s+(?:it\\s+)?)?(?:${prepositions})\\s+(?:the\\s+)?(.+?)\\s+project\\b`, 'i'),
+    // "for/to/in/under X" followed by comma or priority/due keywords
+    new RegExp(`\\s+(?:add\\s+(?:it\\s+)?)?(?:${prepositions})\\s+(?:the\\s+)?(.+?)(?:\\s*,|\\s+(?:high|low|medium|urgent|critical|due)\\b)`, 'i'),
+    // "for/to/in/under X" at end of string
+    new RegExp(`\\s+(?:add\\s+(?:it\\s+)?)?(?:${prepositions})\\s+(?:the\\s+)?(.+)$`, 'i'),
   ]
 
   for (const pattern of patterns) {

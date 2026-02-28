@@ -68,6 +68,7 @@ export function TasksFilter({ currentDate, currentStatus, currentPriority, curre
         onChange={(e) => updateFilter('projectId', e.target.value)}
         options={[
           { value: 'all', label: 'All Projects' },
+          { value: 'none', label: 'Quick Tasks (No Project)' },
           ...projects.map((p) => ({ value: p.id, label: `${p.name} (${p.client.name})` })),
         ]}
         className="col-span-2 sm:w-48"

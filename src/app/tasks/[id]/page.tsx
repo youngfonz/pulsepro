@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getTask } from '@/actions/tasks'
+import { getTask, getProjectsForTaskFilter } from '@/actions/tasks'
 import { TaskDetail } from './TaskDetail'
 
 interface Props {
@@ -8,11 +8,11 @@ interface Props {
 
 export default async function TaskDetailPage({ params }: Props) {
   const { id } = await params
-  const task = await getTask(id)
+  const [task, projects] = await Promise.all([getTask(id), getProjectsForTaskFilter()])
 
   if (!task) {
     notFound()
   }
 
-  return <TaskDetail task={task} />
+  return <TaskDetail task={task} projects={projects} />
 }
