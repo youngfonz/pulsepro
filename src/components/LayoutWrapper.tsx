@@ -10,12 +10,14 @@ interface LayoutWrapperProps {
   clientCount: number
   clerkEnabled?: boolean
   isAdmin?: boolean
+  isAuthenticated?: boolean
 }
 
-export function LayoutWrapper({ children, clientCount, clerkEnabled = false, isAdmin = false }: LayoutWrapperProps) {
+export function LayoutWrapper({ children, clientCount, clerkEnabled = false, isAdmin = false, isAuthenticated = false }: LayoutWrapperProps) {
   const pathname = usePathname()
   const isAuthPage = pathname === '/login' || pathname === '/signup' || pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')
-  const isMarketingPage = pathname === '/' || pathname === '/about' || pathname === '/contact' || pathname === '/privacy' || pathname === '/terms' || pathname === '/kb' || pathname === '/maintenance' || pathname === '/suspended' || pathname.startsWith('/invoice/')
+  const alwaysMarketing = pathname === '/' || pathname === '/about' || pathname === '/contact' || pathname === '/privacy' || pathname === '/terms' || pathname === '/maintenance' || pathname === '/suspended' || pathname.startsWith('/invoice/')
+  const isMarketingPage = alwaysMarketing || (!isAuthenticated && pathname === '/kb')
 
   if (isAuthPage || isMarketingPage) {
     return <>{children}</>

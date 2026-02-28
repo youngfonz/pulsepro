@@ -92,7 +92,7 @@ export default async function RootLayout({
 
   const innerContent = (
     <ThemeProvider>
-      <LayoutWrapper clientCount={clientCount} clerkEnabled={clerkEnabled} isAdmin={isAdmin}>
+      <LayoutWrapper clientCount={clientCount} clerkEnabled={clerkEnabled} isAdmin={isAdmin} isAuthenticated={!!userId}>
         {children}
       </LayoutWrapper>
     </ThemeProvider>
