@@ -60,7 +60,7 @@ interface Task {
   title: string
   description: string | null
   notes: string | null
-  completed: boolean
+  status: string
   priority: string
   startDate: Date | null
   dueDate: Date | null
@@ -81,7 +81,7 @@ export function TaskDetail({ task }: { task: Task }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isEditing, setIsEditing] = useState(false)
-  const overdue = isOverdue(task.dueDate) && !task.completed
+  const overdue = isOverdue(task.dueDate) && task.status !== 'done'
 
   const handleToggle = () => {
     startTransition(async () => {
@@ -117,12 +117,12 @@ export function TaskDetail({ task }: { task: Task }) {
             onClick={handleToggle}
             disabled={isPending}
             className={`mt-1 h-6 w-6 flex-shrink-0 rounded border-2 transition-colors ${
-              task.completed
+              task.status === 'done'
                 ? 'border-emerald-500 bg-emerald-500 text-white'
                 : 'border-border hover:border-primary'
             }`}
           >
-            {task.completed && (
+            {task.status === 'done' && (
               <svg className="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
               </svg>
@@ -131,7 +131,7 @@ export function TaskDetail({ task }: { task: Task }) {
           <div className="flex-1 min-w-0">
             <h1
               className={`text-xl md:text-2xl font-bold ${
-                task.completed
+                task.status === 'done'
                   ? 'text-muted-foreground line-through'
                   : overdue
                   ? 'text-destructive'
@@ -192,7 +192,7 @@ function TaskReadView({ task, overdue }: { task: Task; overdue: boolean }) {
         <Badge className={priorityColors[task.priority]}>
           {priorityLabels[task.priority]}
         </Badge>
-        {task.completed && (
+        {task.status === 'done' && (
           <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
             Completed
           </Badge>

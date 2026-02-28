@@ -14,7 +14,7 @@ interface Project {
     id: string
     name: string
   }
-  tasks: { id: string; completed: boolean; url: string | null }[]
+  tasks: { id: string; status: string; url: string | null }[]
   _count: {
     tasks: number
   }
@@ -31,7 +31,7 @@ type ViewMode = 'table' | 'grid'
 function isProjectCompleted(p: Project): boolean {
   if (p.status === 'completed') return true
   const realTasks = p.tasks.filter(t => !t.url)
-  if (realTasks.length > 0 && realTasks.every(t => t.completed)) return true
+  if (realTasks.length > 0 && realTasks.every(t => t.status === 'done')) return true
   return false
 }
 

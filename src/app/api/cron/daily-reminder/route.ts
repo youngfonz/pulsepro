@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     prisma.task.findMany({
       where: {
         userId: OWNER_USER_ID,
-        completed: false,
+        status: { not: 'done' },
         url: null,
         dueDate: { lt: todayStart },
       },
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     prisma.task.findMany({
       where: {
         userId: OWNER_USER_ID,
-        completed: false,
+        status: { not: 'done' },
         url: null,
         dueDate: { gte: todayStart, lt: todayEnd },
       },
@@ -82,10 +82,10 @@ export async function GET(request: NextRequest) {
   for (const sub of telegramSubs) {
     const [userOverdue, userDueToday] = await Promise.all([
       prisma.task.count({
-        where: { userId: sub.userId, completed: false, url: null, dueDate: { lt: todayStart } },
+        where: { userId: sub.userId, status: { not: 'done' }, url: null, dueDate: { lt: todayStart } },
       }),
       prisma.task.count({
-        where: { userId: sub.userId, completed: false, url: null, dueDate: { gte: todayStart, lt: todayEnd } },
+        where: { userId: sub.userId, status: { not: 'done' }, url: null, dueDate: { gte: todayStart, lt: todayEnd } },
       }),
     ])
 

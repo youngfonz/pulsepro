@@ -10,7 +10,7 @@ import { priorityColors, priorityLabels } from '@/lib/utils'
 interface Task {
   id: string
   title: string
-  completed: boolean
+  status: string
   priority: string
   startDate: string | null
   dueDate: string | null
@@ -186,9 +186,9 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
             {calendarDays.map((day, index) => {
               const dayTasks = day ? getTasksForDate(day) : []
               const hasTasks = dayTasks.length > 0
-              const hasHighPriority = dayTasks.some((t) => t.priority === 'high' && !t.completed)
+              const hasHighPriority = dayTasks.some((t) => t.priority === 'high' && t.status !== 'done')
               const hasOverdue = dayTasks.some((t) => {
-                if (!t.dueDate || t.completed) return false
+                if (!t.dueDate || t.status === 'done') return false
                 const dueDate = new Date(t.dueDate)
                 return dueDate < today && !(dueDate.toDateString() === today.toDateString())
               })
@@ -220,7 +220,7 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
                               <div
                                 key={task.id}
                                 className={`w-1.5 h-1.5 rounded-full ${
-                                  task.completed
+                                  task.status === 'done'
                                     ? 'bg-emerald-500'
                                     : task.priority === 'high'
                                     ? 'bg-rose-500'
@@ -235,7 +235,7 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
                               <div
                                 key={task.id}
                                 className={`text-xs truncate rounded px-1 py-0.5 font-medium ${
-                                  task.completed
+                                  task.status === 'done'
                                     ? 'bg-emerald-600 text-white line-through'
                                     : hasOverdue
                                     ? 'bg-rose-600 text-white'
@@ -307,7 +307,7 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
                         <div className="flex items-start justify-between gap-2">
                           <span
                             className={`font-medium text-sm ${
-                              task.completed
+                              task.status === 'done'
                                 ? 'text-muted-foreground line-through'
                                 : 'text-foreground'
                             }`}

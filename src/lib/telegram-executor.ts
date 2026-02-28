@@ -46,7 +46,7 @@ export async function executeCommand(
 
 async function handleTasks(userId: string, chatId: string): Promise<string> {
   const tasks = await prisma.task.findMany({
-    where: { userId, completed: false, url: null },
+    where: { userId, status: { not: 'done' }, url: null },
     include: { project: { select: { name: true } } },
     orderBy: { createdAt: 'desc' },
     take: 10,
@@ -73,7 +73,7 @@ async function handleToday(userId: string, chatId: string): Promise<string> {
   const tasks = await prisma.task.findMany({
     where: {
       userId,
-      completed: false,
+      status: { not: 'done' },
       url: null,
       dueDate: { gte: todayStart, lt: todayEnd },
     },
@@ -101,7 +101,7 @@ async function handleOverdue(userId: string, chatId: string): Promise<string> {
   const tasks = await prisma.task.findMany({
     where: {
       userId,
-      completed: false,
+      status: { not: 'done' },
       url: null,
       dueDate: { lt: todayStart },
     },
@@ -169,13 +169,13 @@ async function handleDone(
     return `Task not found. Try sending <b>tasks</b> again.`
   }
 
-  if (task.completed) {
+  if (task.status === 'done') {
     return `"${task.title}" is already marked complete.`
   }
 
   await prisma.task.update({
     where: { id: taskId },
-    data: { completed: true },
+    data: { status: 'done' },
   })
 
   return `Done! "<b>${task.title}</b>" marked complete.`

@@ -4,7 +4,27 @@ import { requireUserId } from '@/lib/auth'
 import { generateAIInsights, hashInsightContext, type InsightContext } from '@/lib/ai-insights'
 
 const CACHE_TTL_HOURS = 4
-const COOLDOWN_MS = 5 * 60 * 1000 // 5 minutes
+const COOLDOWN_MS = 5 * 60 * 1000 // 5 minutes between LLM calls per user
+const MAX_DAILY_CALLS = 20 // Hard cap: max LLM calls per user per day
+
+function logLLM(userId: string, reason: string, extra?: Record<string, unknown>) {
+  console.log(JSON.stringify({
+    type: 'llm_call',
+    userId,
+    reason,
+    timestamp: new Date().toISOString(),
+    ...extra,
+  }))
+}
+
+function logLLMSkip(userId: string, reason: string) {
+  console.log(JSON.stringify({
+    type: 'llm_skip',
+    userId,
+    reason,
+    timestamp: new Date().toISOString(),
+  }))
+}
 
 async function gatherInsightContext(userId: string): Promise<InsightContext> {
   const now = new Date()
@@ -17,7 +37,7 @@ async function gatherInsightContext(userId: string): Promise<InsightContext> {
         prisma.project.count({ where: { userId } }),
         prisma.project.count({ where: { userId, status: { in: ['in_progress', 'not_started'] } } }),
         prisma.task.count({ where: { userId, url: null } }),
-        prisma.task.count({ where: { userId, url: null, completed: false } }),
+        prisma.task.count({ where: { userId, url: null, status: { not: 'done' } } }),
       ])
       return { totalProjects, activeProjects, totalTasks, pendingTasks }
     })(),
@@ -27,13 +47,13 @@ async function gatherInsightContext(userId: string): Promise<InsightContext> {
       where: { userId, status: { notIn: ['completed'] } },
       include: {
         client: { select: { name: true } },
-        tasks: { select: { completed: true, dueDate: true } },
+        tasks: { select: { status: true, dueDate: true } },
       },
       take: 10,
     }).then(projects => projects.map(p => {
       const total = p.tasks.length
-      const completed = p.tasks.filter(t => t.completed).length
-      const overdue = p.tasks.filter(t => !t.completed && t.dueDate && new Date(t.dueDate) < now).length
+      const completed = p.tasks.filter(t => t.status === 'done').length
+      const overdue = p.tasks.filter(t => t.status !== 'done' && t.dueDate && new Date(t.dueDate) < now).length
       const score = total === 0 ? 80 : Math.max(0, Math.min(100, 100 - Math.round((overdue / total) * 40) + Math.round((completed / total) * 10)))
       const label = score >= 70 ? 'healthy' : score >= 40 ? 'at_risk' : 'critical'
       return {
@@ -50,7 +70,7 @@ async function gatherInsightContext(userId: string): Promise<InsightContext> {
 
     // Overdue tasks
     prisma.task.findMany({
-      where: { userId, completed: false, url: null, dueDate: { lt: now } },
+      where: { userId, status: { not: 'done' }, url: null, dueDate: { lt: now } },
       include: { project: { select: { name: true, id: true } } },
       orderBy: { dueDate: 'asc' },
       take: 10,
@@ -65,7 +85,7 @@ async function gatherInsightContext(userId: string): Promise<InsightContext> {
     prisma.task.findMany({
       where: {
         userId,
-        completed: false,
+        status: { not: 'done' },
         url: null,
         dueDate: { gte: now, lt: new Date(now.getTime() + 86400000) },
       },
@@ -81,7 +101,7 @@ async function gatherInsightContext(userId: string): Promise<InsightContext> {
     prisma.task.count({
       where: {
         userId,
-        completed: false,
+        status: { not: 'done' },
         url: null,
         dueDate: { gte: now, lt: new Date(now.getTime() + 7 * 86400000) },
       },
@@ -94,35 +114,72 @@ async function gatherInsightContext(userId: string): Promise<InsightContext> {
 export async function POST() {
   try {
     const userId = await requireUserId()
+    const today = new Date().toISOString().split('T')[0]
 
-    // Rate limit: check if we generated within the cooldown period
+    // Fetch cached record
     const cached = await prisma.cachedInsight.findUnique({ where: { userId } })
+
+    // Rate limit: cooldown check (5 minutes between calls)
     if (cached && cached.createdAt.getTime() > Date.now() - COOLDOWN_MS) {
+      logLLMSkip(userId, 'cooldown_active')
       return NextResponse.json({ insights: JSON.parse(cached.insights) })
     }
 
+    // Daily cap check
+    const dailyCalls = cached?.dailyCallsDate === today ? (cached.dailyCalls ?? 0) : 0
+    if (dailyCalls >= MAX_DAILY_CALLS) {
+      logLLMSkip(userId, 'daily_cap_reached')
+      // Return cached if available, otherwise error
+      if (cached) {
+        return NextResponse.json({ insights: JSON.parse(cached.insights) })
+      }
+      return NextResponse.json({ error: 'Daily AI insight limit reached. Try again tomorrow.' }, { status: 429 })
+    }
+
+    // Gather context and check if cache is still valid
     const ctx = await gatherInsightContext(userId)
     const contextHash = hashInsightContext(ctx)
 
-    // If context unchanged and cache still valid, return cached
     if (cached && cached.context === contextHash && cached.expiresAt > new Date()) {
+      logLLMSkip(userId, 'cache_valid')
       return NextResponse.json({ insights: JSON.parse(cached.insights) })
     }
 
+    // Actually call the LLM
+    logLLM(userId, 'generate_insights', { dailyCallNumber: dailyCalls + 1 })
     const insights = await generateAIInsights(ctx)
 
     const expiresAt = new Date(Date.now() + CACHE_TTL_HOURS * 60 * 60 * 1000)
+    const newDailyCalls = dailyCalls + 1
 
     await prisma.cachedInsight.upsert({
       where: { userId },
-      create: { userId, insights: JSON.stringify(insights), context: contextHash, expiresAt },
-      update: { insights: JSON.stringify(insights), context: contextHash, expiresAt, createdAt: new Date() },
+      create: {
+        userId,
+        insights: JSON.stringify(insights),
+        context: contextHash,
+        expiresAt,
+        dailyCalls: newDailyCalls,
+        dailyCallsDate: today,
+      },
+      update: {
+        insights: JSON.stringify(insights),
+        context: contextHash,
+        expiresAt,
+        createdAt: new Date(),
+        dailyCalls: newDailyCalls,
+        dailyCallsDate: today,
+      },
     })
 
     return NextResponse.json({ insights })
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
-    console.error('Insight generation API error:', message, error)
+    console.error(JSON.stringify({
+      type: 'llm_error',
+      error: message,
+      timestamp: new Date().toISOString(),
+    }))
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

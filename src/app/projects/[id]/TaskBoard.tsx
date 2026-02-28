@@ -22,8 +22,7 @@ import { priorityColors, priorityLabels, formatDate, isOverdue } from '@/lib/uti
 interface Task {
   id: string
   title: string
-  completed: boolean
-  status?: string
+  status: string
   sortOrder?: number
   priority: string
   dueDate: Date | null
@@ -36,8 +35,6 @@ const COLUMNS = [
 ] as const
 
 function getTaskStatus(task: Task): string {
-  if (task.status && task.status !== 'todo') return task.status
-  if (task.completed) return 'done'
   return task.status || 'todo'
 }
 
@@ -179,7 +176,7 @@ function TaskCard({ task, canEdit = true }: { task: Task; canEdit?: boolean }) {
     ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
     : undefined
 
-  const overdue = isOverdue(task.dueDate) && !task.completed
+  const overdue = isOverdue(task.dueDate) && task.status !== 'done'
 
   return (
     <div
@@ -191,7 +188,7 @@ function TaskCard({ task, canEdit = true }: { task: Task; canEdit?: boolean }) {
         canEdit ? 'cursor-grab active:cursor-grabbing' : ''
       } ${isDragging ? 'opacity-30' : ''}`}
     >
-      <p className={`text-sm font-medium ${task.completed ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
+      <p className={`text-sm font-medium ${task.status === 'done' ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
         {task.title}
       </p>
       <div className="flex items-center gap-2 mt-2">

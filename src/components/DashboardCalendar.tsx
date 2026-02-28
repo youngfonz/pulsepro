@@ -6,7 +6,7 @@ import Link from 'next/link'
 interface Task {
   id: string
   title: string
-  completed: boolean
+  status: string
   priority: string
   startDate: string | null
   dueDate: string | null
@@ -157,8 +157,8 @@ export function DashboardCalendar() {
 
           const dayTasks = getTasksForDate(day)
           const hasTasks = dayTasks.length > 0
-          const hasPendingTasks = dayTasks.some((t) => !t.completed)
-          const hasHighPriority = dayTasks.some((t) => t.priority === 'high' && !t.completed)
+          const hasPendingTasks = dayTasks.some((t) => t.status !== 'done')
+          const hasHighPriority = dayTasks.some((t) => t.priority === 'high' && t.status !== 'done')
 
           return (
             <Link

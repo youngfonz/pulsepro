@@ -69,7 +69,7 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
         id: true,
         title: true,
         priority: true,
-        completed: true,
+        status: true,
         project: { select: { id: true, name: true } },
       },
       take: 5,
@@ -142,7 +142,7 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
       href: t.project ? `/projects/${t.project.id}` : `/tasks/${t.id}`,
       type: 'task',
       priority: t.priority,
-      status: t.completed ? 'completed' : undefined,
+      status: t.status === 'done' ? 'completed' : undefined,
     })
   }
 

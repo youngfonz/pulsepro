@@ -49,8 +49,8 @@ export default async function TasksPage({ searchParams }: Props) {
 
   // Split into active vs completed — unless user explicitly filtered to "completed"
   const showingCompleted = params.status === 'completed'
-  const activeTasks = showingCompleted ? [] : tasks.filter((t) => !t.completed)
-  const completedTasksList = showingCompleted ? tasks : tasks.filter((t) => t.completed)
+  const activeTasks = showingCompleted ? [] : tasks.filter((t) => t.status !== 'done')
+  const completedTasksList = showingCompleted ? tasks : tasks.filter((t) => t.status === 'done')
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -154,7 +154,7 @@ export default async function TasksPage({ searchParams }: Props) {
                   className="px-4 py-3 hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex items-start gap-3">
-                    <TaskCheckbox taskId={task.id} completed={task.completed} />
+                    <TaskCheckbox taskId={task.id} done={task.status === 'done'} />
                     <div className="flex-1 min-w-0">
                       <Link
                         href={`/tasks/${task.id}`}
@@ -197,7 +197,7 @@ export default async function TasksPage({ searchParams }: Props) {
                         }`}
                       >
                         <div className="flex items-start gap-3">
-                          <TaskCheckbox taskId={task.id} completed={task.completed} />
+                          <TaskCheckbox taskId={task.id} done={task.status === 'done'} />
                           <div className="flex-1 min-w-0">
                             <Link
                               href={`/tasks/${task.id}`}
@@ -242,7 +242,7 @@ export default async function TasksPage({ searchParams }: Props) {
                         className="px-4 py-3 hover:bg-muted/50 transition-colors"
                       >
                         <div className="flex items-start gap-3">
-                          <TaskCheckbox taskId={task.id} completed={task.completed} />
+                          <TaskCheckbox taskId={task.id} done={task.status === 'done'} />
                           <div className="flex-1 min-w-0">
                             <Link
                               href={`/tasks/${task.id}`}

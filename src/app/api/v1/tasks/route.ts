@@ -124,7 +124,6 @@ export async function GET(request: NextRequest) {
         description: true,
         priority: true,
         status: true,
-        completed: true,
         dueDate: true,
         projectId: true,
         project: { select: { name: true } },

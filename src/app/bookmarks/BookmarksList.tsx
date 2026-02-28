@@ -11,7 +11,7 @@ interface Bookmark {
   title: string
   description: string | null
   notes: string | null
-  completed: boolean
+  status: string
   priority: string
   startDate: Date | null
   dueDate: Date | null
@@ -360,7 +360,7 @@ function BookmarkMeta({ bookmark }: { bookmark: Bookmark }) {
 }
 
 function ImageCard({ bookmark }: { bookmark: Bookmark }) {
-  const isDone = bookmark.completed
+  const isDone = bookmark.status === 'done'
   const labels = doneLabel(bookmark.bookmarkType)
   const [isEditing, setIsEditing] = useState(false)
 
@@ -427,7 +427,7 @@ function ImageCard({ bookmark }: { bookmark: Bookmark }) {
 }
 
 function CompactCard({ bookmark }: { bookmark: Bookmark }) {
-  const isDone = bookmark.completed
+  const isDone = bookmark.status === 'done'
   const displayUrl = bookmark.url
     ? bookmark.url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]
     : ''
@@ -485,13 +485,15 @@ function CompactCard({ bookmark }: { bookmark: Bookmark }) {
 }
 
 export function BookmarksList({ bookmarks }: { bookmarks: Bookmark[] }) {
-  const doneCount = bookmarks.filter((b) => b.completed).length
+  const doneCount = bookmarks.filter((b) => b.status === 'done').length
   const totalCount = bookmarks.length
 
   // Sort: incomplete first, done last
   const sorted = [...bookmarks].sort((a, b) => {
-    if (a.completed === b.completed) return 0
-    return a.completed ? 1 : -1
+    const aDone = a.status === 'done'
+    const bDone = b.status === 'done'
+    if (aDone === bDone) return 0
+    return aDone ? 1 : -1
   })
 
   const withImages = sorted.filter((b) => b.thumbnailUrl)
