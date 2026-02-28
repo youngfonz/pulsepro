@@ -16,7 +16,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             htmlFor={id}
             className="block text-sm font-medium text-foreground"
           >
-            {label}
+            {label}{props.required && <span className="text-destructive ml-0.5">*</span>}
           </label>
         )}
         <select

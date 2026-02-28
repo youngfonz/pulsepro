@@ -22,6 +22,7 @@ interface Project {
   priority: string
   dueDate: Date | null
   budget: number | null
+  hourlyRate: number | null
   clientId: string
 }
 
@@ -53,6 +54,7 @@ export function ProjectForm({ project, clients, defaultClientId, onSuccess }: Pr
   const [priority, setPriority] = useState(project?.priority || 'medium')
   const [dueDate, setDueDate] = useState(formatDateForInput(project?.dueDate || null))
   const [budget, setBudget] = useState(project?.budget?.toString() || '')
+  const [hourlyRate, setHourlyRate] = useState(project?.hourlyRate?.toString() || '')
   const [clientId, setClientId] = useState(project?.clientId || defaultClientId || '')
   const [isNewClient, setIsNewClient] = useState(false)
   const [newClientName, setNewClientName] = useState('')
@@ -235,6 +237,19 @@ export function ProjectForm({ project, clients, defaultClientId, onSuccess }: Pr
           label="Budget ($)"
           value={budget}
           onChange={(e) => setBudget(e.target.value)}
+          placeholder="0.00"
+        />
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Input
+          id="hourlyRate"
+          name="hourlyRate"
+          type="number"
+          step="0.01"
+          min="0"
+          label="Hourly Rate ($)"
+          value={hourlyRate}
+          onChange={(e) => setHourlyRate(e.target.value)}
           placeholder="0.00"
         />
       </div>

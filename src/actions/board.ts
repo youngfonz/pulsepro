@@ -36,6 +36,32 @@ export async function updateTaskStatus(
     },
   })
 
-  if (task.projectId) revalidatePath(`/projects/${task.projectId}`)
+  // Auto-update project status based on task completion (excludes bookmarks)
+  if (task.projectId) {
+    const projectTasks = await prisma.task.findMany({
+      where: { projectId: task.projectId, url: null },
+      select: { completed: true },
+    })
+    const allCompleted = projectTasks.length > 0 && projectTasks.every(t => t.completed)
+    const project = await prisma.project.findUnique({
+      where: { id: task.projectId },
+      select: { status: true },
+    })
+
+    if (allCompleted && project?.status !== 'completed') {
+      await prisma.project.update({
+        where: { id: task.projectId },
+        data: { status: 'completed' },
+      })
+    } else if (!allCompleted && project?.status === 'completed') {
+      await prisma.project.update({
+        where: { id: task.projectId },
+        data: { status: 'in_progress' },
+      })
+    }
+
+    revalidatePath(`/projects/${task.projectId}`)
+  }
   revalidatePath('/tasks')
+  revalidatePath('/projects')
 }

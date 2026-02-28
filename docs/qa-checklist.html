@@ -436,6 +436,51 @@
   </div>
 </div>
 
+<div class="section" data-section="p1-invoices">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.15 Invoices (Basic)</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c292"><label for="c292">Sidebar: "Invoices" nav item visible with receipt icon</label></div>
+    <div class="check-item"><input type="checkbox" id="c293"><label for="c293">/invoices page loads — shows empty state with "Create Invoice" button</label></div>
+    <div class="check-item"><input type="checkbox" id="c294"><label for="c294">/invoices/new loads — invoice form with all sections: header, from, bill to, items, totals, notes</label></div>
+    <div class="check-item"><input type="checkbox" id="c295"><label for="c295">No clients: form shows "Add a client to get started" link instead of empty dropdown</label></div>
+    <div class="check-item"><input type="checkbox" id="c296"><label for="c296">Required fields: Client and Due Date marked with red asterisk</label></div>
+    <div class="check-item"><input type="checkbox" id="c297"><label for="c297">Invoice number auto-generated (INV-001, INV-002, etc.)</label></div>
+    <div class="check-item"><input type="checkbox" id="c298"><label for="c298">DatePicker: calendar opens, date selectable, no overflow/clipping</label></div>
+    <div class="check-item"><input type="checkbox" id="c299"><label for="c299">Line items: add row, edit description/qty/rate, amount auto-calculates</label></div>
+    <div class="check-item"><input type="checkbox" id="c300"><label for="c300">Line items: remove row (X button), cannot remove last row</label></div>
+    <div class="check-item"><input type="checkbox" id="c301"><label for="c301">Totals: subtotal, tax rate, tax amount, total all compute live</label></div>
+    <div class="check-item"><input type="checkbox" id="c302"><label for="c302">Validation: cannot save without client and due date selected</label></div>
+    <div class="check-item"><input type="checkbox" id="c303"><label for="c303">Save Draft: creates invoice, redirects to detail page with "Draft" badge</label></div>
+    <div class="check-item"><input type="checkbox" id="c304"><label for="c304">Invoice detail: shows from info, bill to, line items table, totals, notes</label></div>
+    <div class="check-item"><input type="checkbox" id="c305"><label for="c305">Invoices list: shows invoice number, client, amount, status badge</label></div>
+    <div class="check-item"><input type="checkbox" id="c306"><label for="c306">⌘K: "Invoices" appears in navigation, "New Invoice" in quick actions</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p1-welcome">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.16 Welcome &amp; Onboarding</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c307"><label for="c307">New sign-up: welcome email received via Resend</label></div>
+    <div class="check-item"><input type="checkbox" id="c308"><label for="c308">Onboarding overlay: shows step counter "1 of 4", "2 of 4", etc.</label></div>
+    <div class="check-item"><input type="checkbox" id="c309"><label for="c309">Onboarding: "Get started" on last step dismisses overlay</label></div>
+    <div class="check-item"><input type="checkbox" id="c310"><label for="c310">Onboarding: does not show again after dismissal (localStorage)</label></div>
+  </div>
+</div>
+
 </div>
 
 <!-- ==================== PERSONA 2: ADMIN (PRO) ==================== -->
@@ -703,6 +748,45 @@
     <div class="check-item"><input type="checkbox" id="c282"><label for="c282">Delete a bookmark — removed from bookmarks page and search</label></div>
     <div class="check-item"><input type="checkbox" id="c283"><label for="c283">Standalone task: delete — removed (not affected by project deletion)</label></div>
     <div class="check-item"><input type="checkbox" id="c284"><label for="c284">Delete client with multiple projects — all cascade correctly</label></div>
+    <div class="check-item"><input type="checkbox" id="c311"><label for="c311">Delete a draft invoice — removed from invoices list</label></div>
+    <div class="check-item"><input type="checkbox" id="c312"><label for="c312">Cannot delete sent or paid invoices — error shown</label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p2-invoicing">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">2.13 Invoicing (Full Workflow)</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item"><input type="checkbox" id="c313"><label for="c313">Project form: "Hourly Rate" field available for pricing</label></div>
+    <div class="check-item"><input type="checkbox" id="c314"><label for="c314">Create invoice: select client, auto-populates their projects in dropdown</label></div>
+    <div class="check-item"><input type="checkbox" id="c315"><label for="c315">Create invoice: select project with hourly rate — "Import Time Entries" button appears</label></div>
+    <div class="check-item"><input type="checkbox" id="c316"><label for="c316">Import time entries: line items populated from tracked time</label></div>
+    <div class="check-item"><input type="checkbox" id="c317"><label for="c317">Business info (from): persisted to localStorage across sessions</label></div>
+    <div class="check-item"><input type="checkbox" id="c318"><label for="c318">Edit draft invoice: form pre-populated with existing data (including notes)</label></div>
+    <div class="check-item"><input type="checkbox" id="c319"><label for="c319">Edit draft: save changes — updates invoice, redirects to detail</label></div>
+    <div class="check-item"><input type="checkbox" id="c320"><label for="c320">Cannot edit sent/paid invoices — redirects back to detail</label></div>
+    <div class="check-item"><input type="checkbox" id="c321"><label for="c321">Send invoice: email delivered to client via Resend</label></div>
+    <div class="check-item"><input type="checkbox" id="c322"><label for="c322">Send invoice: status changes to "Sent", badge updates</label></div>
+    <div class="check-item"><input type="checkbox" id="c323"><label for="c323">Send invoice: error shown if client has no email address</label></div>
+    <div class="check-item"><input type="checkbox" id="c324"><label for="c324">Resend invoice: "Resend" button visible on sent/overdue invoices</label></div>
+    <div class="check-item"><input type="checkbox" id="c325"><label for="c325">Mark as paid: status changes to "Paid", paidAt date recorded</label></div>
+    <div class="check-item"><input type="checkbox" id="c326"><label for="c326">Copy share link: URL copied to clipboard, toast confirms</label></div>
+    <div class="check-item"><input type="checkbox" id="c327"><label for="c327">Print invoice: <code>window.print()</code> — clean layout, no nav/buttons</label></div>
+    <div class="check-item"><input type="checkbox" id="c328"><label for="c328">Public invoice page (<code>/invoice/[token]</code>): loads without auth</label></div>
+    <div class="check-item"><input type="checkbox" id="c329"><label for="c329">Public invoice: shows from info, bill to, line items, totals</label></div>
+    <div class="check-item"><input type="checkbox" id="c330"><label for="c330">Public invoice: paid invoices show "PAID" watermark</label></div>
+    <div class="check-item"><input type="checkbox" id="c331"><label for="c331">Public invoice: print-friendly layout</label></div>
+    <div class="check-item"><input type="checkbox" id="c332"><label for="c332">Invoice email: contains invoice number, amount, due date, "View Invoice" link</label></div>
+    <div class="check-item"><input type="checkbox" id="c333"><label for="c333">Invoice list: filter by status (all/draft/sent/paid/overdue)</label></div>
+    <div class="check-item"><input type="checkbox" id="c334"><label for="c334">Invoice list: filter by client</label></div>
+    <div class="check-item"><input type="checkbox" id="c335"><label for="c335">Invoice list: search by invoice number or client name</label></div>
+    <div class="check-item"><input type="checkbox" id="c336"><label for="c336">Invoice list: sort by date, amount, number</label></div>
   </div>
 </div>
 
@@ -760,7 +844,8 @@
   <div class="section-body">
     <div class="check-item"><input type="checkbox" id="c181"><label for="c181">Public routes accessible without auth (/, /about, /sign-in, webhooks)</label></div>
     <div class="check-item"><input type="checkbox" id="c182"><label for="c182">/dashboard redirects to sign-in when not authenticated</label></div>
-    <div class="check-item"><input type="checkbox" id="c183"><label for="c183">/tasks, /projects, /clients, /calendar, /settings — all protected</label></div>
+    <div class="check-item"><input type="checkbox" id="c183"><label for="c183">/tasks, /projects, /clients, /calendar, /settings, /invoices — all protected</label></div>
+    <div class="check-item"><input type="checkbox" id="c337"><label for="c337"><code>/invoice/[token]</code> — accessible without auth (public share route)</label></div>
   </div>
 </div>
 
@@ -782,6 +867,9 @@
     <div class="check-item"><input type="checkbox" id="c247"><label for="c247">Delete project cascade: tasks, images, time entries, access records all removed</label></div>
     <div class="check-item"><input type="checkbox" id="c248"><label for="c248">Shared project: revoking all access cleans up ProjectAccess records</label></div>
     <div class="check-item"><input type="checkbox" id="c249"><label for="c249">Org-scoped data: switching org context shows correct data</label></div>
+    <div class="check-item"><input type="checkbox" id="c338"><label for="c338">Delete invoice: cascade-deletes all InvoiceItems</label></div>
+    <div class="check-item"><input type="checkbox" id="c339"><label for="c339">User A cannot view User B's invoices</label></div>
+    <div class="check-item"><input type="checkbox" id="c340"><label for="c340">Public invoice token: invalid token returns 404</label></div>
   </div>
 </div>
 

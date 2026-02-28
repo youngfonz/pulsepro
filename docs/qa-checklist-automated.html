@@ -466,6 +466,51 @@
   </div>
 </div>
 
+<div class="section" data-section="p1-invoices">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.15 Invoices (Basic)</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item auto-verified"><input type="checkbox" id="c292"><label for="c292">Sidebar: "Invoices" nav item visible with receipt icon <span class="auto-badge code">CODE VERIFIED — Sidebar.tsx: invoices nav item with icon</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c293"><label for="c293">/invoices page loads — shows empty state with "Create Invoice" button <span class="auto-badge code">CODE VERIFIED — InvoicesList.tsx: empty state renders</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c294"><label for="c294">/invoices/new loads — invoice form with all sections <span class="auto-badge code">CODE VERIFIED — InvoiceForm.tsx: 6 sections rendered</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c295"><label for="c295">No clients: form shows "Add a client to get started" link <span class="auto-badge code">CODE VERIFIED — InvoiceForm.tsx: clients.length === 0 branch</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c296"><label for="c296">Required fields: Client and Due Date marked with red asterisk <span class="auto-badge code">CODE VERIFIED — InvoiceForm.tsx: text-destructive asterisks</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c297"><label for="c297">Invoice number auto-generated (INV-001, INV-002, etc.) <span class="auto-badge code">CODE VERIFIED — invoices.ts: getNextInvoiceNumber()</span></label></div>
+    <div class="check-item"><input type="checkbox" id="c298"><label for="c298">DatePicker: calendar opens, date selectable, no overflow/clipping <span class="auto-badge manual">MANUAL</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c299"><label for="c299">Line items: add row, edit description/qty/rate, amount auto-calculates <span class="auto-badge code">CODE VERIFIED — InvoiceForm.tsx: addItem(), updateItem(), amount computed</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c300"><label for="c300">Line items: remove row (X button), cannot remove last row <span class="auto-badge code">CODE VERIFIED — InvoiceForm.tsx: disabled={items.length === 1}</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c301"><label for="c301">Totals: subtotal, tax rate, tax amount, total all compute live <span class="auto-badge code">CODE VERIFIED — InvoiceForm.tsx: subtotal/taxAmount/total derived</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c302"><label for="c302">Validation: cannot save without client and due date <span class="auto-badge code">CODE VERIFIED — InvoiceForm.tsx: disabled={!clientId || !dueDate}</span></label></div>
+    <div class="check-item"><input type="checkbox" id="c303"><label for="c303">Save Draft: creates invoice, redirects to detail page <span class="auto-badge manual">MANUAL</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c304"><label for="c304">Invoice detail: shows from info, bill to, line items, totals <span class="auto-badge code">CODE VERIFIED — InvoiceDetail.tsx: all sections rendered</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c305"><label for="c305">Invoices list: shows number, client, amount, status badge <span class="auto-badge code">CODE VERIFIED — InvoicesList.tsx: columns rendered</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c306"><label for="c306">⌘K: "Invoices" in navigation, "New Invoice" in quick actions <span class="auto-badge code">CODE VERIFIED — CommandBar.tsx: NAV_ITEMS + QUICK_ACTIONS include invoices</span></label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p1-welcome">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">1.16 Welcome &amp; Onboarding</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item auto-verified"><input type="checkbox" id="c307"><label for="c307">New sign-up: welcome email received via Resend <span class="auto-badge code">CODE VERIFIED — api/webhook/clerk: sends welcome email on user.created</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c308"><label for="c308">Onboarding overlay: shows step counter "1 of 4" <span class="auto-badge code">CODE VERIFIED — OnboardingOverlay.tsx: {currentStep + 1} of {steps.length}</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c309"><label for="c309">Onboarding: "Get started" on last step dismisses overlay <span class="auto-badge code">CODE VERIFIED — OnboardingOverlay.tsx: handleNext sets localStorage + setVisible(false)</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c310"><label for="c310">Onboarding: does not show again after dismissal <span class="auto-badge code">CODE VERIFIED — OnboardingOverlay.tsx: localStorage.getItem(storageKey) check</span></label></div>
+  </div>
+</div>
+
 </div>
 
 <!-- ==================== PERSONA 2: ADMIN (PRO) ==================== -->
@@ -733,6 +778,45 @@
     <div class="check-item auto-verified"><input type="checkbox" id="c282"><label for="c282">Delete a bookmark — removed from bookmarks page and search <span class="auto-badge code">CODE VERIFIED — bookmarks are tasks, deleteTask() handles them</span></label></div>
     <div class="check-item auto-verified"><input type="checkbox" id="c283"><label for="c283">Standalone task: delete — removed (not affected by project deletion) <span class="auto-badge code">CODE VERIFIED — deleteTask() works with null projectId</span></label></div>
     <div class="check-item auto-verified"><input type="checkbox" id="c284"><label for="c284">Delete client with multiple projects — all cascade correctly <span class="auto-badge code">CODE VERIFIED — cascade applies to all child records</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c311"><label for="c311">Delete a draft invoice — removed from invoices list <span class="auto-badge code">CODE VERIFIED — deleteInvoice() with status='draft' check</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c312"><label for="c312">Cannot delete sent or paid invoices — error shown <span class="auto-badge code">CODE VERIFIED — deleteInvoice: "Only draft invoices can be deleted"</span></label></div>
+  </div>
+</div>
+
+<div class="section" data-section="p2-invoicing">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-title">2.13 Invoicing (Full Workflow)</span>
+    <div class="section-progress">
+      <span class="section-count"></span>
+      <div class="section-bar"><div class="section-bar-fill"></div></div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item auto-verified"><input type="checkbox" id="c313"><label for="c313">Project form: "Hourly Rate" field available <span class="auto-badge code">CODE VERIFIED — ProjectForm.tsx: hourlyRate Input field rendered</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c314"><label for="c314">Create invoice: select client, projects auto-populate <span class="auto-badge code">CODE VERIFIED — InvoiceForm.tsx: availableProjects derived from selectedClient</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c315"><label for="c315">Select project with hourly rate — "Import Time Entries" appears <span class="auto-badge code">CODE VERIFIED — InvoiceForm.tsx: showImportButton = !!(projectId && hourlyRate)</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c316"><label for="c316">Import time entries: line items populated from tracked time <span class="auto-badge code">CODE VERIFIED — getTimeEntriesForImport() + handleImportTimeEntries()</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c317"><label for="c317">Business info (from): persisted to localStorage <span class="auto-badge code">CODE VERIFIED — InvoiceForm.tsx: persistBusinessInfo() + localStorage read on mount</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c318"><label for="c318">Edit draft invoice: form pre-populated with existing data <span class="auto-badge code">CODE VERIFIED — InvoiceForm.tsx: useState(invoice?.X ?? default) for all fields</span></label></div>
+    <div class="check-item"><input type="checkbox" id="c319"><label for="c319">Edit draft: save changes — updates and redirects <span class="auto-badge manual">MANUAL</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c320"><label for="c320">Cannot edit sent/paid invoices — redirects to detail <span class="auto-badge code">CODE VERIFIED — edit/page.tsx: if status !== 'draft' redirect()</span></label></div>
+    <div class="check-item"><input type="checkbox" id="c321"><label for="c321">Send invoice: email delivered to client via Resend <span class="auto-badge manual">MANUAL</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c322"><label for="c322">Send invoice: status changes to "Sent" <span class="auto-badge code">CODE VERIFIED — sendInvoice: update({ status: 'sent' })</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c323"><label for="c323">Send invoice: error if client has no email <span class="auto-badge code">CODE VERIFIED — sendInvoice: "Client has no email address" check</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c324"><label for="c324">Resend button visible on sent/overdue invoices <span class="auto-badge code">CODE VERIFIED — InvoiceDetail.tsx: Resend button in sent + overdue blocks</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c325"><label for="c325">Mark as paid: status → "Paid", paidAt set <span class="auto-badge code">CODE VERIFIED — markInvoicePaid: update({ status: 'paid', paidAt: new Date() })</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c326"><label for="c326">Copy share link: URL copied, toast confirms <span class="auto-badge code">CODE VERIFIED — InvoiceDetail.tsx: handleCopyLink() + showToast('Link copied!')</span></label></div>
+    <div class="check-item"><input type="checkbox" id="c327"><label for="c327">Print invoice: clean layout, no nav/buttons <span class="auto-badge manual">MANUAL</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c328"><label for="c328">Public invoice page loads without auth <span class="auto-badge code">CODE VERIFIED — middleware.ts: /invoice in bypassPaths + isPublicRoute</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c329"><label for="c329">Public invoice: shows all invoice sections <span class="auto-badge code">CODE VERIFIED — invoice/[token]/page.tsx renders from/to/items/totals</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c330"><label for="c330">Public invoice: paid invoices show "PAID" watermark <span class="auto-badge code">CODE VERIFIED — invoice/[token]/page.tsx: status === 'paid' watermark div</span></label></div>
+    <div class="check-item"><input type="checkbox" id="c331"><label for="c331">Public invoice: print-friendly layout <span class="auto-badge manual">MANUAL</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c332"><label for="c332">Invoice email: number, amount, due date, "View Invoice" link <span class="auto-badge code">CODE VERIFIED — email.ts: sendInvoiceEmail() includes all fields + shareToken URL</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c333"><label for="c333">Invoice list: filter by status <span class="auto-badge code">CODE VERIFIED — InvoicesFilter.tsx: status Select with all/draft/sent/paid/overdue</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c334"><label for="c334">Invoice list: filter by client <span class="auto-badge code">CODE VERIFIED — InvoicesFilter.tsx: client Select with client list</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c335"><label for="c335">Invoice list: search by number or client name <span class="auto-badge code">CODE VERIFIED — getInvoices: OR [number contains, client.name contains]</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c336"><label for="c336">Invoice list: sort by date, amount, number <span class="auto-badge code">CODE VERIFIED — getInvoices: switch on sort param</span></label></div>
   </div>
 </div>
 
@@ -790,7 +874,8 @@
   <div class="section-body">
     <div class="check-item auto-verified"><input type="checkbox" id="c181"><label for="c181">Public routes accessible without auth (/, /about, /sign-in, webhooks) <span class="auto-badge pass">E2E PASS</span></label></div>
     <div class="check-item auto-verified"><input type="checkbox" id="c182"><label for="c182">/dashboard redirects to sign-in when not authenticated <span class="auto-badge code">CODE VERIFIED — /dashboard not in public routes, Clerk middleware redirects</span></label></div>
-    <div class="check-item auto-verified"><input type="checkbox" id="c183"><label for="c183">/tasks, /projects, /clients, /calendar, /settings — all protected <span class="auto-badge pass">E2E PASS</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c183"><label for="c183">/tasks, /projects, /clients, /calendar, /settings, /invoices — all protected <span class="auto-badge pass">E2E PASS</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c337"><label for="c337"><code>/invoice/[token]</code> — accessible without auth (public share route) <span class="auto-badge code">CODE VERIFIED — middleware.ts: /invoice in bypassPaths + isPublicRoute</span></label></div>
   </div>
 </div>
 
@@ -812,6 +897,9 @@
     <div class="check-item auto-verified"><input type="checkbox" id="c247"><label for="c247">Delete project cascade: tasks, images, time entries, access records all removed <span class="auto-badge code">CODE VERIFIED — onDelete: Cascade on all child models (schema:67,76,94,154)</span></label></div>
     <div class="check-item auto-verified"><input type="checkbox" id="c248"><label for="c248">Shared project: revoking all access cleans up ProjectAccess records <span class="auto-badge code">CODE VERIFIED — revokeProjectAccess() deletes + Project onDelete: Cascade</span></label></div>
     <div class="check-item"><input type="checkbox" id="c249"><label for="c249">Org-scoped data: switching org context shows correct data <span class="auto-badge manual">MANUAL</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c338"><label for="c338">Delete invoice: cascade-deletes all InvoiceItems <span class="auto-badge code">CODE VERIFIED — InvoiceItem: onDelete: Cascade on Invoice relation</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c339"><label for="c339">User A cannot view User B's invoices <span class="auto-badge code">CODE VERIFIED — getInvoices/getInvoice: where { userId } filter</span></label></div>
+    <div class="check-item auto-verified"><input type="checkbox" id="c340"><label for="c340">Public invoice token: invalid token returns 404 <span class="auto-badge code">CODE VERIFIED — getInvoiceByToken returns null → notFound()</span></label></div>
   </div>
 </div>
 

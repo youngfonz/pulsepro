@@ -6,8 +6,11 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { LayoutWrapper } from "@/components/LayoutWrapper";
 import { AuthGuard } from "@/components/AuthGuard";
 import { getClientCount } from "@/actions/dashboard";
+import { getMaintenanceMode } from "@/actions/admin";
 import { auth } from "@clerk/nextjs/server";
 import { isAdminUser } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -67,6 +70,24 @@ export default async function RootLayout({
   // Only fetch data when we have an authenticated user
   if (userId) {
     clientCount = await getClientCount();
+
+    // Check maintenance mode and suspension for non-admin users
+    // Note: /maintenance and /suspended are bypass paths in middleware,
+    // so auth() returns null for them — no redirect loop possible
+    if (!isAdmin) {
+      const [maintenanceOn, subscription] = await Promise.all([
+        getMaintenanceMode(),
+        prisma.subscription.findUnique({ where: { userId }, select: { suspendedAt: true } }),
+      ]);
+
+      if (maintenanceOn) {
+        redirect('/maintenance');
+      }
+
+      if (subscription?.suspendedAt) {
+        redirect('/suspended');
+      }
+    }
   }
 
   const innerContent = (

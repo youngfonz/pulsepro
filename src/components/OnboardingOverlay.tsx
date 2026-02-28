@@ -116,18 +116,21 @@ export function OnboardingOverlay({ userId }: { userId: string }) {
             </button>
           )}
 
-          {/* Dot indicators */}
-          <div className="flex items-center gap-2">
-            {steps.map((_, i) => (
-              <div
-                key={i}
-                className={`h-2 rounded-full transition-all ${
-                  i === currentStep
-                    ? 'w-2 bg-primary'
-                    : 'w-2 bg-muted-foreground/25'
-                }`}
-              />
-            ))}
+          {/* Step indicator */}
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="flex items-center gap-2">
+              {steps.map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-2 rounded-full transition-all ${
+                    i === currentStep
+                      ? 'w-2 bg-primary'
+                      : 'w-2 bg-muted-foreground/25'
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-[10px] text-muted-foreground">{currentStep + 1} of {steps.length}</span>
           </div>
 
           {/* Continue/Done button */}
