@@ -16,7 +16,7 @@ interface Project {
     id: string
     name: string
   }
-  tasks: { id: string; completed: boolean; url: string | null }[]
+  tasks: { id: string; status: string; url: string | null }[]
   _count: {
     tasks: number
   }
@@ -48,7 +48,7 @@ interface Props {
 function isProjectCompleted(p: Project): boolean {
   if (p.status === 'completed') return true
   const realTasks = p.tasks.filter(t => !t.url)
-  if (realTasks.length > 0 && realTasks.every(t => t.completed)) return true
+  if (realTasks.length > 0 && realTasks.every(t => t.status === 'done')) return true
   return false
 }
 
@@ -199,7 +199,7 @@ export function ProjectsList({ projects, currentSort, viewMode, healthMap }: Pro
           <div className="divide-y divide-border lg:hidden">
             {activeProjects.map((project) => {
               const overdue = isOverdue(project.dueDate) && project.status !== 'completed'
-              const completedTasks = project.tasks.filter(t => t.completed).length
+              const completedTasks = project.tasks.filter(t => t.status === 'done').length
               const totalTasks = project._count.tasks
               const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
               return (
@@ -287,7 +287,7 @@ export function ProjectsList({ projects, currentSort, viewMode, healthMap }: Pro
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {activeProjects.map((project) => {
               const overdue = isOverdue(project.dueDate) && project.status !== 'completed'
-              const completedTasks = project.tasks.filter(t => t.completed).length
+              const completedTasks = project.tasks.filter(t => t.status === 'done').length
               const totalTasks = project._count.tasks
               const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
               return (

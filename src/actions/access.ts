@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { requireUserId, getAuthContext } from '@/lib/auth'
+import { requireUserId, getOrgId } from '@/lib/auth'
 import { requireProjectAccess } from '@/lib/access'
 import { checkCollaboratorLimit } from '@/lib/subscription'
 import { clerkClient } from '@clerk/nextjs/server'
@@ -107,7 +107,7 @@ export async function getProjectMembers(projectId: string) {
 }
 
 export async function getOrgMembers() {
-  const { orgId } = await getAuthContext()
+  const orgId = await getOrgId()
   if (!orgId) return []
 
   const clerk = await clerkClient()

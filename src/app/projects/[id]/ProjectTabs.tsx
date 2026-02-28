@@ -14,7 +14,6 @@ interface Task {
   title: string
   description: string | null
   notes: string | null
-  completed: boolean
   status: string
   sortOrder: number
   priority: string

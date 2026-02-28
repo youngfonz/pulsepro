@@ -20,7 +20,7 @@ export async function getDashboardStats() {
       prisma.project.count({ where: { userId } }),
       prisma.project.count({ where: { userId, status: { in: ['in_progress', 'not_started'] } } }),
       prisma.task.count({ where: { userId, url: null } }),
-      prisma.task.count({ where: { userId, url: null, completed: false } }),
+      prisma.task.count({ where: { userId, url: null, status: { not: 'done' } } }),
     ])
 
     let totalProjects = ownedTotalProjects
@@ -34,7 +34,7 @@ export async function getDashboardStats() {
         prisma.project.count({ where: { id: { in: sharedIds } } }),
         prisma.project.count({ where: { id: { in: sharedIds }, status: { in: ['in_progress', 'not_started'] } } }),
         prisma.task.count({ where: { projectId: { in: sharedIds }, url: null } }),
-        prisma.task.count({ where: { projectId: { in: sharedIds }, url: null, completed: false } }),
+        prisma.task.count({ where: { projectId: { in: sharedIds }, url: null, status: { not: 'done' } } }),
       ])
       totalProjects += sharedProjects
       activeProjects += sharedActive
@@ -91,7 +91,7 @@ export async function getProjectsDueThisWeek() {
           select: { tasks: true },
         },
         tasks: {
-          select: { completed: true },
+          select: { status: true },
         },
       },
       orderBy: { dueDate: 'asc' },
@@ -109,7 +109,7 @@ export async function getProjectsDueThisWeek() {
         include: {
           client: { select: { id: true, name: true } },
           _count: { select: { tasks: true } },
-          tasks: { select: { completed: true } },
+          tasks: { select: { status: true } },
         },
         orderBy: { dueDate: 'asc' },
         take: 10,
@@ -120,7 +120,7 @@ export async function getProjectsDueThisWeek() {
     // Exclude projects where all tasks are completed
     const filtered = results.filter((p) => {
       if (p.tasks.length === 0) return true // no tasks = still show it
-      return p.tasks.some((t) => !t.completed)
+      return p.tasks.some((t) => t.status !== 'done')
     })
 
     // Strip the tasks array from the return (only needed _count and client)
@@ -143,7 +143,7 @@ export async function getTasksDueToday() {
       where: {
         userId,
         url: null,
-        completed: false,
+        status: { not: 'done' },
         dueDate: {
           gte: today,
           lt: tomorrow,
@@ -176,7 +176,7 @@ export async function getOverdueTasks() {
       where: {
         userId,
         url: null,
-        completed: false,
+        status: { not: 'done' },
         dueDate: {
           lt: today,
         },
@@ -242,7 +242,7 @@ export async function getTasksDueThisWeek() {
       where: {
         userId,
         url: null,
-        completed: false,
+        status: { not: 'done' },
         dueDate: {
           gte: today,
           lte: weekFromNow,
@@ -356,7 +356,7 @@ export async function getProjectHealth(): Promise<ProjectHealth[]> {
         client: { select: { name: true } },
         tasks: {
           where: { url: null },
-          select: { completed: true, dueDate: true, priority: true },
+          select: { status: true, dueDate: true, priority: true },
         },
       },
       orderBy: { updatedAt: 'desc' },
@@ -371,7 +371,7 @@ export async function getProjectHealth(): Promise<ProjectHealth[]> {
           client: { select: { name: true } },
           tasks: {
             where: { url: null },
-            select: { completed: true, dueDate: true, priority: true },
+            select: { status: true, dueDate: true, priority: true },
           },
         },
         orderBy: { updatedAt: 'desc' },
@@ -381,9 +381,9 @@ export async function getProjectHealth(): Promise<ProjectHealth[]> {
 
     const results: ProjectHealth[] = projects.map((project) => {
       const total = project.tasks.length
-      const completed = project.tasks.filter((t) => t.completed).length
+      const completed = project.tasks.filter((t) => t.status === 'done').length
       const overdue = project.tasks.filter(
-        (t) => !t.completed && t.dueDate && new Date(t.dueDate) < now
+        (t) => t.status !== 'done' && t.dueDate && new Date(t.dueDate) < now
       ).length
 
       if (total === 0) {
@@ -515,7 +515,7 @@ async function getRuleBasedInsights(): Promise<Insight[]> {
       prisma.task.findMany({
         where: {
           userId,
-          completed: false,
+          status: { not: 'done' },
           url: null,
           priority: 'high',
           dueDate: { gte: now, lt: new Date(tomorrow.getTime() + 86400000) },

@@ -32,14 +32,14 @@ export async function getProjects(filters?: {
         conditions.push({
           OR: [
             { status: 'completed' },
-            { tasks: { every: { OR: [{ completed: true }, { url: { not: null } }] }, some: { url: null } } },
+            { tasks: { every: { OR: [{ status: 'done' }, { url: { not: null } }] }, some: { url: null } } },
           ],
         })
       } else {
         // For non-completed statuses, exclude projects where all real tasks (non-bookmarks) are done
         where.status = filters.status
         where.NOT = {
-          tasks: { every: { OR: [{ completed: true }, { url: { not: null } }] }, some: { url: null } },
+          tasks: { every: { OR: [{ status: 'done' }, { url: { not: null } }] }, some: { url: null } },
         }
       }
     }
@@ -107,7 +107,7 @@ export async function getProjects(filters?: {
           },
         },
         tasks: {
-          select: { id: true, completed: true, url: true },
+          select: { id: true, status: true, url: true },
         },
         _count: {
           select: { tasks: true },
@@ -162,7 +162,7 @@ export async function getProject(id: string) {
           },
         },
         orderBy: [
-          { completed: 'asc' as const },
+          { status: 'desc' as const },
           { priority: 'desc' as const },
           { createdAt: 'desc' as const },
         ],

@@ -32,7 +32,6 @@ export async function updateTaskStatus(
     data: {
       status,
       sortOrder,
-      completed: status === 'done',
     },
   })
 
@@ -40,9 +39,9 @@ export async function updateTaskStatus(
   if (task.projectId) {
     const projectTasks = await prisma.task.findMany({
       where: { projectId: task.projectId, url: null },
-      select: { completed: true },
+      select: { status: true },
     })
-    const allCompleted = projectTasks.length > 0 && projectTasks.every(t => t.completed)
+    const allCompleted = projectTasks.length > 0 && projectTasks.every(t => t.status === 'done')
     const project = await prisma.project.findUnique({
       where: { id: task.projectId },
       select: { status: true },

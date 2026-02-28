@@ -12,8 +12,7 @@ datasource db {
 
 model Client {
   id        String   @id @default(cuid())
-  userId    String?
-  orgId     String?
+  userId    String
   name      String
   email     String?
   phone     String?
@@ -27,13 +26,11 @@ model Client {
   invoices  Invoice[]
 
   @@index([userId])
-  @@index([orgId])
 }
 
 model Project {
   id          String   @id @default(cuid())
-  userId      String?
-  orgId       String?
+  userId      String
   name        String
   description String?
   notes       String?
@@ -55,9 +52,8 @@ model Project {
   @@index([userId])
   @@index([userId, status])
   @@index([userId, dueDate])
-  @@index([orgId])
-  @@index([orgId, status])
-  @@index([orgId, dueDate])
+  @@index([userId, status, dueDate])
+  @@index([userId, updatedAt])
   @@index([clientId])
 }
 
@@ -69,6 +65,8 @@ model TimeEntry {
   projectId   String
   project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
+
+  @@index([projectId])
 }
 
 model ProjectImage {
@@ -82,12 +80,10 @@ model ProjectImage {
 
 model Task {
   id           String   @id @default(cuid())
-  userId       String?
-  orgId        String?
+  userId       String
   title        String
   description  String?
   notes        String?
-  completed    Boolean  @default(false)
   status       String   @default("todo") // todo, in_progress, done
   sortOrder    Int      @default(0)
   priority     String   @default("medium") // low, medium, high
@@ -107,13 +103,12 @@ model Task {
   comments     TaskComment[]
 
   @@index([userId])
-  @@index([userId, completed])
+  @@index([userId, status])
   @@index([userId, dueDate])
   @@index([userId, projectId])
-  @@index([orgId])
-  @@index([orgId, completed])
-  @@index([orgId, dueDate])
+  @@index([userId, status, dueDate])
   @@index([projectId])
+  @@index([projectId, url])
 }
 
 model TaskImage {
@@ -166,12 +161,14 @@ model ProjectAccess {
 }
 
 model CachedInsight {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  insights  String   // JSON-serialized Insight[]
-  context   String?  // Hash of input data for smart cache invalidation
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  insights       String   // JSON-serialized Insight[]
+  context        String?  // Hash of input data for smart cache invalidation
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+  dailyCalls     Int      @default(0)
+  dailyCallsDate String?  // YYYY-MM-DD — resets when date changes
 
   @@index([userId, expiresAt])
 }
@@ -179,7 +176,6 @@ model CachedInsight {
 model Subscription {
   id                    String    @id @default(cuid())
   userId                String    @unique
-  orgId                 String?
   polarCustomerId       String?
   polarSubscriptionId   String?
   plan                  String    @default("free") // free, pro, team
@@ -200,7 +196,6 @@ model Subscription {
   updatedAt             DateTime  @updatedAt
 
   @@index([userId])
-  @@index([orgId])
   @@index([polarCustomerId])
   @@index([polarSubscriptionId])
 }
@@ -213,7 +208,7 @@ model Invoice {
   client      Client        @relation(fields: [clientId], references: [id])
   projectId   String?
   project     Project?      @relation(fields: [projectId], references: [id])
-  status      String        @default("draft") // draft, sent, paid, overdue
+  status      String        @default("draft") // draft, sent, paid
   issueDate   DateTime      @default(now())
   dueDate     DateTime
   taxRate     Float         @default(0)
@@ -228,6 +223,8 @@ model Invoice {
   items       InvoiceItem[]
 
   @@index([userId])
+  @@index([userId, status])
+  @@index([userId, createdAt])
   @@index([clientId])
 }
 

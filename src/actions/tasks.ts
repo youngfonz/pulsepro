@@ -141,32 +141,29 @@ export async function toggleTask(id: string) {
     const userId = await requireUserId()
     let task = await prisma.task.findFirst({
       where: { id, userId },
-      select: { completed: true, projectId: true },
+      select: { status: true, projectId: true },
     })
 
     if (!task) {
-      task = await prisma.task.findFirst({ where: { id }, select: { completed: true, projectId: true } })
+      task = await prisma.task.findFirst({ where: { id }, select: { status: true, projectId: true } })
       if (!task) return
       if (!task.projectId) throw new Error('Not authorized')
       await requireProjectAccess(task.projectId, 'editor')
     }
 
-    const newCompleted = !task.completed
+    const newStatus = task.status === 'done' ? 'todo' : 'done'
     await prisma.task.update({
       where: { id },
-      data: {
-        completed: newCompleted,
-        status: newCompleted ? 'done' : 'todo',
-      },
+      data: { status: newStatus },
     })
 
     // Auto-update project status based on task completion (excludes bookmarks)
     if (task.projectId) {
       const realTasks = await prisma.task.findMany({
         where: { projectId: task.projectId, url: null },
-        select: { completed: true },
+        select: { status: true },
       })
-      const allCompleted = realTasks.length > 0 && realTasks.every(t => t.completed)
+      const allCompleted = realTasks.length > 0 && realTasks.every(t => t.status === 'done')
       const project = await prisma.project.findUnique({
         where: { id: task.projectId },
         select: { status: true },
@@ -218,9 +215,9 @@ export async function deleteTask(id: string) {
     if (task.projectId) {
       const remaining = await prisma.task.findMany({
         where: { projectId: task.projectId, url: null },
-        select: { completed: true },
+        select: { status: true },
       })
-      const allCompleted = remaining.length > 0 && remaining.every(t => t.completed)
+      const allCompleted = remaining.length > 0 && remaining.every(t => t.status === 'done')
       const project = await prisma.project.findUnique({
         where: { id: task.projectId },
         select: { status: true },
@@ -376,7 +373,7 @@ export async function getTasksDueToday() {
   return prisma.task.findMany({
     where: {
       userId,
-      completed: false,
+      status: { not: 'done' },
       dueDate: {
         gte: today,
         lt: tomorrow,
@@ -402,7 +399,7 @@ export async function getOverdueTasks() {
   return prisma.task.findMany({
     where: {
       userId,
-      completed: false,
+      status: { not: 'done' },
       dueDate: {
         lt: today,
       },
@@ -517,9 +514,9 @@ export async function getAllTasks(options?: {
   }
 
   if (options?.status === 'pending') {
-    where.completed = false
+    where.status = { not: 'done' }
   } else if (options?.status === 'completed') {
-    where.completed = true
+    where.status = 'done'
   }
 
   if (options?.priority && options.priority !== 'all') {
@@ -532,45 +529,44 @@ export async function getAllTasks(options?: {
 
   where.AND = conditions
 
-  // Determine sort order
+  // Determine sort order — status desc puts todo > in_progress > done (incomplete first)
   type OrderBy = Record<string, 'asc' | 'desc' | Record<string, 'asc' | 'desc'>>
   let orderBy: OrderBy | OrderBy[] = [
-    { completed: 'asc' as const },
+    { status: 'desc' as const },
     { dueDate: 'asc' as const },
     { priority: 'desc' as const },
   ]
 
   switch (options?.sort) {
     case 'due_date':
-      orderBy = [{ completed: 'asc' }, { dueDate: 'asc' }, { createdAt: 'desc' }]
+      orderBy = [{ status: 'desc' }, { dueDate: 'asc' }, { createdAt: 'desc' }]
       break
     case 'due_date_desc':
-      orderBy = [{ completed: 'asc' }, { dueDate: 'desc' }, { createdAt: 'desc' }]
+      orderBy = [{ status: 'desc' }, { dueDate: 'desc' }, { createdAt: 'desc' }]
       break
     case 'newest':
-      orderBy = [{ completed: 'asc' }, { createdAt: 'desc' }]
+      orderBy = [{ status: 'desc' }, { createdAt: 'desc' }]
       break
     case 'oldest':
-      orderBy = [{ completed: 'asc' }, { createdAt: 'asc' }]
+      orderBy = [{ status: 'desc' }, { createdAt: 'asc' }]
       break
     case 'name':
-      orderBy = [{ completed: 'asc' }, { title: 'asc' }]
+      orderBy = [{ status: 'desc' }, { title: 'asc' }]
       break
     case 'name_desc':
-      orderBy = [{ completed: 'asc' }, { title: 'desc' }]
+      orderBy = [{ status: 'desc' }, { title: 'desc' }]
       break
     case 'project':
-      orderBy = [{ completed: 'asc' }, { project: { name: 'asc' } }]
+      orderBy = [{ status: 'desc' }, { project: { name: 'asc' } }]
       break
     case 'client':
-      // Sort by client in memory after fetching (Prisma doesn't support nested relation ordering)
-      orderBy = [{ completed: 'asc' }, { createdAt: 'desc' }]
+      orderBy = [{ status: 'desc' }, { createdAt: 'desc' }]
       break
     case 'priority_high':
-      orderBy = [{ completed: 'asc' }, { priority: 'desc' }]
+      orderBy = [{ status: 'desc' }, { priority: 'desc' }]
       break
     case 'priority_low':
-      orderBy = [{ completed: 'asc' }, { priority: 'asc' }]
+      orderBy = [{ status: 'desc' }, { priority: 'asc' }]
       break
   }
 
@@ -597,7 +593,9 @@ export async function getAllTasks(options?: {
   // Sort by client name in memory (Prisma doesn't support nested relation ordering)
   if (options?.sort === 'client') {
     tasks.sort((a, b) => {
-      if (a.completed !== b.completed) return a.completed ? 1 : -1
+      const aDone = a.status === 'done' ? 1 : 0
+      const bDone = b.status === 'done' ? 1 : 0
+      if (aDone !== bDone) return aDone - bDone
       return (a.project?.client?.name ?? '').localeCompare(b.project?.client?.name ?? '')
     })
   }

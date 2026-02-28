@@ -40,7 +40,7 @@ interface Task {
   title: string
   description: string | null
   notes: string | null
-  completed: boolean
+  status: string
   priority: string
   startDate: Date | null
   dueDate: Date | null
@@ -75,7 +75,7 @@ function TaskItem({ task, canEdit = true }: { task: Task; canEdit?: boolean }) {
   const [isPending, startTransition] = useTransition()
   const [isEditing, setIsEditing] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
-  const overdue = isOverdue(task.dueDate) && !task.completed
+  const overdue = isOverdue(task.dueDate) && task.status !== 'done'
 
   const handleToggle = () => {
     startTransition(async () => {
@@ -118,12 +118,12 @@ function TaskItem({ task, canEdit = true }: { task: Task; canEdit?: boolean }) {
             <button
               onClick={handleToggle}
               className={`mt-0.5 h-5 w-5 flex-shrink-0 rounded border-2 transition-colors ${
-                task.completed
+                task.status === 'done'
                   ? 'border-emerald-500 bg-emerald-500 text-white'
                   : 'border-border hover:border-primary'
               }`}
             >
-              {task.completed && (
+              {task.status === 'done' && (
                 <svg className="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
@@ -131,11 +131,11 @@ function TaskItem({ task, canEdit = true }: { task: Task; canEdit?: boolean }) {
             </button>
           ) : (
             <div className={`mt-0.5 h-5 w-5 flex-shrink-0 rounded border-2 ${
-              task.completed
+              task.status === 'done'
                 ? 'border-emerald-500 bg-emerald-500 text-white'
                 : 'border-border'
             }`}>
-              {task.completed && (
+              {task.status === 'done' && (
                 <svg className="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
@@ -146,7 +146,7 @@ function TaskItem({ task, canEdit = true }: { task: Task; canEdit?: boolean }) {
             <div className="flex flex-wrap items-center gap-1 sm:gap-2">
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className={`font-medium text-left ${task.completed ? 'text-muted-foreground line-through' : 'text-foreground'} hover:text-link`}
+                className={`font-medium text-left ${task.status === 'done' ? 'text-muted-foreground line-through' : 'text-foreground'} hover:text-link`}
               >
                 {task.title}
               </button>
