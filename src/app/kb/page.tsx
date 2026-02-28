@@ -1,5 +1,6 @@
 import { MarketingNav } from '@/components/marketing/MarketingNav'
 import { MarketingFooter } from '@/components/marketing/MarketingFooter'
+import { auth } from '@clerk/nextjs/server'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -47,11 +48,19 @@ function Badge({ children, variant = 'default' }: { children: React.ReactNode; v
   )
 }
 
-export default function KnowledgeBasePage() {
+export default async function KnowledgeBasePage() {
+  let isAuthenticated = false
+  try {
+    const session = await auth()
+    isAuthenticated = !!session.userId
+  } catch {
+    // auth() may fail — default to unauthenticated
+  }
+
   return (
-    <div className="min-h-screen bg-background">
-      <MarketingNav />
-      <main id="main-content" className="max-w-4xl mx-auto px-4 md:px-8 py-20">
+    <div className={isAuthenticated ? '' : 'min-h-screen bg-background'}>
+      {!isAuthenticated && <MarketingNav />}
+      <main id="main-content" className={`max-w-4xl mx-auto px-4 md:px-8 ${isAuthenticated ? 'py-4' : 'py-20'}`}>
         <div className="mb-12">
           <h1 className="text-3xl font-bold text-foreground mb-3">Knowledge Base</h1>
           <p className="text-muted-foreground">
@@ -648,7 +657,7 @@ export default function KnowledgeBasePage() {
           </p>
         </div>
       </main>
-      <MarketingFooter />
+      {!isAuthenticated && <MarketingFooter />}
     </div>
   )
 }
