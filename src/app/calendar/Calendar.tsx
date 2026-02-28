@@ -284,7 +284,18 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
                   </Link>
                 </div>
                 {selectedDayTasks.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No tasks for this day</p>
+                  <div className="text-center py-4">
+                    <p className="text-sm text-muted-foreground">No tasks for this day</p>
+                    <Link
+                      href="/tasks?add=true"
+                      className="inline-flex items-center gap-1.5 mt-2 text-sm text-primary hover:text-primary/80"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                      </svg>
+                      Add a task
+                    </Link>
+                  </div>
                 ) : (
                   <div className="space-y-3">
                     {selectedDayTasks.map((task) => (

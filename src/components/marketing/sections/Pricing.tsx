@@ -33,7 +33,7 @@ const plans = [
       'Priority support',
     ],
     highlighted: true,
-    cta: 'Start Free Trial',
+    cta: 'Get Started',
     href: '/sign-up',
   },
   {
@@ -49,7 +49,7 @@ const plans = [
       'Priority support',
     ],
     highlighted: false,
-    cta: 'Start Free Trial',
+    cta: 'Get Started',
     href: '/sign-up',
   },
 ]

@@ -30,11 +30,13 @@ export function AdminUsersTable({ users, currentAdminId, adminUserIds }: Props) 
   const [pendingUserId, setPendingUserId] = useState<string | null>(null)
   const [openMenu, setOpenMenu] = useState<string | null>(null)
 
-  function handlePlanChange(userId: string, newPlan: string) {
+  function handlePlanChange(userId: string, newPlan: string, currentPlan: string) {
+    if (!confirm(`Change this user's plan from ${currentPlan} to ${newPlan}? This takes effect immediately.`)) return
     setPendingUserId(userId)
     startTransition(async () => {
       try {
         await updateUserPlan(userId, newPlan)
+        alert(`Plan updated to ${newPlan}`)
       } catch (err) {
         alert(err instanceof Error ? err.message : 'Failed to update plan')
       } finally {
@@ -180,7 +182,7 @@ export function AdminUsersTable({ users, currentAdminId, adminUserIds }: Props) 
                   ) : (
                     <select
                       value={user.plan}
-                      onChange={(e) => handlePlanChange(user.id, e.target.value)}
+                      onChange={(e) => handlePlanChange(user.id, e.target.value, user.plan)}
                       className="text-xs rounded-md border border-border bg-background px-2 py-1 text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                     >
                       <option value="free">Free</option>

@@ -128,8 +128,22 @@ export default async function TasksPage({ searchParams }: Props) {
         </CardHeader>
         <CardContent className="p-0">
           {tasks.length === 0 ? (
-            <div className="px-6 py-12 text-center text-muted-foreground">
-              No tasks found matching your filters.
+            <div className="px-6 py-12 flex flex-col items-center justify-center text-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                <svg className="w-6 h-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              {stats.totalTasks === 0 ? (
+                <div>
+                  <p className="font-medium text-foreground">No tasks yet</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Add your first task to start tracking your work. Press <kbd className="px-1.5 py-0.5 bg-muted border border-border rounded text-xs font-mono">N</kbd> for quick-add.
+                  </p>
+                </div>
+              ) : (
+                <p className="text-muted-foreground">No tasks found matching your filters.</p>
+              )}
             </div>
           ) : showingCompleted ? (
             /* User explicitly filtered to "Completed" — show flat list */

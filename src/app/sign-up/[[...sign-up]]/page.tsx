@@ -13,6 +13,7 @@ export default function SignUpPage() {
             <span className="text-2xl font-bold text-foreground">Pulse Pro</span>
           </div>
           <p className="text-muted-foreground">Create your account to get started</p>
+          <p className="text-xs text-muted-foreground/70 mt-1">Free plan — no credit card required</p>
         </div>
         <SignUp
           forceRedirectUrl="/dashboard"

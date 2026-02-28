@@ -190,7 +190,14 @@ export function AddTaskDialog({ projects, defaultOpen = false }: AddTaskDialogPr
                 />
 
                 {error && (
-                  <p className="text-sm text-destructive">{error}</p>
+                  <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3">
+                    <p className="text-sm text-destructive">{error}</p>
+                    {error.toLowerCase().includes('upgrade') && (
+                      <a href="/settings" className="text-sm font-medium text-primary hover:text-primary/80 mt-1 inline-block">
+                        Manage plan &rarr;
+                      </a>
+                    )}
+                  </div>
                 )}
                 <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row">
                   <Button
