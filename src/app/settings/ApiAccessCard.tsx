@@ -275,7 +275,7 @@ export function ApiAccessCard() {
                     <ul className="mt-1.5 space-y-1 pl-3">
                       <li>Choose <b>Text</b> as the type</li>
                       <li>Set the key to <b>title</b></li>
-                      <li>For the value, tap the field, then tap <b>Provided Input</b> from the variable suggestions above the keyboard (this connects your voice input to the task title)</li>
+                      <li>For the value, tap the field, then tap the <b>variable icon</b> (wand) above the keyboard and select <b>Ask for Input</b> from the list. This connects your voice input to the task title.</li>
                     </ul>
                   </div>
 
