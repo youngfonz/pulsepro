@@ -23,7 +23,7 @@ jobs:
       - name: Check schema drift
         run: |
           DRIFT=$(npx prisma migrate diff \
-            --from-migrations-directory prisma/migrations \
+            --from-migrations prisma/migrations \
             --to-schema-datamodel prisma/schema.prisma \
             --script 2>&1) || true
 
