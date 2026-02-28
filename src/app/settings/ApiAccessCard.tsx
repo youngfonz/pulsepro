@@ -9,6 +9,33 @@ import {
   regenerateApiToken,
 } from '@/actions/integrations'
 
+function CopyButton({ value, label }: { value: string; label?: string }) {
+  const [copied, setCopied] = useState(false)
+  const handleCopy = () => {
+    navigator.clipboard.writeText(value)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+  return (
+    <button
+      onClick={handleCopy}
+      className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors shrink-0"
+      title={`Copy ${label || 'value'}`}
+    >
+      {copied ? (
+        <svg className="w-3 h-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+      ) : (
+        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+      )}
+      {label && <span>{copied ? 'Copied' : label}</span>}
+    </button>
+  )
+}
+
 export function ApiAccessCard() {
   const [plan, setPlan] = useState<string | null>(null)
   const [token, setToken] = useState<string | null>(null)
@@ -16,6 +43,7 @@ export function ApiAccessCard() {
   const [actionLoading, setActionLoading] = useState(false)
   const [copied, setCopied] = useState(false)
   const [showToken, setShowToken] = useState(false)
+  const [showSetup, setShowSetup] = useState(false)
 
   useEffect(() => {
     getIntegrationSettings()
@@ -181,21 +209,96 @@ export function ApiAccessCard() {
 
             {/* Siri Shortcut setup */}
             <div className="pt-3 border-t border-border">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                Apple Shortcuts Setup
-              </p>
-              <div className="space-y-1.5 text-xs text-muted-foreground">
-                <div>1. Open the <b>Shortcuts</b> app on iPhone, iPad, or Mac</div>
-                <div>2. Create a new shortcut with <b>Ask for Input</b> (task title)</div>
-                <div>3. Add <b>Get Contents of URL</b> action:</div>
-                <div className="pl-4 space-y-0.5">
-                  <div>URL: <code className="text-foreground">https://pulsepro.work/api/v1/tasks</code></div>
-                  <div>Method: <code className="text-foreground">POST</code></div>
-                  <div>Header: <code className="text-foreground">Authorization: Bearer YOUR_TOKEN</code></div>
-                  <div>Body (JSON): <code className="text-foreground">{'{"title": "Provided Input"}'}</code></div>
+              <button
+                onClick={() => setShowSetup(!showSetup)}
+                className="flex items-center gap-2 w-full text-left"
+              >
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Apple Shortcuts Setup
+                </p>
+                <svg
+                  className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${showSetup ? 'rotate-180' : ''}`}
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {showSetup && (
+                <div className="mt-3 space-y-4 text-xs text-muted-foreground">
+                  {/* Step 1 */}
+                  <div>
+                    <div className="font-medium text-foreground mb-1">Step 1: Create a new shortcut</div>
+                    <p>Open the <b>Shortcuts</b> app on your iPhone. Tap the <b>+</b> button in the top right to create a new shortcut.</p>
+                  </div>
+
+                  {/* Step 2 */}
+                  <div>
+                    <div className="font-medium text-foreground mb-1">Step 2: Add &quot;Ask for Input&quot;</div>
+                    <p>In the search bar at the bottom, type <b>Ask for Input</b> and tap it to add it. Change the prompt text to:</p>
+                    <div className="mt-1.5 flex items-center gap-2 bg-muted rounded-md px-2.5 py-1.5">
+                      <code className="text-foreground text-[11px] flex-1">What&apos;s the task?</code>
+                      <CopyButton value="What's the task?" />
+                    </div>
+                  </div>
+
+                  {/* Step 3 */}
+                  <div>
+                    <div className="font-medium text-foreground mb-1">Step 3: Add &quot;Get Contents of URL&quot;</div>
+                    <p>Search for <b>Get Contents of URL</b> and tap it to add it below the input action. Tap the URL field and paste:</p>
+                    <div className="mt-1.5 flex items-center gap-2 bg-muted rounded-md px-2.5 py-1.5">
+                      <code className="text-foreground text-[11px] flex-1 break-all">https://pulsepro.work/api/v1/tasks</code>
+                      <CopyButton value="https://pulsepro.work/api/v1/tasks" label="Copy" />
+                    </div>
+                  </div>
+
+                  {/* Step 4 */}
+                  <div>
+                    <div className="font-medium text-foreground mb-1">Step 4: Change method to POST</div>
+                    <p>Tap the <b>&rsaquo;</b> arrow next to the URL to expand the details. Tap <b>Method</b> and change it to <b>POST</b>.</p>
+                  </div>
+
+                  {/* Step 5 */}
+                  <div>
+                    <div className="font-medium text-foreground mb-1">Step 5: Add the authorization header</div>
+                    <p>Under <b>Headers</b>, tap <b>Add new header</b>. Set the key to <b>Authorization</b> and the value to:</p>
+                    <div className="mt-1.5 flex items-center gap-2 bg-muted rounded-md px-2.5 py-1.5">
+                      <code className="text-foreground text-[11px] flex-1 truncate">Bearer {showToken ? token : maskedToken}</code>
+                      <CopyButton value={`Bearer ${token}`} label="Copy" />
+                    </div>
+                  </div>
+
+                  {/* Step 6 */}
+                  <div>
+                    <div className="font-medium text-foreground mb-1">Step 6: Set up the JSON body</div>
+                    <p>Tap <b>Request Body</b> and change it to <b>JSON</b>. Then tap <b>Add new field</b>:</p>
+                    <ul className="mt-1.5 space-y-1 pl-3">
+                      <li>Choose <b>Text</b> as the type</li>
+                      <li>Set the key to <b>title</b></li>
+                      <li>For the value, tap the field, then tap <b>Provided Input</b> from the variable suggestions above the keyboard (this connects your voice input to the task title)</li>
+                    </ul>
+                  </div>
+
+                  {/* Step 7 */}
+                  <div>
+                    <div className="font-medium text-foreground mb-1">Step 7: Name it and add to Siri</div>
+                    <p>Tap the name at the top (e.g. &quot;New Shortcut 1&quot;) and rename it to something like <b>Add Pulse Task</b>. Now you can say:</p>
+                    <p className="mt-1 font-medium text-foreground">&quot;Hey Siri, Add Pulse Task&quot;</p>
+                    <p className="mt-1">Siri will ask &quot;What&apos;s the task?&quot;, you say the title, and it creates the task in Pulse Pro.</p>
+                  </div>
+
+                  {/* Optional fields */}
+                  <div className="pt-2 border-t border-border">
+                    <div className="font-medium text-foreground mb-1">Optional: Extra fields</div>
+                    <p>You can add more JSON fields in step 6 to set priority, project, or due date:</p>
+                    <ul className="mt-1.5 space-y-0.5 pl-3">
+                      <li><code className="text-foreground">priority</code> &mdash; &quot;low&quot;, &quot;medium&quot;, or &quot;high&quot;</li>
+                      <li><code className="text-foreground">project</code> &mdash; project name (matched automatically)</li>
+                      <li><code className="text-foreground">dueDate</code> &mdash; e.g. &quot;2025-03-15&quot;</li>
+                    </ul>
+                  </div>
                 </div>
-                <div>4. Add to Siri: &quot;Hey Siri, add a Pulse task&quot;</div>
-              </div>
+              )}
             </div>
 
             {/* curl example */}

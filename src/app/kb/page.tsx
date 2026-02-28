@@ -169,7 +169,7 @@ export default function KnowledgeBasePage() {
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-foreground">6. Siri / API <Badge variant="pro">Pro</Badge></h3>
               <p>
-                Generate an API token in Settings and set up an Apple Shortcut with the 4-step guide provided. Then say &quot;Hey Siri, add task&quot; to create tasks hands-free. Developers can also use <code>POST /api/v1/tasks</code> with a Bearer token from any automation tool.
+                Generate an API token in Settings, then follow the step-by-step Apple Shortcuts guide to create a &quot;Add Pulse Task&quot; shortcut. Once set up, say &quot;Hey Siri, Add Pulse Task&quot; to create tasks hands-free from any Apple device. The guide walks through each tap &mdash; from creating the shortcut to connecting your voice input to the task title. Developers can also use <code>POST /api/v1/tasks</code> with a Bearer token from any automation tool.
               </p>
             </div>
           </Section>
