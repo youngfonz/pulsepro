@@ -24,12 +24,12 @@ export function LayoutWrapper({ children, clientCount, clerkEnabled = false, isA
   }
 
   return (
-    <div className="flex h-screen bg-background overflow-x-clip overflow-y-hidden w-full max-w-[100vw]">
+    <div className="flex h-screen bg-background overflow-x-clip overflow-y-hidden w-full max-w-full overscroll-x-none [touch-action:pan-y_pinch-zoom]">
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-background focus:text-foreground">
         Skip to main content
       </a>
       <Sidebar clientCount={clientCount} clerkEnabled={clerkEnabled} isAdmin={isAdmin} />
-      <main id="main-content" className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto pt-14 md:pt-0">
+      <main id="main-content" className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto overscroll-contain pt-14 md:pt-0">
         <div className="p-4 md:p-6">{children}</div>
       </main>
       <CommandBar />
