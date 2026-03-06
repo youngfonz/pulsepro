@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Pulse Pro",
+    "slug": "pulsepro",
+    "scheme": "pulsepro",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#09090b"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "org.pulsepro.app"
+    },
+    "plugins": [
+      "@clerk/expo"
+    ],
+    "extra": {
+      "clerkPublishableKey": "pk_test_dmFzdC1zdGlua2J1Zy05OC5jbGVyay5hY2NvdW50cy5kZXYk"
+    }
+  }
+}

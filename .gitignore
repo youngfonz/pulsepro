@@ -57,3 +57,10 @@ public/uploads/*
 
 # old version
 /v1
+
+# Expo / React Native
+mobile/node_modules/
+mobile/.expo/
+mobile/dist/
+mobile/ios/
+mobile/android/

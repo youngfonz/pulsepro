@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { isAdminUser } from '@/lib/auth'
 import { parseTaskFromVoice } from '@/lib/voice'
-import crypto from 'crypto'
+import { authenticateRequest, apiError, handleCors } from '@/lib/api-auth'
 
 /**
  * Extract project name from natural language text.
@@ -32,55 +31,13 @@ function extractProject(text: string): { projectName?: string; cleanedText: stri
   return { cleanedText: text }
 }
 
-async function authenticateToken(request: NextRequest) {
-  const authHeader = request.headers.get('authorization')
-  if (!authHeader?.startsWith('Bearer ')) {
-    return { error: 'Missing or invalid Authorization header', status: 401 }
-  }
-
-  const token = authHeader.slice(7)
-  if (!token) {
-    return { error: 'Missing API token', status: 401 }
-  }
-
-  // Hash the incoming token and look up by hash (new tokens are stored hashed)
-  const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
-  let subscription = await prisma.subscription.findFirst({
-    where: { apiToken: tokenHash },
-  })
-
-  // Fallback: try plain-text lookup for legacy tokens and auto-migrate
-  if (!subscription) {
-    subscription = await prisma.subscription.findFirst({
-      where: { apiToken: token },
-    })
-    if (subscription) {
-      // Auto-migrate: hash the legacy token in place
-      await prisma.subscription.update({
-        where: { id: subscription.id },
-        data: { apiToken: tokenHash },
-      })
-    }
-  }
-
-  if (!subscription) {
-    return { error: 'Invalid API token', status: 401 }
-  }
-
-  if (subscription.plan !== 'pro' && subscription.plan !== 'team' && !isAdminUser(subscription.userId)) {
-    return { error: 'Pro plan required', status: 403 }
-  }
-
-  return { subscription }
-}
+export async function OPTIONS() { return handleCors() }
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = await authenticateToken(request)
-    if ('error' in auth) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status })
-    }
-    const { subscription } = auth
+    const auth = await authenticateRequest(request)
+    if ('error' in auth) return apiError(auth.error, auth.status)
+    const { userId } = auth
 
     const body = await request.json()
     let { title, project, priority, dueDate, description } = body
@@ -108,7 +65,7 @@ export async function POST(request: NextRequest) {
     if (project && typeof project === 'string') {
       const found = await prisma.project.findFirst({
         where: {
-          userId: subscription.userId,
+          userId,
           name: { equals: project, mode: 'insensitive' },
         },
         select: { id: true, name: true },
@@ -134,7 +91,7 @@ export async function POST(request: NextRequest) {
 
     const task = await prisma.task.create({
       data: {
-        userId: subscription.userId,
+        userId,
         title: title.trim(),
         description: description?.trim() || null,
         priority: taskPriority,
@@ -168,39 +125,62 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await authenticateToken(request)
-    if ('error' in auth) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status })
-    }
-    const { subscription } = auth
+    const auth = await authenticateRequest(request)
+    if ('error' in auth) return apiError(auth.error, auth.status)
+    const { userId } = auth
 
     const url = new URL(request.url)
     const status = url.searchParams.get('status') // todo, in_progress, done
-    const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 100)
+    const priority = url.searchParams.get('priority')
+    const projectId = url.searchParams.get('projectId')
+    const sort = url.searchParams.get('sort')
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 200)
 
-    const where: Record<string, unknown> = { userId: subscription.userId }
-    if (status) where.status = status
+    // Build ownership filter (owned + shared)
+    const sharedAccess = await prisma.projectAccess.findMany({
+      where: { userId },
+      select: { projectId: true },
+    })
+    const sharedIds = sharedAccess.map(r => r.projectId)
+    const ownerFilter = sharedIds.length > 0
+      ? { OR: [{ userId }, { projectId: { in: sharedIds } }] }
+      : { userId }
+
+    const where: Record<string, unknown> = { url: null, AND: [ownerFilter] }
+    if (status) where.status = status === 'pending' ? { not: 'done' } : status === 'completed' ? 'done' : status
+    if (priority && priority !== 'all') where.priority = priority
+    if (projectId === 'none') where.projectId = null
+    else if (projectId && projectId !== 'all') where.projectId = projectId
+
+    type OrderBy = Record<string, 'asc' | 'desc' | Record<string, 'asc' | 'desc'>>
+    let orderBy: OrderBy | OrderBy[] = [{ status: 'desc' }, { dueDate: 'asc' }, { priority: 'desc' }]
+    switch (sort) {
+      case 'newest': orderBy = [{ status: 'desc' }, { createdAt: 'desc' }]; break
+      case 'oldest': orderBy = [{ status: 'desc' }, { createdAt: 'asc' }]; break
+      case 'due_date': orderBy = [{ status: 'desc' }, { dueDate: 'asc' }]; break
+      case 'priority_high': orderBy = [{ status: 'desc' }, { priority: 'desc' }]; break
+      case 'priority_low': orderBy = [{ status: 'desc' }, { priority: 'asc' }]; break
+      case 'name': orderBy = [{ status: 'desc' }, { title: 'asc' }]; break
+    }
 
     const tasks = await prisma.task.findMany({
       where,
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        priority: true,
-        status: true,
-        dueDate: true,
-        projectId: true,
-        project: { select: { name: true } },
-        createdAt: true,
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+            client: { select: { id: true, name: true } },
+          },
+        },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy,
       take: limit,
     })
 
     return NextResponse.json({ tasks })
   } catch (error) {
     console.error('API v1/tasks GET error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return apiError('Internal error', 500)
   }
 }
