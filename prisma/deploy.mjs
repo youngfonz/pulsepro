@@ -72,12 +72,12 @@ async function resolveFailedMigrations() {
     )
     if (!result[0]?.exists) return
 
-    const failed = await prisma.$queryRawUnsafe(
-      `SELECT migration_name FROM _prisma_migrations WHERE rolled_back_at IS NOT NULL OR (finished_at IS NULL AND started_at IS NOT NULL AND started_at < NOW() - INTERVAL '10 minutes')`
+    // Fix any migrations stuck in a failed/incomplete state by marking them as finished
+    const fixed = await prisma.$executeRawUnsafe(
+      `UPDATE _prisma_migrations SET finished_at = NOW(), rolled_back_at = NULL, logs = 'Auto-resolved by deploy.mjs' WHERE finished_at IS NULL OR rolled_back_at IS NOT NULL`
     )
-    for (const row of failed) {
-      console.log(`[deploy] Resolving failed migration: ${row.migration_name}`)
-      execSync(`npx prisma migrate resolve --applied ${row.migration_name}`, { stdio: 'inherit' })
+    if (fixed > 0) {
+      console.log(`[deploy] Fixed ${fixed} failed/stuck migration(s) in _prisma_migrations table`)
     }
   } finally {
     await prisma.$disconnect()
