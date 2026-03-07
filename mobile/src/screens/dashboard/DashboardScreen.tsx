@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import { Plus } from 'lucide-react-native'
 import { useAuth } from '@clerk/expo'
 import { useDashboard } from '../../hooks/useDashboard'
 import { useInsights } from '../../hooks/useInsights'
@@ -12,6 +11,7 @@ import type { Insight } from '../../api/insights'
 import { colors } from '../../theme/colors'
 import { spacing } from '../../theme/spacing'
 import { getHealthColor } from '../../utils/status'
+import { SpeedDialFAB } from '../../components/SpeedDialFAB'
 import type { DashboardStackParamList } from '../../types/navigation'
 
 const RING = {
@@ -176,13 +176,11 @@ export function DashboardScreen() {
           </View>
         )}
       </ScrollView>
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => navigation.navigate('CreateTask')}
-        activeOpacity={0.85}
-      >
-        <Plus size={24} color="#fff" />
-      </TouchableOpacity>
+      <SpeedDialFAB
+        onAddTask={() => navigation.navigate('CreateTask')}
+        onAddProject={() => navigation.navigate('CreateProject')}
+        onAddClient={() => navigation.navigate('CreateClient')}
+      />
     </SafeAreaView>
   )
 }
@@ -272,20 +270,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl, paddingVertical: spacing.md,
   },
   signOutText: { color: '#fff', fontSize: 15, fontWeight: '600' },
-  fab: {
-    position: 'absolute',
-    bottom: spacing.xl,
-    right: spacing.xl,
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.18,
-    shadowRadius: 6,
-    elevation: 4,
-  },
 })

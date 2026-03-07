@@ -10,6 +10,8 @@ import { ProjectDetailScreen } from '../screens/projects/ProjectDetailScreen'
 import { TasksListScreen } from '../screens/tasks/TasksListScreen'
 import { TaskDetailScreen } from '../screens/tasks/TaskDetailScreen'
 import { CreateTaskScreen } from '../screens/tasks/CreateTaskScreen'
+import { CreateProjectScreen } from '../screens/projects/CreateProjectScreen'
+import { CreateClientScreen } from '../screens/clients/CreateClientScreen'
 import { CalendarScreen } from '../screens/calendar/CalendarScreen'
 import { MoreScreen } from '../screens/more/MoreScreen'
 import { ClientsListScreen } from '../screens/clients/ClientsListScreen'
@@ -46,6 +48,8 @@ function DashboardStackScreen() {
     <DashboardStack.Navigator screenOptions={screenOptions}>
       <DashboardStack.Screen name="Dashboard" component={DashboardScreen} />
       <DashboardStack.Screen name="CreateTask" component={CreateTaskScreen} options={{ title: 'New Task' }} />
+      <DashboardStack.Screen name="CreateProject" component={CreateProjectScreen} options={{ title: 'New Project' }} />
+      <DashboardStack.Screen name="CreateClient" component={CreateClientScreen} options={{ title: 'New Client' }} />
     </DashboardStack.Navigator>
   )
 }
