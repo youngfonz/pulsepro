@@ -4,7 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import { Plus } from 'lucide-react-native'
+import { SpeedDialFAB } from '../../components/SpeedDialFAB'
+import { AnimatedEntry } from '../../components/AnimatedEntry'
 import { useAuth } from '@clerk/expo'
 import { useDashboard } from '../../hooks/useDashboard'
 import { useInsights } from '../../hooks/useInsights'
@@ -55,10 +56,12 @@ export function DashboardScreen() {
         refreshControl={<RefreshControl refreshing={isFetching && !!data} onRefresh={refetch} tintColor={colors.primary} />}
       >
         {/* Greeting */}
-        <View style={styles.greetingSection}>
-          <Text style={styles.greetingText}>{greeting}</Text>
-          <Text style={styles.greetingDate}>{dateStr}</Text>
-        </View>
+        <AnimatedEntry delay={0}>
+          <View style={styles.greetingSection}>
+            <Text style={styles.greetingText}>{greeting}</Text>
+            <Text style={styles.greetingDate}>{dateStr}</Text>
+          </View>
+        </AnimatedEntry>
 
         {isLoading && !data && (
           <View style={styles.centered}>
@@ -82,6 +85,7 @@ export function DashboardScreen() {
 
         {/* Insights */}
         {insightsData?.insights && insightsData.insights.length > 0 && (
+          <AnimatedEntry delay={80}>
           <View style={styles.insightsCard}>
             <Text style={styles.insightsTitle}>Insights</Text>
             {insightsData.insights.map((insight: Insight) => (
@@ -91,10 +95,12 @@ export function DashboardScreen() {
               </View>
             ))}
           </View>
+          </AnimatedEntry>
         )}
 
         {/* Activity Rings */}
         {stats && (
+          <AnimatedEntry delay={160}>
           <View style={styles.ringsCard}>
             <View style={styles.ringsCenter}>
               <View style={styles.ringsWrap}>
@@ -137,18 +143,22 @@ export function DashboardScreen() {
               <LegendItem color={RING.due.b} label="Clients" value={`${stats.activeClients}/${stats.totalClients}`} />
             </View>
           </View>
+          </AnimatedEntry>
         )}
 
         {/* Stats Cards */}
         {stats && (
+          <AnimatedEntry delay={240}>
           <View style={styles.statsGrid}>
             <StatCard label="Projects" value={stats.activeProjects} subtitle={`${stats.totalProjects} total`} />
             <StatCard label="Tasks" value={stats.pendingTasks} subtitle={`${stats.totalTasks} total`} />
             <StatCard label="Clients" value={stats.activeClients} subtitle={`${stats.totalClients} total`} />
           </View>
+          </AnimatedEntry>
         )}
 
         {data?.overdueTasks && data.overdueTasks.length > 0 && (
+          <AnimatedEntry delay={320}>
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Overdue Tasks</Text>
             {data.overdueTasks.map(task => (
@@ -158,9 +168,11 @@ export function DashboardScreen() {
               </View>
             ))}
           </View>
+          </AnimatedEntry>
         )}
 
         {data?.projectHealth && data.projectHealth.length > 0 && (
+          <AnimatedEntry delay={400}>
           <View style={styles.healthCard}>
             <Text style={styles.healthCardTitle}>Project Health</Text>
             {data.projectHealth.slice(0, 6).map(p => {
@@ -183,15 +195,14 @@ export function DashboardScreen() {
               )
             })}
           </View>
+          </AnimatedEntry>
         )}
       </ScrollView>
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => navigation.navigate('CreateTask')}
-        activeOpacity={0.85}
-      >
-        <Plus size={24} color="#fff" />
-      </TouchableOpacity>
+      <SpeedDialFAB
+        onAddTask={() => navigation.navigate('CreateTask')}
+        onAddProject={() => navigation.navigate('CreateProject')}
+        onAddClient={() => navigation.navigate('CreateClient')}
+      />
     </SafeAreaView>
   )
 }
@@ -290,20 +301,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl, paddingVertical: spacing.md,
   },
   signOutText: { color: '#fff', fontSize: 15, fontWeight: '600' },
-  fab: {
-    position: 'absolute',
-    bottom: spacing.xl,
-    right: spacing.xl,
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.18,
-    shadowRadius: 6,
-    elevation: 4,
-  },
 })

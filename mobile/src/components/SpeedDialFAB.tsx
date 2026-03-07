@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'absolute',
     bottom: 0,
-    right: 0,
+    right: 6,
     gap: spacing.sm,
   },
   actionLabel: {
