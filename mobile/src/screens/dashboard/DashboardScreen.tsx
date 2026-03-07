@@ -161,18 +161,27 @@ export function DashboardScreen() {
         )}
 
         {data?.projectHealth && data.projectHealth.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Project Health</Text>
-            {data.projectHealth.map(p => (
-              <View key={p.projectId} style={styles.healthRow}>
-                <View style={[styles.healthDot, { backgroundColor: getHealthColor(p.label) }]} />
-                <View style={styles.healthInfo}>
-                  <Text style={styles.healthName} numberOfLines={1}>{p.projectName}</Text>
-                  <Text style={styles.healthMeta}>{p.completedTasks}/{p.totalTasks} tasks</Text>
+          <View style={styles.healthCard}>
+            <Text style={styles.healthCardTitle}>Project Health</Text>
+            {data.projectHealth.slice(0, 6).map(p => {
+              const healthLabel = p.label === 'completed' ? 'Done' : p.label === 'healthy' ? 'Healthy' : p.label === 'at_risk' ? 'At Risk' : 'Critical'
+              const healthColor = getHealthColor(p.label)
+              return (
+                <View key={p.projectId} style={styles.healthRow}>
+                  <View style={[styles.healthBadge, { backgroundColor: healthColor + '18' }]}>
+                    <View style={[styles.healthBadgeDot, { backgroundColor: healthColor }]} />
+                    <Text style={[styles.healthBadgeText, { color: healthColor }]}>{healthLabel}</Text>
+                  </View>
+                  <View style={styles.healthInfo}>
+                    <Text style={styles.healthName} numberOfLines={1}>{p.projectName}</Text>
+                    {p.clientName ? <Text style={styles.healthClient} numberOfLines={1}>{p.clientName}</Text> : null}
+                  </View>
+                  <Text style={styles.healthMeta}>
+                    {p.label === 'completed' ? 'Done' : p.overdueTasks > 0 ? `${p.overdueTasks} overdue` : `${p.completedTasks}/${p.totalTasks}`}
+                  </Text>
                 </View>
-                <Text style={[styles.healthScore, { color: getHealthColor(p.label) }]}>{p.score}</Text>
-              </View>
-            ))}
+              )
+            })}
           </View>
         )}
       </ScrollView>
@@ -249,16 +258,25 @@ const styles = StyleSheet.create({
   },
   overdueTitle: { fontSize: 15, color: colors.textPrimary, marginBottom: spacing.xs },
   overdueProject: { fontSize: 13, color: colors.textSecondary },
-  healthRow: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface,
-    borderRadius: 10, padding: spacing.md, borderWidth: 1, borderColor: colors.border,
-    marginBottom: spacing.sm,
+  healthCard: {
+    backgroundColor: colors.surface, borderRadius: 12, borderWidth: 1, borderColor: colors.border,
+    padding: spacing.lg, marginBottom: spacing.xl,
   },
-  healthDot: { width: 10, height: 10, borderRadius: 5, marginRight: spacing.md },
+  healthCardTitle: { fontSize: 17, fontWeight: '600', color: colors.textPrimary, marginBottom: spacing.md },
+  healthRow: {
+    flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.sm + 2,
+    borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border, gap: spacing.sm,
+  },
+  healthBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 6, paddingVertical: 3, borderRadius: 4,
+  },
+  healthBadgeDot: { width: 5, height: 5, borderRadius: 3 },
+  healthBadgeText: { fontSize: 10, fontWeight: '600' },
   healthInfo: { flex: 1 },
-  healthName: { fontSize: 15, color: colors.textPrimary },
-  healthMeta: { fontSize: 13, color: colors.textSecondary },
-  healthScore: { fontSize: 17, fontWeight: '600' },
+  healthName: { fontSize: 14, fontWeight: '500', color: colors.textPrimary },
+  healthClient: { fontSize: 12, color: colors.textSecondary },
+  healthMeta: { fontSize: 12, color: colors.textSecondary },
   contentCenter: { flexGrow: 1, justifyContent: 'center' },
   centered: { alignItems: 'center', paddingVertical: spacing.xxxl },
   loadingText: { color: colors.textSecondary, fontSize: 15, marginTop: spacing.md },
