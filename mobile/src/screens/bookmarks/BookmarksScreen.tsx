@@ -1,11 +1,11 @@
 import React from 'react'
-import { Text, FlatList, TouchableOpacity, StyleSheet, View } from 'react-native'
+import { Text, FlatList, TouchableOpacity, StyleSheet, View, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ExternalLink } from 'lucide-react-native'
 import * as Linking from 'expo-linking'
 import { colors } from '../../theme/colors'
 import { spacing } from '../../theme/spacing'
-import { mockBookmarks } from '../../data/mock'
+import { useBookmarks } from '../../hooks/useBookmarks'
 import type { Task } from '../../types/api'
 
 function getBookmarkIcon(type: string | null): string {
@@ -26,7 +26,7 @@ function getDomain(url: string): string {
 }
 
 export function BookmarksScreen() {
-  const bookmarks = mockBookmarks
+  const { data, isLoading } = useBookmarks()
 
   const renderItem = ({ item }: { item: Task }) => (
     <TouchableOpacity
@@ -45,10 +45,18 @@ export function BookmarksScreen() {
     </TouchableOpacity>
   )
 
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container} edges={['bottom']}>
+        <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 60 }} />
+      </SafeAreaView>
+    )
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <FlatList
-        data={bookmarks}
+        data={data?.bookmarks}
         keyExtractor={item => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.list}

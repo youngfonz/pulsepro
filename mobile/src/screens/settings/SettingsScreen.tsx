@@ -1,17 +1,17 @@
 import React from 'react'
-import { Text, ScrollView, StyleSheet, View, TouchableOpacity } from 'react-native'
+import { Text, ScrollView, StyleSheet, View, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth, useUser } from '@clerk/expo'
 import { colors } from '../../theme/colors'
 import { spacing } from '../../theme/spacing'
-import { mockMe } from '../../data/mock'
+import { useMe } from '../../hooks/useMe'
 
 export function SettingsScreen() {
   const { signOut } = useAuth()
   const { user } = useUser()
-  const me = mockMe
+  const { data: me, isLoading } = useMe()
 
-  const planLabel = me.plan === 'pro' ? 'Pro' : me.plan === 'team' ? 'Team' : 'Free'
+  const planLabel = me?.plan === 'pro' ? 'Pro' : me?.plan === 'team' ? 'Team' : 'Free'
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -35,31 +35,37 @@ export function SettingsScreen() {
         </View>
 
         {/* Plan */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Plan</Text>
-          <View style={styles.infoCard}>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Current plan</Text>
-              <View style={[styles.planBadge, me.plan === 'pro' && styles.planPro]}>
-                <Text style={[styles.planText, me.plan === 'pro' && styles.planProText]}>{planLabel}</Text>
+        {me ? (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Plan</Text>
+            <View style={styles.infoCard}>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Current plan</Text>
+                <View style={[styles.planBadge, me.plan === 'pro' && styles.planPro]}>
+                  <Text style={[styles.planText, me.plan === 'pro' && styles.planProText]}>{planLabel}</Text>
+                </View>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Status</Text>
+                <Text style={styles.infoValue}>{me.status === 'active' ? 'Active' : me.status}</Text>
               </View>
             </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Status</Text>
-              <Text style={styles.infoValue}>{me.status === 'active' ? 'Active' : me.status}</Text>
-            </View>
           </View>
-        </View>
+        ) : isLoading ? (
+          <ActivityIndicator size="small" color={colors.primary} style={{ marginVertical: spacing.xl }} />
+        ) : null}
 
         {/* Usage */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Usage</Text>
-          <View style={styles.infoCard}>
-            <UsageRow label="Projects" current={me.usage.projects.current} limit={me.usage.projects.limit} />
-            <UsageRow label="Tasks" current={me.usage.tasks.current} limit={me.usage.tasks.limit} />
-            <UsageRow label="Clients" current={me.usage.clients.current} limit={me.usage.clients.limit} />
+        {me && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Usage</Text>
+            <View style={styles.infoCard}>
+              <UsageRow label="Projects" current={me.usage.projects.current} limit={me.usage.projects.limit} />
+              <UsageRow label="Tasks" current={me.usage.tasks.current} limit={me.usage.tasks.limit} />
+              <UsageRow label="Clients" current={me.usage.clients.current} limit={me.usage.clients.limit} />
+            </View>
           </View>
-        </View>
+        )}
 
         {/* App Info */}
         <View style={styles.section}>
