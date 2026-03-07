@@ -93,7 +93,7 @@ export function DashboardScreen() {
           <View style={styles.ringsCard}>
             <View style={styles.ringsRow}>
               <View style={styles.ringsWrap}>
-                <Svg width={150} height={150} viewBox="0 0 100 100">
+                <Svg width={180} height={180} viewBox="0 0 100 100">
                   <Defs>
                     <LinearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="0%">
                       <Stop offset="0%" stopColor={RING.projects.a} />
@@ -214,10 +214,10 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: colors.border, marginBottom: spacing.xl,
   },
   ringsRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
-  ringsWrap: { position: 'relative', width: 150, height: 150 },
+  ringsWrap: { position: 'relative', width: 180, height: 180 },
   ringCenter: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' },
   ringCenterNum: { fontSize: 26, fontWeight: '700', color: colors.textPrimary },
-  ringCenterSub: { fontSize: 11, color: colors.textSecondary, marginTop: -2 },
+  ringCenterSub: { fontSize: 12, color: colors.textSecondary, marginTop: -1 },
   legendCol: { flex: 1, gap: spacing.lg },
   legendRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   legendDot: { width: 10, height: 10, borderRadius: 5 },
