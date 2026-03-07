@@ -91,9 +91,9 @@ export function DashboardScreen() {
         {/* Activity Rings */}
         {stats && (
           <View style={styles.ringsCard}>
-            <View style={styles.ringsRow}>
+            <View style={styles.ringsCenter}>
               <View style={styles.ringsWrap}>
-                <Svg width={180} height={180} viewBox="0 0 100 100">
+                <Svg width={160} height={160} viewBox="0 0 100 100">
                   <Defs>
                     <LinearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="0%">
                       <Stop offset="0%" stopColor={RING.projects.a} />
@@ -109,27 +109,27 @@ export function DashboardScreen() {
                     </LinearGradient>
                   </Defs>
                   {/* Background */}
-                  <Circle cx={50} cy={50} r={42} fill="none" stroke={RING.projects.bg} strokeWidth={6} />
-                  <Circle cx={50} cy={50} r={32} fill="none" stroke={RING.tasks.bg} strokeWidth={6} />
-                  <Circle cx={50} cy={50} r={22} fill="none" stroke={RING.due.bg} strokeWidth={6} />
+                  <Circle cx={50} cy={50} r={44} fill="none" stroke={RING.projects.bg} strokeWidth={5} />
+                  <Circle cx={50} cy={50} r={36} fill="none" stroke={RING.tasks.bg} strokeWidth={5} />
+                  <Circle cx={50} cy={50} r={28} fill="none" stroke={RING.due.bg} strokeWidth={5} />
                   {/* Progress */}
-                  <Circle cx={50} cy={50} r={42} fill="none" stroke="url(#pg)" strokeWidth={6}
-                    strokeLinecap="round" strokeDasharray={`${pProg * 264} 264`} rotation={-90} origin="50,50" />
-                  <Circle cx={50} cy={50} r={32} fill="none" stroke="url(#tg)" strokeWidth={6}
-                    strokeLinecap="round" strokeDasharray={`${tProg * 201} 201`} rotation={-90} origin="50,50" />
-                  <Circle cx={50} cy={50} r={22} fill="none" stroke="url(#dg)" strokeWidth={6}
-                    strokeLinecap="round" strokeDasharray={`${cProg * 138} 138`} rotation={-90} origin="50,50" />
+                  <Circle cx={50} cy={50} r={44} fill="none" stroke="url(#pg)" strokeWidth={5}
+                    strokeLinecap="round" strokeDasharray={`${pProg * 276} 276`} rotation={-90} origin="50,50" />
+                  <Circle cx={50} cy={50} r={36} fill="none" stroke="url(#tg)" strokeWidth={5}
+                    strokeLinecap="round" strokeDasharray={`${tProg * 226} 226`} rotation={-90} origin="50,50" />
+                  <Circle cx={50} cy={50} r={28} fill="none" stroke="url(#dg)" strokeWidth={5}
+                    strokeLinecap="round" strokeDasharray={`${cProg * 176} 176`} rotation={-90} origin="50,50" />
                 </Svg>
                 <View style={styles.ringCenter}>
                   <Text style={styles.ringCenterNum}>{stats.pendingTasks}</Text>
                   <Text style={styles.ringCenterSub}>pending</Text>
                 </View>
               </View>
-              <View style={styles.legendCol}>
-                <LegendRow color={RING.projects.b} label="Projects" value={`${stats.activeProjects}/${stats.totalProjects}`} />
-                <LegendRow color={RING.tasks.b} label="Completed" value={`${completed}/${stats.totalTasks}`} />
-                <LegendRow color={RING.due.b} label="Clients" value={`${stats.activeClients}/${stats.totalClients}`} />
-              </View>
+            </View>
+            <View style={styles.legendRow3}>
+              <LegendItem color={RING.projects.b} label="Projects" value={`${stats.activeProjects}/${stats.totalProjects}`} />
+              <LegendItem color={RING.tasks.b} label="Completed" value={`${completed}/${stats.totalTasks}`} />
+              <LegendItem color={RING.due.b} label="Clients" value={`${stats.activeClients}/${stats.totalClients}`} />
             </View>
           </View>
         )}
@@ -185,9 +185,9 @@ function StatCard({ label, value, subtitle }: { label: string; value: number; su
   )
 }
 
-function LegendRow({ color, label, value }: { color: string; label: string; value: string }) {
+function LegendItem({ color, label, value }: { color: string; label: string; value: string }) {
   return (
-    <View style={styles.legendRow}>
+    <View style={styles.legendItem}>
       <View style={[styles.legendDot, { backgroundColor: color }]} />
       <Text style={styles.legendLabel}>{label}</Text>
       <Text style={styles.legendValue}>{value}</Text>
@@ -213,15 +213,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface, borderRadius: 16, padding: spacing.xl,
     borderWidth: 1, borderColor: colors.border, marginBottom: spacing.xl,
   },
-  ringsRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
-  ringsWrap: { position: 'relative', width: 180, height: 180 },
+  ringsCenter: { alignItems: 'center', marginBottom: spacing.lg },
+  ringsWrap: { position: 'relative', width: 160, height: 160 },
   ringCenter: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' },
-  ringCenterNum: { fontSize: 26, fontWeight: '700', color: colors.textPrimary },
+  ringCenterNum: { fontSize: 24, fontWeight: '700', color: colors.textPrimary },
   ringCenterSub: { fontSize: 12, color: colors.textSecondary, marginTop: -1 },
-  legendCol: { flex: 1, gap: spacing.lg },
-  legendRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  legendDot: { width: 10, height: 10, borderRadius: 5 },
-  legendLabel: { flex: 1, fontSize: 14, color: colors.textSecondary },
+  legendRow3: { flexDirection: 'row', justifyContent: 'space-around' },
+  legendItem: { alignItems: 'center', gap: 4 },
+  legendDot: { width: 8, height: 8, borderRadius: 4 },
+  legendLabel: { fontSize: 12, color: colors.textSecondary },
   legendValue: { fontSize: 15, fontWeight: '600', color: colors.textPrimary },
   statsGrid: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.xl },
   statCard: {
